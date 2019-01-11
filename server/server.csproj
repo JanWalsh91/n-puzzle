@@ -30,10 +30,16 @@
     <Folder Include="src\" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="src\Server.cs" />
+    <Compile Include="src\Validator.cs" />
+    <Compile Include="src\AStar.cs" />
+    <Compile Include="src\Board.cs" />
+    <Compile Include="src\HeuristicFunction.cs" />
+    <Compile Include="src\Node.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile" />
+    <None Include="src\Server.cs" />
+    <None Include="src\Client.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
