@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -34,11 +35,18 @@ namespace server.src {
 
 		static int pouet = 0;
 
+		//internal class Comparer : IComparer<Node> {
+		//	public int Compare(Node a, Node b) {
+		//		return (int)(a.f - b.f);
+		//	}
+		//}
+
 		public List<Node> Resolve() {
 			// algo	
 			closedSet = new List<Node>();
 
 			openSet = new List<Node>();
+
 			openSet.Add(new Node(ref input));
 
 			openSet[0].g = 0;
@@ -46,7 +54,10 @@ namespace server.src {
 
 			while (openSet.Count > 0) {
 				openSet = openSet.OrderBy(o => o.f).ToList();
-
+				//for (int i = 0; i < 10 && i < openSet.Count; i++) {
+				//	Console.WriteLine(openSet[i].f);
+				//}
+				//Console.WriteLine("--------");
 				Node current = openSet[0];
 
 				if (current.state.Equals(this.solution)) {
@@ -97,8 +108,9 @@ namespace server.src {
 				//	return null;
 				//}
 
-				if (AStar.pouet % 100 == 0) {
-					Console.WriteLine("pouet: " + AStar.pouet + ". openSet.Count: " + this.openSet.Count + ". closedSet.Count: " + this.closedSet.Count);
+				if (AStar.pouet % 500 == 0) {
+					Console.WriteLine("pouet: " + AStar.pouet + ". openSet.Count: " + this.openSet.Count + ". closedSet.Count: " + this.closedSet.Count + ". openSet[0].f: " + openSet[0].f);
+					current.state.PrintBoard();
 				}
 
 			}
@@ -141,9 +153,9 @@ namespace server.src {
 			//input.Add(new List<int>(new int[] { 1, 4 }));
 
 			// Unsolvable. Bug: infinite loop?
-			input.Add(new List<int>(new int[] { 7, 4, 9 }));
-			input.Add(new List<int>(new int[] { 6, 8, 1 }));
-			input.Add(new List<int>(new int[] { 5, 3, 2 }));
+			//input.Add(new List<int>(new int[] { 7, 4, 9 }));
+			//input.Add(new List<int>(new int[] { 6, 8, 1 }));
+			//input.Add(new List<int>(new int[] { 5, 3, 2 }));
 
 			// Solvable
 			//input.Add(new List<int>(new int[] { 2, 4, 1 }));
@@ -156,8 +168,15 @@ namespace server.src {
 			//input.Add(new List<int>(new int[] { 11, 1, 6, 4  }));
 			//input.Add(new List<int>(new int[] { 12, 2, 16, 8 }));
 
+			// Not Solvable
+			input.Add(new List<int>(new int[] { 1, 2, 3 }));
+			input.Add(new List<int>(new int[] { 8, 9, 4 }));
+			input.Add(new List<int>(new int[] { 7, 6, 5 }));
+
 			Board b2 = Board.GetSnailSolution(input.Count);
 			Board b1 = new Board(input);
+
+
 
 			//Console.WriteLine("B1:");
 			//b1.PrintBoard();
@@ -165,24 +184,26 @@ namespace server.src {
 			//b2.PrintBoard();
 			//List<Board> boards = Board.GetNeighbors(b1);
 			//foreach (var board in boards) {
-				//board.PrintBoard();
+			//board.PrintBoard();
 			//}
 
+			Validator validator = new Validator(input);
+			validator.Validate();
 
 
 			AStar aStar = new AStar(ref b1, ref b2);
 
-			List<Node> solution = aStar.Resolve();
-			if (solution != null) {
-				aStar.PrintSolution(solution);
-			}
+			//List<Node> solution = aStar.Resolve();
+			//if (solution != null) {
+			//	aStar.PrintSolution(solution);
+			//}
 
 
-			Console.WriteLine("OpenSet.Count: " + aStar.openSet.Count);
-			Console.WriteLine("ClosedSet.Count: " + aStar.closedSet.Count);
-			if (solution != null) {
-				Console.WriteLine("Nunber of Moves to solution: " + solution.Count);
-			}
+			//Console.WriteLine("OpenSet.Count: " + aStar.openSet.Count);
+			//Console.WriteLine("ClosedSet.Count: " + aStar.closedSet.Count);
+			//if (solution != null) {
+			//	Console.WriteLine("Nunber of Moves to solution: " + solution.Count);
+			//}
 		}
 
 	}

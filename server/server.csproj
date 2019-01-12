@@ -32,7 +32,6 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="src\AStar.cs" />
     <Compile Include="src\Board.cs" />
     <Compile Include="src\HeuristicFunction.cs" />

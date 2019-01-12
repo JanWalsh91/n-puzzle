@@ -95,7 +95,7 @@ namespace server.src {
 
 		}
 
-		static void UpdateDirection(ref int deltaX, ref int deltaY) {
+		public static void UpdateDirection(ref int deltaX, ref int deltaY) {
 			if (deltaX == -1) {
 				deltaX = 0;
 				deltaY = -1;
@@ -109,6 +109,7 @@ namespace server.src {
 				deltaY = 0;
 				deltaX = -1;
 			}
+			Console.WriteLine("UpdateDirection, X: " + deltaX + " Y: " + deltaY);
 		}
 
 		static void UpdateCoords(ref int x, ref int y, int size) {
