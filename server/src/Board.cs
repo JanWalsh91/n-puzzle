@@ -5,7 +5,7 @@ using System.Linq;
 namespace server.src {
 	public class Board {
 		List<int> list = new List<int>();
-		int size;
+		int size;								// N
 
 		public Board(List<List<int>> input) {
 			// make list
@@ -19,8 +19,18 @@ namespace server.src {
 			this.size = input.Count;
 		}
 
-		public override bool Equals(object obj) {
+		public Board(Board board) {
+			this.list = new List<int>(board.list);
+			this.size = board.size;
+		}
 
+		public Board(List<int> input) {
+			this.list = new List<int>(input);
+			this.size = (int)Math.Sqrt(input.Count);
+		}
+
+		public override bool Equals(object obj) {
+			
 			if (obj.GetType() != typeof(Board)) {
 				return false;
 			}
@@ -66,7 +76,6 @@ namespace server.src {
 			int y = 0;
 
 			for (int i = 1; i <= N * N; i++) {
-				Console.WriteLine("Placed " + i + " at " + x + " " + y);
 				list[y][x] = i;
 				if (x + deltaX >= N || y + deltaY >= N || x + deltaX < 0 || y + deltaY < 0) {
 					UpdateDirection(ref deltaX, ref deltaY);
@@ -79,13 +88,14 @@ namespace server.src {
 
 			}
 
-			return new Board(list);
+			Console.WriteLine("Solution: ");
+			Board board = new Board(list);
+			board.PrintBoard();
+			return board;
 
 		}
 
 		static void UpdateDirection(ref int deltaX, ref int deltaY) {
-			Console.WriteLine("UpdateDirection");
-			Console.WriteLine("dX: " + deltaX + " dY: " + deltaY);
 			if (deltaX == -1) {
 				deltaX = 0;
 				deltaY = -1;
@@ -99,7 +109,6 @@ namespace server.src {
 				deltaY = 0;
 				deltaX = -1;
 			}
-			Console.WriteLine("dX: " + deltaX + " dY: " + deltaY);
 		}
 
 		static void UpdateCoords(ref int x, ref int y, int size) {
@@ -110,14 +119,56 @@ namespace server.src {
 		}
 
 		public void PrintBoard() {
-			Console.WriteLine("BOARD");
+			Console.WriteLine("PrintBoard: ");
 			for (int i = 0; i < this.size * this.size; i++) {
-				Console.Write(this.list[i]);
-				Console.Write(' ');
+				if (this.list[i] == this.size * this.size) {
+					Console.Write('@');
+				} else {
+					Console.Write(this.list[i]);
+				}
+				Console.Write('\t');
 				if ((i + 1) % this.size == 0) {
 					Console.Write('\n');
 				}
 			}
+		}
+
+		public static List<Board> GetNeighbors(Board current) {
+			int index = current.GetIndexOfEmpty();
+			int x = index % current.size;
+			int y = index / current.size;
+			List<Board> boards = new List<Board>();
+
+
+			if (x != 0) {
+				List<int> list = new List<int>(current.list);
+				list[index] = list[index - 1];
+				list[index - 1] = current.size * current.size;
+				boards.Add(new Board(list));
+			}
+			if (x != current.size - 1) {
+				List<int> list = new List<int>(current.list);
+				list[index] = list[index + 1];
+				list[index + 1] = current.size * current.size;
+				boards.Add(new Board(list));
+			}
+			if (y != 0) {
+				List<int> list = new List<int>(current.list);
+				list[index] = list[index - current.size];
+				list[index - current.size] = current.size * current.size;
+				boards.Add(new Board(list));
+			}
+			if (y != current.size - 1) {
+				List<int> list = new List<int>(current.list);
+				list[index] = list[index + current.size];
+				list[index + current.size] = current.size * current.size;
+				boards.Add(new Board(list));
+			}
+			return boards;
+		}
+
+		int GetIndexOfEmpty() {
+			return list.IndexOf(this.size * this.size);
 		}
 	}
 }

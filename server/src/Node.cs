@@ -1,7 +1,7 @@
 ﻿using System;
 namespace server.src {
 	public class Node {
-		Node cameFrom;
+		public Node cameFrom;
 		public Board state;
 		public float g;
 		public float f;
