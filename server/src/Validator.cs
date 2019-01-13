@@ -70,6 +70,10 @@ namespace server.src {
 		private void ValidateInversions() {
 			int numberOfInversions = CountNumberOfInversions();
 
+			if (numberOfInversions == 0) {
+				return;
+			}
+
 			//If N is odd, then puzzle instance is solvable if number of inversions is even in the input state.
 			if (this.sideLength % 2 == 1) {
 				if (numberOfInversions % 2 == 1) {
@@ -79,6 +83,7 @@ namespace server.src {
 				//If N is even, puzzle instance is solvable if
 				//the blank is on an even row counting from the bottom(second-last, fourth - last, etc.) and number of inversions is odd.
 				if (this.onEvenRow && numberOfInversions % 2 == 0) {
+					Console.WriteLine("Inersions: " + numberOfInversions + " onEvenRow: " + onEvenRow);
 					throw new Exception("V: Unsolvable (2)");
 				} else {
 					//the blank is on an odd row counting from the bottom(last, third-last, fifth - last, etc.) and number of inversions is even.

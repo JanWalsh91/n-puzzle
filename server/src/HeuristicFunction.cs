@@ -32,11 +32,24 @@ namespace server.src {
 				int vDist = Math.Abs(i2 / board.GetSize() - i / board.GetSize());
 				cost += hDist + vDist;
 			}
+
 			return cost;
 		}
 
 		private float A(Board board) {
-			return 0.0f;
+			float cost = 0.0f;
+			for (int i = 0; i < board.GetSize() * board.GetSize(); i++) {
+				int i2 = this.solution.GetIndexOf(board.GetList()[i]);
+				int hDist = Math.Abs(i2 % board.GetSize() - i % board.GetSize());
+				int vDist = Math.Abs(i2 / board.GetSize() - i / board.GetSize());
+				int big = Math.Max(hDist, vDist);
+				int sml = Math.Min(hDist, vDist);
+
+
+				cost += (5 * big - 4) - (big - sml) * 2;
+			}
+
+			return cost;
 		}
 
 		private float B(Board board) {

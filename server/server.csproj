@@ -30,6 +30,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="C5">
+      <HintPath>packages\C5.2.5.3\lib\net45\C5.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="src\AStar.cs" />
@@ -42,6 +45,7 @@
   <ItemGroup>
     <None Include="src\Client.cs" />
     <None Include="src\Server.cs" />
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
