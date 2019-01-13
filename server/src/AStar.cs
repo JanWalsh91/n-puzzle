@@ -15,16 +15,16 @@ namespace server.src {
 
 		//SortedList<String, Node> o2 = new SortedList<string, Node>(new Comparer());
 
-		Hashtable openSet;
+		//Hashtable openSet;
 		Hashtable closedSet;
 
-		//IntervalHeap<Node> o = new IntervalHeap<Node>(new Comparer());
+		IntervalHeap<Node> openSet;
 
-		//internal class Comparer : IComparer<Node> {
-		//	public int Compare(Node x, Node y) {
-		//		return (int)(x.f - y.f);
-		//	}
-		//}
+		internal class Comparer : IComparer<Node> {
+			public int Compare(Node x, Node y) {
+				return (int)(x.f - y.f);
+			}
+		}
 
 		public AStar(ref Board input, ref Board solution) {
 			this.input = input;
@@ -59,14 +59,14 @@ namespace server.src {
 			// algo	
 			closedSet = new Hashtable();
 
-			openSet = new Hashtable();
+			Comparer comparer = new Comparer();
+			openSet = new IntervalHeap<Node>(comparer);
 
 			Node n = new Node(ref input);
-			openSet.Add(n.hash, n);
+			openSet.Add(n);
 
 			n.g = 0;
 			n.f = heuristicFunction.heuristic(n.state);
-
 
 			bool evalNeighbor = false;
 			Node current = null;
@@ -76,7 +76,8 @@ namespace server.src {
 
 
 				if (!evalNeighbor) {
-					current = GetSmallestValue();
+					//current = GetSmallestValue();
+					current = openSet.DeleteMin();
 				} else {
 					evalNeighbor = false;
 				}
@@ -88,7 +89,7 @@ namespace server.src {
 					return ReconstructPath(current);
 				}
 
-				openSet.Remove(current.hash);
+				//openSet.Delete(current);
 
 				closedSet.Add(current.hash, current);
 
@@ -106,10 +107,11 @@ namespace server.src {
 					float tentativeGScore = current.g + 1;
 					//Console.WriteLine("tentativeGScore: " + tentativeGScore);
 					// If neighbor not in openSet
-					if (openSet[neighbor.hash] == null) {
-						openSet.Add(neighbor.hash, neighbor);
+					Node tmp = null;
+					openSet.Find((arg) => arg.hash == current.hash, out tmp);
+					if (tmp == null) {
+						openSet.Add(neighbor);
 					} else {
-
 						// Find n in closedSet
 						Node n2 = closedSet[neighbor.hash] as Node;
 						if (n2 == null) {
@@ -129,17 +131,17 @@ namespace server.src {
 					neighbor.f = neighbor.g + heuristicFunction.heuristic(neighbor.state);
 
 				}
-				if (neighbors.Count > 0) {
-					var bestNeighborList = neighbors.Where(nn => Math.Abs(nn.f - neighbors.Min(o => o.f)) < 0.0001).ToList();
-					if (bestNeighborList.Count > 0) {
-						var bestNeighbor = bestNeighborList[0];
-						if (bestNeighbor.f < current.f) {
-							//Console.WriteLine("Going to Neighbot EXpress town");
-							current = bestNeighbor;
-							evalNeighbor = true;
-						}
-					}
-				}
+				//if (neighbors.Count > 0) {
+				//	var bestNeighborList = neighbors.Where(nn => Math.Abs(nn.f - neighbors.Min(o => o.f)) < 0.0001).ToList();
+				//	if (bestNeighborList.Count > 0) {
+				//		var bestNeighbor = bestNeighborList[0];
+				//		if (bestNeighbor.f < current.f) {
+				//			//Console.WriteLine("Going to Neighbot EXpress town");
+				//			current = bestNeighbor;
+				//			evalNeighbor = true;
+				//		}
+				//	}
+				//}
 
 
 				AStar.pouet++;
@@ -165,19 +167,19 @@ namespace server.src {
 			//Console.WriteLine("H: " + h);
 		}
 
-		Node GetSmallestValue() {
-			string key = "";
-			float fValue = float.PositiveInfinity;
+		//Node GetSmallestValue() {
+		//	string key = "";
+		//	float fValue = float.PositiveInfinity;
 
-			foreach (DictionaryEntry item in openSet) {
-				if ((item.Value as Node).f < fValue) {
-					key = item.Key as string;
-					fValue = (item.Value as Node).f;
-				}
-			}
+		//	foreach (DictionaryEntry item in openSet) {
+		//		if ((item.Value as Node).f < fValue) {
+		//			key = item.Key as string;
+		//			fValue = (item.Value as Node).f;
+		//		}
+		//	}
 
-			return openSet[key] as Node;
-		}
+		//	return openSet[key] as Node;
+		//}
 
 		//float CalculateH(Node node) {
 		//	return heuristicFunction.heuristic(Node.board);
