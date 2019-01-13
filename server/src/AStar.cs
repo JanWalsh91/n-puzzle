@@ -145,7 +145,14 @@ namespace server.src {
 			}
 		}
 
-		public static void Main() {
+		public static void Main(string[] argv) {
+
+			Parser parser = new Parser();
+
+			foreach (var str in argv) {
+				parser.SolveFromFile(str);
+			}
+			return;
 
 			List<List<int>> input = new List<List<int>>();
 
@@ -163,19 +170,52 @@ namespace server.src {
 			//input.Add(new List<int>(new int[] { 8, 7, 9 }));
 
 			// Solvable
-			//input.Add(new List<int>(new int[] { 10, 14, 15, 13 }));
-			//input.Add(new List<int>(new int[] { 5, 7, 3, 9 }));
-			//input.Add(new List<int>(new int[] { 11, 1, 6, 4  }));
-			//input.Add(new List<int>(new int[] { 12, 2, 16, 8 }));
+			//input.Add(new List<int>(new int[] { 1, 8, 7 }));
+			//input.Add(new List<int>(new int[] { 5, 9, 2 }));
+			//input.Add(new List<int>(new int[] { 6, 4, 3 }));
+
+			// Solvable
+			//input.Add(new List<int>(new int[] { 7, 1, 9 }));
+			//input.Add(new List<int>(new int[] { 6, 8, 5 }));
+			//input.Add(new List<int>(new int[] { 2, 3, 4 }));
+
+			// Solvable
+			//input.Add(new List<int>(new int[] { 1, 8, 5 }));
+			//input.Add(new List<int>(new int[] { 4, 9, 2 }));
+			//input.Add(new List<int>(new int[] { 3, 6, 7 }));
+
+			// Solvable
+			input.Add(new List<int>(new int[] { 3, 7, 4, 13 }));
+			input.Add(new List<int>(new int[] { 16, 8, 2, 12 }));
+			input.Add(new List<int>(new int[] { 11, 1, 9, 5 }));
+			input.Add(new List<int>(new int[] { 15, 6, 14, 10 }));
+
+			// Unsolvable
+			//input.Add(new List<int>(new int[] { 5, 3, 2 }));
+			//input.Add(new List<int>(new int[] { 6, 7, 1 }));
+			//input.Add(new List<int>(new int[] { 8, 4, 9 }));
+
+			// Unsolvable
+			//input.Add(new List<int>(new int[] { 5, 15, 10, 11 }));
+			//input.Add(new List<int>(new int[] { 9, 1, 16, 12 }));
+			//input.Add(new List<int>(new int[] { 2, 6, 7, 13 }));
+			//input.Add(new List<int>(new int[] { 8, 3, 4, 14 }));
+
+			// Unsolvable
+			//input.Add(new List<int>(new int[] { 14, 10, 6, 15, 8 }));
+			//input.Add(new List<int>(new int[] { 12, 20, 19, 23, 21 }));
+			//input.Add(new List<int>(new int[] { 9, 5, 17, 7, 24 }));
+			//input.Add(new List<int>(new int[] { 1, 25, 13, 4, 3 }));
+			//input.Add(new List<int>(new int[] { 11, 18, 2, 16, 22 }));
+
 
 			// Not Solvable
-			input.Add(new List<int>(new int[] { 1, 2, 3 }));
-			input.Add(new List<int>(new int[] { 8, 9, 4 }));
-			input.Add(new List<int>(new int[] { 7, 6, 5 }));
+			//input.Add(new List<int>(new int[] { 2, 1, 3 }));
+			//input.Add(new List<int>(new int[] { 8, 9, 4 }));
+			//input.Add(new List<int>(new int[] { 7, 6, 5 }));
 
 			Board b2 = Board.GetSnailSolution(input.Count);
 			Board b1 = new Board(input);
-
 
 
 			//Console.WriteLine("B1:");
@@ -188,15 +228,20 @@ namespace server.src {
 			//}
 
 			Validator validator = new Validator(input);
-			validator.Validate();
-
+			try {
+				validator.Validate();
+			} catch (Exception e) {
+				Console.WriteLine(e.Message);
+				return;
+			}
+			return;
 
 			AStar aStar = new AStar(ref b1, ref b2);
 
-			//List<Node> solution = aStar.Resolve();
-			//if (solution != null) {
-			//	aStar.PrintSolution(solution);
-			//}
+			List<Node> solution = aStar.Resolve();
+			if (solution != null) {
+				aStar.PrintSolution(solution);
+			}
 
 
 			//Console.WriteLine("OpenSet.Count: " + aStar.openSet.Count);

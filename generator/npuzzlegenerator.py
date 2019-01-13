@@ -28,7 +28,7 @@ def make_puzzle(s, solvable, iterations):
 		if p[0] == 0 or p[1] == 0:
 			p[-1], p[-2] = p[-2], p[-1]
 		else:
-			p[0], p[1] = p[1], p[0]
+			p[0], p[1] = p[1], p[0] 
 
 	return p
 

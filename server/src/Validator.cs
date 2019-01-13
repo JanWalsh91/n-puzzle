@@ -43,11 +43,13 @@ namespace server.src {
 					if (biggestNum < input[i][y]) {
 						biggestNum = input[i][y];
 					}
+					Console.WriteLine("i; " + i);
 					if (input[i][y] == size + 1) {
-						onEvenRow = (i + 1) % 2 == 0;
+						onEvenRow = (sideLength - i) % 2 == 0;
+						//Console.WriteLine("Row from bottom: " + (sideLength - i) + " onEvenRow: " + onEvenRow);
 					}
 				}
-			} 
+			}
 
 			// check if all numbers are in order
 			List<int> copy = new List<int>(listOfNumbers);
@@ -97,26 +99,24 @@ namespace server.src {
 			int x = 0;
 			int y = 0;
 
-			Console.WriteLine(sideLength);
-
 			int stepsTaken = 1;
 			int stepsToTake = sideLength;
 			bool repeat = false;
 
-			while (stepsToTake > 0) {
-				Console.WriteLine("x: " + x + " Y:" + y);
-				int prev = input[y][x];
+			List<int> unrolledSnail = new List<int>();
 
+			while (stepsToTake > 0) {
+				unrolledSnail.Add(input[y][x]);
 				x += deltaX;
 				y += deltaY;
 				stepsTaken++;
 
-				int current = input[y][x];
-				if (prev > current) {
-					num++;
-				}
-				Console.WriteLine("Stepstaken: " + stepsTaken);
-				Console.WriteLine("Stepstotkae: " + stepsToTake);
+				//int current = input[y][x];
+		
+				//if (!(current == sideLength * sideLength || prev == sideLength * sideLength) && prev > current) {
+				//	num++;
+				//}
+
 				if (stepsTaken == stepsToTake) {
 					Board.UpdateDirection(ref deltaX, ref deltaY);
 					if (!repeat) {
@@ -127,10 +127,24 @@ namespace server.src {
 					}
 					stepsTaken = 0;
 				}
-
-
 			}
-			Console.WriteLine("Inversions: " + num);
+			unrolledSnail.Add(input[y][x]);
+
+			for (int ygreque = 0; ygreque < unrolledSnail.Count; ygreque++) {
+				Console.WriteLine(unrolledSnail[ygreque]);
+			}
+
+			for (int i = 0; i < sideLength * sideLength - 1; i++) {
+				for (int j = i + 1; j < sideLength * sideLength; j++) {
+					// count pairs(i, j) such that i appears 
+					// before j, but i > j. 
+					if (unrolledSnail[j] != sideLength * sideLength && unrolledSnail[i] != sideLength * sideLength && unrolledSnail[i] > unrolledSnail[j])
+						num++;
+				}
+			}
+
+			Console.WriteLine("Number of inversions: " + num);
+
 			return num;
 		}
 
