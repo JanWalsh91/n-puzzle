@@ -52,6 +52,10 @@ namespace server.src {
 			return base.GetHashCode();
 		}
 
+		public override string ToString() {
+			return String.Join(";", list.ToArray());
+		}
+
 		public int GetIndexOf(int i) {
 			return list.IndexOf(i);
 		}
@@ -76,7 +80,8 @@ namespace server.src {
 			int y = 0;
 
 			for (int i = 1; i <= N * N; i++) {
-				list[y][x] = i;
+				list[y][x] = i == N * N ? 0 : i;
+
 				if (x + deltaX >= N || y + deltaY >= N || x + deltaX < 0 || y + deltaY < 0) {
 					UpdateDirection(ref deltaX, ref deltaY);
 				} else if (i < N * N && list[y + deltaY][x + deltaX] != 0) {
@@ -85,7 +90,6 @@ namespace server.src {
 
 				x += deltaX;
 				y += deltaY;
-
 			}
 
 			Console.WriteLine("Solution: ");
@@ -109,7 +113,7 @@ namespace server.src {
 				deltaY = 0;
 				deltaX = -1;
 			}
-			Console.WriteLine("UpdateDirection, X: " + deltaX + " Y: " + deltaY);
+			//Console.WriteLine("UpdateDirection, X: " + deltaX + " Y: " + deltaY);
 		}
 
 		static void UpdateCoords(ref int x, ref int y, int size) {
@@ -122,11 +126,7 @@ namespace server.src {
 		public void PrintBoard() {
 			Console.WriteLine("PrintBoard: ");
 			for (int i = 0; i < this.size * this.size; i++) {
-				if (this.list[i] == this.size * this.size) {
-					Console.Write('@');
-				} else {
-					Console.Write(this.list[i]);
-				}
+				Console.Write(this.list[i]);
 				Console.Write('\t');
 				if ((i + 1) % this.size == 0) {
 					Console.Write('\n');
@@ -144,32 +144,32 @@ namespace server.src {
 			if (x != 0) {
 				List<int> list = new List<int>(current.list);
 				list[index] = list[index - 1];
-				list[index - 1] = current.size * current.size;
+				list[index - 1] = 0;
 				boards.Add(new Board(list));
 			}
 			if (x != current.size - 1) {
 				List<int> list = new List<int>(current.list);
 				list[index] = list[index + 1];
-				list[index + 1] = current.size * current.size;
+				list[index + 1] = 0;
 				boards.Add(new Board(list));
 			}
 			if (y != 0) {
 				List<int> list = new List<int>(current.list);
 				list[index] = list[index - current.size];
-				list[index - current.size] = current.size * current.size;
+				list[index - current.size] = 0;
 				boards.Add(new Board(list));
 			}
 			if (y != current.size - 1) {
 				List<int> list = new List<int>(current.list);
 				list[index] = list[index + current.size];
-				list[index + current.size] = current.size * current.size;
+				list[index + current.size] = 0;
 				boards.Add(new Board(list));
 			}
 			return boards;
 		}
 
 		int GetIndexOfEmpty() {
-			return list.IndexOf(this.size * this.size);
+			return list.IndexOf(0);
 		}
 	}
 }

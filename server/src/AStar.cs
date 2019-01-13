@@ -9,8 +9,19 @@ namespace server.src {
 		Board input;
 		Board solution;
 		HeuristicFunction heuristicFunction;
-		List<Node> openSet;
-		List<Node> closedSet;
+		//List<Node> openSet;
+		//List<Node> closedSet;
+
+		//SortedList<String, Node> o2 = new SortedList<string, Node>(new Comparer());
+
+		Hashtable openSet;
+		Hashtable closedSet;
+
+		//internal class Comparer : IComparer<Node> {
+			//public int Compare(Node x, Node y) {
+			//	return (int)(x.f - y.f);
+			//}
+		//}
 
 		public AStar(ref Board input, ref Board solution) {
 			this.input = input;
@@ -43,38 +54,38 @@ namespace server.src {
 
 		public List<Node> Resolve() {
 			// algo	
-			closedSet = new List<Node>();
+			closedSet = new Hashtable();
 
-			openSet = new List<Node>();
+			openSet = new Hashtable();
 
-			openSet.Add(new Node(ref input));
+			Node n = new Node(ref input);
+			openSet.Add(n.hash, n);
 
-			openSet[0].g = 0;
-			openSet[0].f = heuristicFunction.heuristic(openSet[0].state);
+			
+
+			n.g = 0;
+			n.f = heuristicFunction.heuristic(n.state);
 
 			while (openSet.Count > 0) {
-				openSet = openSet.OrderBy(o => o.f).ToList();
-				//for (int i = 0; i < 10 && i < openSet.Count; i++) {
-				//	Console.WriteLine(openSet[i].f);
-				//}
-				//Console.WriteLine("--------");
-				Node current = openSet[0];
+
+				Node current = GetSmallestValue();
+				//Console.WriteLine("set current to : " + current.hash);
 
 				if (current.state.Equals(this.solution)) {
 					Console.WriteLine("END");
 					return ReconstructPath(current);
 				}
+				openSet.Remove(current.hash);
 
-				openSet.RemoveAt(0);
-				closedSet.Add(current);
+				closedSet.Add(current.hash, current);
 
 				List<Node> neighbors = GetNeighbors(ref current);
 
-				foreach (var n in neighbors) {
-					//n.state.PrintBoard();
+				foreach (var neighbor in neighbors) {
 
-					// If neighbor not in closedSet
-					if (closedSet.Find(o => (o.state.Equals(n.state))) != null) {
+					// If neighbor in closedSet
+					//if (closedSet.Find(o => (o.state.Equals(neighbor.state))) != null) {
+					if (closedSet[neighbor.hash] != null) {
 						//Console.WriteLine("continue");
 						continue;
 					}
@@ -82,11 +93,11 @@ namespace server.src {
 					float tentativeGScore = current.g + 1;
 					//Console.WriteLine("tentativeGScore: " + tentativeGScore);
 					// If neighbor not in openSet
-					if (openSet.Find(o => (o.state.Equals(n.state))) == null) {
-						openSet.Add(n);
+					if (openSet[neighbor.hash] == null) {
+						openSet.Add(neighbor.hash, neighbor);
 					} else {
 						// Find n in closedSet
-						Node n2 = closedSet.Find(o => (o.state.Equals(n.state)));
+						Node n2 = closedSet[neighbor.hash] as Node;
 						if (n2 != null && tentativeGScore >= n2.g) {
 							// DOES NOT PASS HERE
 							Console.WriteLine("continue");
@@ -95,9 +106,9 @@ namespace server.src {
 					}
 
 
-					n.cameFrom = current;
-					n.g = tentativeGScore;
-					n.f = n.g + heuristicFunction.heuristic(n.state);
+					neighbor.cameFrom = current;
+					neighbor.g = tentativeGScore;
+					neighbor.f = neighbor.g + heuristicFunction.heuristic(neighbor.state);
 
 				}
 
@@ -109,7 +120,7 @@ namespace server.src {
 				//}
 
 				if (AStar.pouet % 500 == 0) {
-					Console.WriteLine("pouet: " + AStar.pouet + ". openSet.Count: " + this.openSet.Count + ". closedSet.Count: " + this.closedSet.Count + ". openSet[0].f: " + openSet[0].f);
+					Console.WriteLine("pouet: " + AStar.pouet + ". openSet.Count: " + this.openSet.Count + ". closedSet.Count: " + this.closedSet.Count);
 					current.state.PrintBoard();
 				}
 
@@ -117,6 +128,20 @@ namespace server.src {
 			return null;
 			//float h = heuristicFunction.heuristic(this.input);
 			//Console.WriteLine("H: " + h);
+		}
+
+		Node GetSmallestValue() {
+			string key = "";
+			float fValue = float.PositiveInfinity;
+
+			foreach (DictionaryEntry item in openSet) {
+				if ((item.Value as Node).f < fValue) {
+					key = item.Key as string;
+					fValue = (item.Value as Node).f;
+				}
+			}
+
+			return openSet[key] as Node;
 		}
 
 		//float CalculateH(Node node) {
@@ -149,55 +174,59 @@ namespace server.src {
 
 			Parser parser = new Parser();
 
-			foreach (var str in argv) {
-				parser.SolveFromFile(str);
-			}
-			return;
+			//foreach (var str in argv) {
+			//List<List<int>> input = parser.SolveFromFile(argv[0]);
+
+			//Board board = new Board(input);
+			//board.PrintBoard();
+
+			//}
+			//return;
 
 			List<List<int>> input = new List<List<int>>();
 
 			//input.Add(new List<int>(new int[] { 3, 2 }));
-			//input.Add(new List<int>(new int[] { 1, 4 }));
+			//input.Add(new List<int>(new int[] { 1, 0 }));
 
-			// Unsolvable. Bug: infinite loop?
-			//input.Add(new List<int>(new int[] { 7, 4, 9 }));
+			// Unsolvable
+			//input.Add(new List<int>(new int[] { 7, 4, 0 }));
 			//input.Add(new List<int>(new int[] { 6, 8, 1 }));
 			//input.Add(new List<int>(new int[] { 5, 3, 2 }));
 
 			// Solvable
 			//input.Add(new List<int>(new int[] { 2, 4, 1 }));
 			//input.Add(new List<int>(new int[] { 6, 5, 3 }));
-			//input.Add(new List<int>(new int[] { 8, 7, 9 }));
+			//input.Add(new List<int>(new int[] { 8, 7, 0 }));
 
 			// Solvable
 			//input.Add(new List<int>(new int[] { 1, 8, 7 }));
-			//input.Add(new List<int>(new int[] { 5, 9, 2 }));
+			//input.Add(new List<int>(new int[] { 5, 0, 2 }));
 			//input.Add(new List<int>(new int[] { 6, 4, 3 }));
 
 			// Solvable
-			//input.Add(new List<int>(new int[] { 7, 1, 9 }));
+			//input.Add(new List<int>(new int[] { 7, 1, 0 }));
 			//input.Add(new List<int>(new int[] { 6, 8, 5 }));
 			//input.Add(new List<int>(new int[] { 2, 3, 4 }));
 
 			// Solvable
 			//input.Add(new List<int>(new int[] { 1, 8, 5 }));
-			//input.Add(new List<int>(new int[] { 4, 9, 2 }));
+			//input.Add(new List<int>(new int[] { 4, 0, 2 }));
 			//input.Add(new List<int>(new int[] { 3, 6, 7 }));
 
 			// Solvable
 			input.Add(new List<int>(new int[] { 3, 7, 4, 13 }));
-			input.Add(new List<int>(new int[] { 16, 8, 2, 12 }));
+			input.Add(new List<int>(new int[] { 0, 8, 2, 12 }));
 			input.Add(new List<int>(new int[] { 11, 1, 9, 5 }));
 			input.Add(new List<int>(new int[] { 15, 6, 14, 10 }));
 
 			// Unsolvable
 			//input.Add(new List<int>(new int[] { 5, 3, 2 }));
 			//input.Add(new List<int>(new int[] { 6, 7, 1 }));
-			//input.Add(new List<int>(new int[] { 8, 4, 9 }));
+			//input.Add(new List<int>(new int[] { 8, 4, 0 }));
 
 			// Unsolvable
 			//input.Add(new List<int>(new int[] { 5, 15, 10, 11 }));
-			//input.Add(new List<int>(new int[] { 9, 1, 16, 12 }));
+			//input.Add(new List<int>(new int[] { 9, 1, 0, 12 }));
 			//input.Add(new List<int>(new int[] { 2, 6, 7, 13 }));
 			//input.Add(new List<int>(new int[] { 8, 3, 4, 14 }));
 
@@ -205,13 +234,13 @@ namespace server.src {
 			//input.Add(new List<int>(new int[] { 14, 10, 6, 15, 8 }));
 			//input.Add(new List<int>(new int[] { 12, 20, 19, 23, 21 }));
 			//input.Add(new List<int>(new int[] { 9, 5, 17, 7, 24 }));
-			//input.Add(new List<int>(new int[] { 1, 25, 13, 4, 3 }));
+			//input.Add(new List<int>(new int[] { 1, 0, 13, 4, 3 }));
 			//input.Add(new List<int>(new int[] { 11, 18, 2, 16, 22 }));
 
 
 			// Not Solvable
 			//input.Add(new List<int>(new int[] { 2, 1, 3 }));
-			//input.Add(new List<int>(new int[] { 8, 9, 4 }));
+			//input.Add(new List<int>(new int[] { 8, 0, 4 }));
 			//input.Add(new List<int>(new int[] { 7, 6, 5 }));
 
 			Board b2 = Board.GetSnailSolution(input.Count);
@@ -228,13 +257,13 @@ namespace server.src {
 			//}
 
 			Validator validator = new Validator(input);
-			try {
+			//try {
 				validator.Validate();
-			} catch (Exception e) {
-				Console.WriteLine(e.Message);
-				return;
-			}
-			return;
+			//} catch (Exception e) {
+			//	Console.WriteLine(e.Message);
+			//	return;
+			//}
+			//return;
 
 			AStar aStar = new AStar(ref b1, ref b2);
 

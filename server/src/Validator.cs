@@ -28,7 +28,7 @@ namespace server.src {
 			this.sideLength = input.Count;
 			foreach (var i in input) {
 				if (i.Count != this.sideLength) {
-					throw new Exception("Exception 3");
+					throw new Exception("V: Invalid input shape");
 				}
 			}
 		}
@@ -43,8 +43,8 @@ namespace server.src {
 					if (biggestNum < input[i][y]) {
 						biggestNum = input[i][y];
 					}
-					Console.WriteLine("i; " + i);
-					if (input[i][y] == size + 1) {
+					//Console.WriteLine("i; " + i);
+					if (input[i][y] == 0) {
 						onEvenRow = (sideLength - i) % 2 == 0;
 						//Console.WriteLine("Row from bottom: " + (sideLength - i) + " onEvenRow: " + onEvenRow);
 					}
@@ -58,12 +58,12 @@ namespace server.src {
 			for (int i = 1; i < copy.Count; i++) {
 				if (copy[i] - 1 != copy[i - 1]) {
 					//Console.WriteLine("Pas content parce que : " + (copy[i] - 1) + " vs " + copy[i]]);
-					throw new Exception("Exceptionn 1");
+					throw new Exception("V: Input numbers non-contiguous");
 				}
 			}
 
-			if (copy[copy.Count - 1] != size + 1) {
-				throw new Exception("Exceptionn 2");
+			if (copy[0] != 0) {
+				throw new Exception("V: Missing empty square");
 			}
 		}
 
@@ -73,22 +73,21 @@ namespace server.src {
 			//If N is odd, then puzzle instance is solvable if number of inversions is even in the input state.
 			if (this.sideLength % 2 == 1) {
 				if (numberOfInversions % 2 == 1) {
-					throw new Exception("Exception 4");
+					throw new Exception("V: Unsolvable (1)");
 				}
 			} else {
 				//If N is even, puzzle instance is solvable if
 				//the blank is on an even row counting from the bottom(second-last, fourth - last, etc.) and number of inversions is odd.
 				if (this.onEvenRow && numberOfInversions % 2 == 0) {
-					throw new Exception("Exception 5");
+					throw new Exception("V: Unsolvable (2)");
 				} else {
 					//the blank is on an odd row counting from the bottom(last, third-last, fifth - last, etc.) and number of inversions is even.
 					if (numberOfInversions % 2 != 0) {
-						throw new Exception("Exception 6");
+						throw new Exception("V: Unsolvable (3)");
 					}	
 				}
 			}
 
-			//For all other cases, the puzzle instance is not solvable.
 		}
 
 		private int CountNumberOfInversions() {
@@ -111,12 +110,6 @@ namespace server.src {
 				y += deltaY;
 				stepsTaken++;
 
-				//int current = input[y][x];
-		
-				//if (!(current == sideLength * sideLength || prev == sideLength * sideLength) && prev > current) {
-				//	num++;
-				//}
-
 				if (stepsTaken == stepsToTake) {
 					Board.UpdateDirection(ref deltaX, ref deltaY);
 					if (!repeat) {
@@ -130,16 +123,17 @@ namespace server.src {
 			}
 			unrolledSnail.Add(input[y][x]);
 
-			for (int ygreque = 0; ygreque < unrolledSnail.Count; ygreque++) {
-				Console.WriteLine(unrolledSnail[ygreque]);
-			}
+			//for (int z = 0; z < unrolledSnail.Count; z++) {
+			//	Console.WriteLine(unrolledSnail[z]);
+			//}
 
 			for (int i = 0; i < sideLength * sideLength - 1; i++) {
 				for (int j = i + 1; j < sideLength * sideLength; j++) {
 					// count pairs(i, j) such that i appears 
 					// before j, but i > j. 
-					if (unrolledSnail[j] != sideLength * sideLength && unrolledSnail[i] != sideLength * sideLength && unrolledSnail[i] > unrolledSnail[j])
+					if (unrolledSnail[j] != 0 && unrolledSnail[i] != 0 && unrolledSnail[i] > unrolledSnail[j]) {
 						num++;
+					}
 				}
 			}
 
