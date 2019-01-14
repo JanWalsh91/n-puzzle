@@ -372,17 +372,25 @@ namespace server.src {
 			//input.Add(new List<int>(new int[] { 7, 6, 5 }));
 
 			// Solvable BUG not solvable?
-			input.Add(new List<int>(new int[] { 1, 2, 3, 4 }));
-			input.Add(new List<int>(new int[] { 12, 13, 5, 6 }));
-			input.Add(new List<int>(new int[] { 11, 15, 14, 0 }));
-			input.Add(new List<int>(new int[] { 10, 9, 8, 7 }));
+			//input.Add(new List<int>(new int[] { 1, 2, 3, 4 }));
+			//input.Add(new List<int>(new int[] { 12, 13, 5, 6 }));
+			//input.Add(new List<int>(new int[] { 11, 15, 14, 0 }));
+			//input.Add(new List<int>(new int[] { 10, 9, 8, 7 }));
 
 			// SooOO00lvable
-			//input.Add(new List<int>(new int[] { 11, 22, 1, 5, 14 }));
-			//input.Add(new List<int>(new int[] { 23, 4, 9, 17, 24  }));
-			//input.Add(new List<int>(new int[] { 0, 21, 16, 7, 15 }));
-			//input.Add(new List<int>(new int[] { 18, 2, 19, 3, 12 }));
-			//input.Add(new List<int>(new int[] { 8, 20, 13, 6, 10 }));
+			input.Add(new List<int>(new int[] { 11, 22, 1, 5, 14 }));
+			input.Add(new List<int>(new int[] { 23, 4, 9, 17, 24  }));
+			input.Add(new List<int>(new int[] { 0, 21, 16, 7, 15 }));
+			input.Add(new List<int>(new int[] { 18, 2, 19, 3, 12 }));
+			input.Add(new List<int>(new int[] { 8, 20, 13, 6, 10 }));
+
+			// Solvable
+			//input.Add(new List<int>(new int[] { 16, 19, 3, 17, 31, 22 }));
+			//input.Add(new List<int>(new int[] { 20, 1, 18, 26, 15, 11 }));
+			//input.Add(new List<int>(new int[] { 4, 8, 28, 6, 34, 12 }));
+			//input.Add(new List<int>(new int[] { 0, 32, 13, 29, 21, 30 }));
+			//input.Add(new List<int>(new int[] { 27, 9, 7, 25, 10, 35 }));
+			//input.Add(new List<int>(new int[] { 2, 33, 14, 5, 24, 23 }));
 
 			Board b2 = Board.GetSnailSolution(input.Count);
 			Board b1 = new Board(input);
@@ -406,7 +414,13 @@ namespace server.src {
 			//}
 			//return;
 
-			AStar aStar = new AStar(ref b1, ref b2);
+			AStar aStar = null;
+			try {
+				aStar = new AStar(ref b1, ref b2);
+			} catch (OutOfMemoryException oome) {
+				Console.WriteLine(":( " + oome.Message);
+				return;
+			}
 
 			List<Node> solution = aStar.Resolve();
 			if (solution != null) {
