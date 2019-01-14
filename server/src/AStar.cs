@@ -2,29 +2,39 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using C5;
+using Wintellect.PowerCollections;
 
 namespace server.src {
 	public class AStar {
 
+		static int pouet = 0;
+
 		Board input;
 		Board solution;
+
 		HeuristicFunction heuristicFunction;
-		//List<Node> openSet;
-		//List<Node> closedSet;
 
-		//SortedList<String, Node> o2 = new SortedList<string, Node>(new Comparer());
-
-		//Hashtable openSet;
+		Dictionary<string, Node> nodes = new Dictionary<string, Node>();
 		Hashtable closedSet;
-
-		IntervalHeap<Node> openSet;
+		OrderedBag<Node> openSet;
 
 		internal class Comparer : IComparer<Node> {
 			public int Compare(Node x, Node y) {
+				//return (x.f - y.f > 0 ? 1 : -1);
 				return (int)(x.f - y.f);
 			}
 		}
+
+		internal class EqualityComparer : IEqualityComparer<Node> {
+			public bool Equals(Node x, Node y) {
+				return x.hash.Equals(y.hash);
+			}
+
+			public int GetHashCode(Node obj) {
+				return obj.GetHashCode();
+			}
+		}
+
 
 		public AStar(ref Board input, ref Board solution) {
 			this.input = input;
@@ -37,8 +47,9 @@ namespace server.src {
 		}
 
 		List<Node> ReconstructPath(Node current) {
-			List<Node> totalPath = new List<Node>();
-			totalPath.Add(current);
+			List<Node> totalPath = new List<Node> {
+				current
+			};
 			while (current.cameFrom != null) {
 				totalPath.Add(current.cameFrom);
 				current = current.cameFrom;
@@ -47,23 +58,18 @@ namespace server.src {
 			return totalPath;
 		}
 
-		static int pouet = 0;
-
-		//internal class Comparer : IComparer<Node> {
-		//	public int Compare(Node a, Node b) {
-		//		return (int)(a.f - b.f);
-		//	}
-		//}
-
 		public List<Node> Resolve() {
-			// algo	
+			
 			closedSet = new Hashtable();
 
-			Comparer comparer = new Comparer();
-			openSet = new IntervalHeap<Node>(comparer);
+			openSet = new OrderedBag<Node>(new Comparer());
+
+			EqualityComparer equalityComparer = new EqualityComparer();
 
 			Node n = new Node(ref input);
+			nodes.Add(n.hash, n);
 			openSet.Add(n);
+			n.isInOpenSet = true;
 
 			n.g = 0;
 			n.f = heuristicFunction.heuristic(n.state);
@@ -72,12 +78,11 @@ namespace server.src {
 			Node current = null;
 
 			while (openSet.Count > 0) {
-
-
-
+				
 				if (!evalNeighbor) {
 					//current = GetSmallestValue();
-					current = openSet.DeleteMin();
+					current = openSet.RemoveFirst();
+					current.isInOpenSet = false;
 				} else {
 					evalNeighbor = false;
 				}
@@ -89,39 +94,24 @@ namespace server.src {
 					return ReconstructPath(current);
 				}
 
-				//openSet.Delete(current);
-
-				closedSet.Add(current.hash, current);
-
+				//closedSet.Add(current.hash, current);
+				closedSet[current.hash] = current;
+				current.isInClosedSet = true;
 
 				List<Node> neighbors = GetNeighbors(ref current);
 				foreach (var neighbor in neighbors) {
+					
 					// If neighbor in closedSet
-					//if (closedSet.Find(o => (o.state.Equals(neighbor.state))) != null) {
-
-					if (closedSet[neighbor.hash] != null) {
-						//Console.WriteLine("continue");
+					if (closedSet.ContainsKey(neighbor.hash)) {
 						continue;
 					}
 
 					float tentativeGScore = current.g + 1;
-					//Console.WriteLine("tentativeGScore: " + tentativeGScore);
-					// If neighbor not in openSet
-					Node tmp = null;
-					openSet.Find((arg) => arg.hash == current.hash, out tmp);
-					if (tmp == null) {
-						openSet.Add(neighbor);
-					} else {
-						// Find n in closedSet
-						Node n2 = closedSet[neighbor.hash] as Node;
-						if (n2 == null) {
-							//Console.WriteLine("N2 Null");
-						} else {
-							Console.WriteLine("tentiveG: " + tentativeGScore + ", n2.g: " + n2.g);
-						}
-						if (n2 != null && tentativeGScore >= n2.g) {
+	
+					if (neighbor.isInOpenSet) {
+						if (tentativeGScore >= neighbor.g) {
 							// DOES NOT PASS HERE
-							Console.WriteLine("continue");
+							//Console.WriteLine("continue");
 							continue;
 						}
 					}
@@ -130,7 +120,16 @@ namespace server.src {
 					neighbor.g = tentativeGScore;
 					neighbor.f = neighbor.g + heuristicFunction.heuristic(neighbor.state);
 
+					if (!neighbor.isInOpenSet) {
+						openSet.Add(neighbor);
+						neighbor.isInOpenSet = true;
+					} else {
+						openSet.Remove(neighbor);
+						openSet.Add(neighbor);
+					}
+
 				}
+
 				//if (neighbors.Count > 0) {
 				//	var bestNeighborList = neighbors.Where(nn => Math.Abs(nn.f - neighbors.Min(o => o.f)) < 0.0001).ToList();
 				//	if (bestNeighborList.Count > 0) {
@@ -146,56 +145,47 @@ namespace server.src {
 
 				AStar.pouet++;
 
-				//if (AStar.pouet > 50000) {
-				//	Console.WriteLine("End of algo, earlier " + AStar.pouet);
-				//	return null;
-				//}
-
 				if (AStar.pouet % 500 == 0) {
 					Console.WriteLine("pouet: " + AStar.pouet + ". openSet.Count: " + this.openSet.Count + ". closedSet.Count: " + this.closedSet.Count + ". f: " + current.f);
 					current.state.PrintBoard();
+					Console.WriteLine("==========");
+					//foreach (var item in openSet) {
+					//	//Console.WriteLine(item.f);
+					//	Console.WriteLine(item.ToString());
+					//}
+
+					//openSet = openSet.Reverse();
+
+					//while (openSet.Count > 0) {
+					//	Node tmp = openSet.RemoveFirst();
+					//	//Console.WriteLine(tmp.GetHashCode());
+					//	Console.WriteLine(tmp.f);
+					//	//TypedReference tr = __makeref(tmp);
+					//	//Console.WriteLine(tr.);
+					//}
+					//Console.WriteLine("========== END");
+
+					//return null;
 				}
-				//if (AStar.pouet % 500 == 0 && closedSet.Count > 50) {
-				//	foreach (DictionaryEntry item in closedSet) {
-				//		(item.Value as Node).state.PrintBoard();
-				//	}
-				//	return null;
-				//}
 			}
 			return null;
-			//float h = heuristicFunction.heuristic(this.input);
-			//Console.WriteLine("H: " + h);
 		}
 
-		//Node GetSmallestValue() {
-		//	string key = "";
-		//	float fValue = float.PositiveInfinity;
-
-		//	foreach (DictionaryEntry item in openSet) {
-		//		if ((item.Value as Node).f < fValue) {
-		//			key = item.Key as string;
-		//			fValue = (item.Value as Node).f;
-		//		}
-		//	}
-
-		//	return openSet[key] as Node;
-		//}
-
-		//float CalculateH(Node node) {
-		//	return heuristicFunction.heuristic(Node.board);
-		//}	
-
-		List<Node> GetNeighbors(ref Node current) {
-			List<Board> boards = Board.GetNeighbors(current.state);
-			List<Node> nodes = new List<Node>();
-
-			for (int i = 0; i < boards.Count; i++) {
-				Board b = boards[i];
-				nodes.Add(new Node(ref b));
+		public List<Node> GetNeighbors(ref Node current) {
+			List<string> hashes = current.GetNeighborHashes();
+			List<Node> neighbors = new List<Node>();
+			foreach (var hash in hashes) {
+				if (nodes.ContainsKey(hash)) {
+					neighbors.Add(nodes[hash]);	
+				} else {
+					Node node = new Node(hash);
+					nodes.Add(node.hash, node);
+					neighbors.Add(node);
+				}
 			}
+			return neighbors;
+		} 
 
-			return nodes;
-		}
 
 		public void PrintSolution(List<Node> moves) {
 			if (moves == null) {
@@ -207,7 +197,48 @@ namespace server.src {
 			}
 		}
 
+		// TEST ==========
+
+		internal class Comparer2 : Comparer<IntWrapper> {
+			override public int Compare(IntWrapper x, IntWrapper y) {
+				Console.WriteLine("Compare " + x.v + " and " + y.v + ": " + (x.v - y.v > 0 ? 1 : -1));
+				return (int)(x.v - y.v);
+			}
+		}
+
+		public class IntWrapper {
+			public float v;
+
+			public IntWrapper(float i) {
+				this.v = i;
+			}
+		}
+
+
+		public static void PrintBag(OrderedBag<IntWrapper> b) {
+			foreach (var item in b) {
+				Console.WriteLine(item.v);
+			}
+		}
+
+		// TEST END ==========
 		public static void Main(string[] argv) {
+
+
+			//OrderedBag<IntWrapper> bag = new OrderedBag<IntWrapper>(new Comparer2());
+			//IntWrapper intWrapper = new IntWrapper(1.0f);
+			//bag.Add(intWrapper);
+			//PrintBag(bag);
+			//bag.Add(new IntWrapper(-1.0f));
+			//PrintBag(bag);
+			//bag.Add(new IntWrapper(2.0f));
+			//bag.Add(new IntWrapper(242.0f));
+			//bag.Add(new IntWrapper(242.5f));
+			//intWrapper.v = 999f;
+			//bag.Add(new IntWrapper(-1000f));
+			//PrintBag(bag);
+			//bag.
+			//return;
 
 			//Parser parser = new Parser();
 

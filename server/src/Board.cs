@@ -134,38 +134,38 @@ namespace server.src {
 			}
 		}
 
-		public static List<Board> GetNeighbors(Board current) {
-			int index = current.GetIndexOfEmpty();
-			int x = index % current.size;
-			int y = index / current.size;
-			List<Board> boards = new List<Board>();
+		public List<string> GetNeighborHashes() {
+			int index = this.GetIndexOfEmpty();
+			int x = index % this.size;
+			int y = index / this.size;
+			List<string> hashes = new List<string>();
 
 
 			if (x != 0) {
-				List<int> list = new List<int>(current.list);
-				list[index] = list[index - 1];
-				list[index - 1] = 0;
-				boards.Add(new Board(list));
+				List<int> list2 = new List<int>(this.list);
+				list2[index] = list2[index - 1];
+				list2[index - 1] = 0;
+				hashes.Add(String.Join(";", list2.ToArray()));
 			}
-			if (x != current.size - 1) {
-				List<int> list = new List<int>(current.list);
-				list[index] = list[index + 1];
-				list[index + 1] = 0;
-				boards.Add(new Board(list));
+			if (x != this.size - 1) {
+				List<int> list2 = new List<int>(this.list);
+				list2[index] = list2[index + 1];
+				list2[index + 1] = 0;
+				hashes.Add(String.Join(";", list2.ToArray()));
 			}
 			if (y != 0) {
-				List<int> list = new List<int>(current.list);
-				list[index] = list[index - current.size];
-				list[index - current.size] = 0;
-				boards.Add(new Board(list));
+				List<int> list2 = new List<int>(this.list);
+				list2[index] = list2[index - this.size];
+				list2[index - this.size] = 0;
+				hashes.Add(String.Join(";", list2.ToArray()));
 			}
-			if (y != current.size - 1) {
-				List<int> list = new List<int>(current.list);
-				list[index] = list[index + current.size];
-				list[index + current.size] = 0;
-				boards.Add(new Board(list));
+			if (y != this.size - 1) {
+				List<int> list2 = new List<int>(this.list);
+				list2[index] = list2[index + this.size];
+				list2[index + this.size] = 0;
+				hashes.Add(String.Join(";", list2.ToArray()));
 			}
-			return boards;
+			return hashes;
 		}
 
 		int GetIndexOfEmpty() {
