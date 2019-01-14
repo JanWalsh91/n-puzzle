@@ -40,17 +40,17 @@ namespace server.src {
 		//	return (int)(other.f - this.f);
 		//}
 
-		public override bool Equals(object obj) {
-			if (obj.GetType() != typeof(Node)) {
-				return false;
-			}
-			Console.WriteLine("IRE");
-			return this.hash.Equals((obj as Node).hash);
-		}
+		//public override bool Equals(object obj) {
+		//	if (obj.GetType() != typeof(Node)) {
+		//		return false;
+		//	}
+		//	Console.WriteLine("IRE");
+		//	return this.hash.Equals((obj as Node).hash);
+		//}
 
-		public override int GetHashCode() {
-			return base.GetHashCode();
-		}
+		//public override int GetHashCode() {
+		//	return base.GetHashCode();
+		//}
 
 		public List<string> GetNeighborHashes() {
 			return this.state.GetNeighborHashes();

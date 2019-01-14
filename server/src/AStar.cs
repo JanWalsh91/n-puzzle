@@ -18,22 +18,30 @@ namespace server.src {
 		Hashtable closedSet;
 		OrderedBag<Node> openSet;
 
-		internal class Comparer : IComparer<Node> {
-			public int Compare(Node x, Node y) {
+		internal class Comparer : Comparer<Node> {
+			override public int Compare(Node x, Node y) {
 				//return (x.f - y.f > 0 ? 1 : -1);
-				return (int)(x.f - y.f);
+				if (x.f > 5000 || y.f > 5000) {
+					Console.WriteLine("!!!x: " + x.f + " y: " + y.f);
+
+				}
+				if (x.hash.Equals(y.hash)) {
+					Console.WriteLine("Equals hash");
+					return 0;
+				}
+				return ((x.f - y.f > 0) ? 1 : -1);
 			}
 		}
 
-		internal class EqualityComparer : IEqualityComparer<Node> {
-			public bool Equals(Node x, Node y) {
-				return x.hash.Equals(y.hash);
-			}
+		//internal class EqualityComparer : IEqualityComparer<Node> {
+		//	public bool Equals(Node x, Node y) {
+		//		return x.hash.Equals(y.hash);
+		//	}
 
-			public int GetHashCode(Node obj) {
-				return obj.GetHashCode();
-			}
-		}
+		//	public int GetHashCode(Node obj) {
+		//		return obj.GetHashCode();
+		//	}
+		//}
 
 
 		public AStar(ref Board input, ref Board solution) {
@@ -64,12 +72,12 @@ namespace server.src {
 
 			openSet = new OrderedBag<Node>(new Comparer());
 
-			EqualityComparer equalityComparer = new EqualityComparer();
+			//EqualityComparer equalityComparer = new EqualityComparer();
 
 			Node n = new Node(ref input);
 			nodes.Add(n.hash, n);
-			openSet.Add(n);
 			n.isInOpenSet = true;
+			openSet.Add(n);
 
 			n.g = 0;
 			n.f = heuristicFunction.heuristic(n.state);
@@ -78,10 +86,25 @@ namespace server.src {
 			Node current = null;
 
 			while (openSet.Count > 0) {
-				
+
 				if (!evalNeighbor) {
-					//current = GetSmallestValue();
 					current = openSet.RemoveFirst();
+					Console.WriteLine("REMOVED FROM OPENSET " + current.hash + " f: " + current.f);
+					//Console.WriteLine(openSet.FindAll(a => a.hash == current.hash).ToList().Count);
+
+					//if (openSet.Count > 0 && openSet.First().hash.Equals(current.hash)) {
+					//	current = openSet.RemoveFirst();
+					//	Console.WriteLine("Remove again");
+					//}
+
+					//if (openSet.FindAll(a => a.hash == current.hash).ToList().Count > 0) {
+						//Console.WriteLine("Remove again");
+						////current = openSet.RemoveFirst();
+						//openSet.Remove(current);
+
+				   	//}
+					//Console.WriteLine(openSet.FindAll(a => a.hash == current.hash).ToList().Count);
+
 					current.isInOpenSet = false;
 				} else {
 					evalNeighbor = false;
@@ -94,38 +117,63 @@ namespace server.src {
 					return ReconstructPath(current);
 				}
 
-				//closedSet.Add(current.hash, current);
-				closedSet[current.hash] = current;
+				Console.WriteLine("ADDED TO CLOSED SET " + current.hash);
 				current.isInClosedSet = true;
+				closedSet.Add(current.hash, current);
+				
+				//closedSet[current.hash] = current;
+				Console.WriteLine("CURRENT " + current.hash);
 
 				List<Node> neighbors = GetNeighbors(ref current);
-				foreach (var neighbor in neighbors) {
-					
+				for (int i = 0; i < neighbors.Count; i++) {
+
 					// If neighbor in closedSet
-					if (closedSet.ContainsKey(neighbor.hash)) {
+					if (closedSet.ContainsKey(neighbors[i].hash)) {
+						Console.WriteLine("SKIP " + neighbors[i].hash);
 						continue;
 					}
+					Console.WriteLine("CONTINUE " + neighbors[i].hash);
+
 
 					float tentativeGScore = current.g + 1;
-	
-					if (neighbor.isInOpenSet) {
-						if (tentativeGScore >= neighbor.g) {
+
+					if (neighbors[i].isInOpenSet) {
+						if (tentativeGScore >= neighbors[i].g) {
 							// DOES NOT PASS HERE
 							//Console.WriteLine("continue");
 							continue;
 						}
 					}
 
-					neighbor.cameFrom = current;
-					neighbor.g = tentativeGScore;
-					neighbor.f = neighbor.g + heuristicFunction.heuristic(neighbor.state);
+					neighbors[i].cameFrom = current;
+					neighbors[i].g = tentativeGScore;
+					neighbors[i].f = neighbors[i].g + heuristicFunction.heuristic(neighbors[i].state);
 
-					if (!neighbor.isInOpenSet) {
-						openSet.Add(neighbor);
-						neighbor.isInOpenSet = true;
+					if (!neighbors[i].isInOpenSet) {
+						neighbors[i].isInOpenSet = true;
+						Console.WriteLine("ADDED TO OPENSET: " + neighbors[i].hash);
+						openSet.Add(neighbors[i]);
 					} else {
-						openSet.Remove(neighbor);
-						openSet.Add(neighbor);
+						Console.WriteLine("READDED TO OPENSET: " + neighbors[i].hash);
+						//if (neighbors[i].hash.Equals("3;2;7;4;11;8;12;13;1;9;14;5;15;0;6;10")) {
+						//	int I = openSet.FindAll(a => a.hash.Equals(neighbors[i].hash)).ToList().Count;
+						//	Console.WriteLine("I: " + I);
+						//}
+						while (openSet.Contains(neighbors[i])) {
+							
+							openSet.Remove(neighbors[i]);
+						}
+						//openSet.
+						//if (neighbors[i].hash.Equals("3;2;7;4;11;8;12;13;1;9;14;5;15;0;6;10")) {
+						//	int I = openSet.FindAll(a => a.hash.Equals(neighbors[i].hash)).ToList().Count;
+						//	Console.WriteLine("I: " + I);
+						//}
+						//openSet[neighbors[i].hash]
+						openSet.Add(neighbors[i]);
+						//if (neighbors[i].hash.Equals("3;2;7;4;11;8;12;13;1;9;14;5;15;0;6;10")) {
+						//	int I = openSet.FindAll(a => a.hash.Equals(neighbors[i].hash)).ToList().Count;
+						//	Console.WriteLine("I: " + I);
+						//}
 					}
 
 				}
@@ -150,14 +198,14 @@ namespace server.src {
 					current.state.PrintBoard();
 					Console.WriteLine("==========");
 					//foreach (var item in openSet) {
-					//	//Console.WriteLine(item.f);
-					//	Console.WriteLine(item.ToString());
+					//	Console.WriteLine(item.f);
+					//	//Console.WriteLine(item.ToString());
 					//}
 
 					//openSet = openSet.Reverse();
 
 					//while (openSet.Count > 0) {
-					//	Node tmp = openSet.RemoveFirst();
+					//	Node tmp = opeΩnSet.RemoveFirst();
 					//	//Console.WriteLine(tmp.GetHashCode());
 					//	Console.WriteLine(tmp.f);
 					//	//TypedReference tr = __makeref(tmp);
@@ -173,8 +221,10 @@ namespace server.src {
 
 		public List<Node> GetNeighbors(ref Node current) {
 			List<string> hashes = current.GetNeighborHashes();
+
 			List<Node> neighbors = new List<Node>();
 			foreach (var hash in hashes) {
+				//Console.WriteLine("hash: " + hash);
 				if (nodes.ContainsKey(hash)) {
 					neighbors.Add(nodes[hash]);	
 				} else {
@@ -183,6 +233,14 @@ namespace server.src {
 					neighbors.Add(node);
 				}
 			}
+
+			//Console.WriteLine("Current: ");
+			//current.state.PrintBoard();
+			//foreach (var node in neighbors) {
+			//	//Console.WriteLine("Neighbor: ");
+			//	node.state.PrintBoard();
+			//	Console.WriteLine(node.hash);
+			//}
 			return neighbors;
 		} 
 
