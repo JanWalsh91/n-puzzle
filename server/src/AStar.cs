@@ -16,7 +16,7 @@ namespace server.src {
 
 		Dictionary<string, Node> nodes = new Dictionary<string, Node>();
 		Hashtable closedSet;
-		OrderedBag<Node> openSet;
+		OrderedSet<Node> openSet;
 
 		internal class Comparer : Comparer<Node> {
 			override public int Compare(Node x, Node y) {
@@ -70,7 +70,8 @@ namespace server.src {
 			
 			closedSet = new Hashtable();
 
-			openSet = new OrderedBag<Node>(new Comparer());
+			//openSet = new OrderedSet<Node>(new Comparer());
+			openSet = new OrderedSet<Node>();
 
 			//EqualityComparer equalityComparer = new EqualityComparer();
 
@@ -86,34 +87,19 @@ namespace server.src {
 			Node current = null;
 
 			while (openSet.Count > 0) {
-
+				Console.WriteLine("WHILE START");
 				if (!evalNeighbor) {
 					current = openSet.RemoveFirst();
-					Console.WriteLine("REMOVED FROM OPENSET " + current.hash + " f: " + current.f);
-					//Console.WriteLine(openSet.FindAll(a => a.hash == current.hash).ToList().Count);
-
-					//if (openSet.Count > 0 && openSet.First().hash.Equals(current.hash)) {
-					//	current = openSet.RemoveFirst();
-					//	Console.WriteLine("Remove again");
-					//}
-
-					//if (openSet.FindAll(a => a.hash == current.hash).ToList().Count > 0) {
-						//Console.WriteLine("Remove again");
-						////current = openSet.RemoveFirst();
-						//openSet.Remove(current);
-
-				   	//}
-					//Console.WriteLine(openSet.FindAll(a => a.hash == current.hash).ToList().Count);
-
-					current.isInOpenSet = false;
+					//current.isInOpenSet = false;
 				} else {
 					evalNeighbor = false;
 				}
+				current.isInOpenSet = false;
 
 				//Console.WriteLine("set current to : " + current.hash);
 
 				if (current.state.Equals(this.solution)) {
-					Console.WriteLine("END");
+					//Console.WriteLine("END");
 					return ReconstructPath(current);
 				}
 
@@ -122,18 +108,18 @@ namespace server.src {
 				closedSet.Add(current.hash, current);
 				
 				//closedSet[current.hash] = current;
-				Console.WriteLine("CURRENT " + current.hash);
+				//Console.WriteLine("CURRENT " + current.hash);
 
 				List<Node> neighbors = GetNeighbors(ref current);
 				for (int i = 0; i < neighbors.Count; i++) {
+					//Console.WriteLine("FOR START");
 
 					// If neighbor in closedSet
-					if (closedSet.ContainsKey(neighbors[i].hash)) {
+					if (closedSet.ContainsKey(neighbors[i].hash) || neighbors[i].isInClosedSet) {
 						Console.WriteLine("SKIP " + neighbors[i].hash);
 						continue;
 					}
 					Console.WriteLine("CONTINUE " + neighbors[i].hash);
-
 
 					float tentativeGScore = current.g + 1;
 
@@ -154,41 +140,41 @@ namespace server.src {
 						Console.WriteLine("ADDED TO OPENSET: " + neighbors[i].hash);
 						openSet.Add(neighbors[i]);
 					} else {
-						Console.WriteLine("READDED TO OPENSET: " + neighbors[i].hash);
-						//if (neighbors[i].hash.Equals("3;2;7;4;11;8;12;13;1;9;14;5;15;0;6;10")) {
-						//	int I = openSet.FindAll(a => a.hash.Equals(neighbors[i].hash)).ToList().Count;
-						//	Console.WriteLine("I: " + I);
-						//}
-						while (openSet.Contains(neighbors[i])) {
+						//Console.WriteLine("READDED TO OPENSET: " + neighbors[i].hash);
+						////if (neighbors[i].hash.Equals("3;2;7;4;11;8;12;13;1;9;14;5;15;0;6;10")) {
+						////	int I = openSet.FindAll(a => a.hash.Equals(neighbors[i].hash)).ToList().Count;
+						////	Console.WriteLine("I: " + I);
+						////}
+						//while (openSet.Contains(neighbors[i])) {
 							
-							openSet.Remove(neighbors[i]);
-						}
-						//openSet.
-						//if (neighbors[i].hash.Equals("3;2;7;4;11;8;12;13;1;9;14;5;15;0;6;10")) {
-						//	int I = openSet.FindAll(a => a.hash.Equals(neighbors[i].hash)).ToList().Count;
-						//	Console.WriteLine("I: " + I);
+						//	openSet.Remove(neighbors[i]);
 						//}
-						//openSet[neighbors[i].hash]
-						openSet.Add(neighbors[i]);
-						//if (neighbors[i].hash.Equals("3;2;7;4;11;8;12;13;1;9;14;5;15;0;6;10")) {
-						//	int I = openSet.FindAll(a => a.hash.Equals(neighbors[i].hash)).ToList().Count;
-						//	Console.WriteLine("I: " + I);
-						//}
+						////openSet.
+						////if (neighbors[i].hash.Equals("3;2;7;4;11;8;12;13;1;9;14;5;15;0;6;10")) {
+						////	int I = openSet.FindAll(a => a.hash.Equals(neighbors[i].hash)).ToList().Count;
+						////	Console.WriteLine("I: " + I);
+						////}
+						////openSet[neighbors[i].hash]
+						//openSet.Add(neighbors[i]);
+						////if (neighbors[i].hash.Equals("3;2;7;4;11;8;12;13;1;9;14;5;15;0;6;10")) {
+						////	int I = openSet.FindAll(a => a.hash.Equals(neighbors[i].hash)).ToList().Count;
+						////	Console.WriteLine("I: " + I);
+						////}
 					}
 
 				}
 
-				//if (neighbors.Count > 0) {
-				//	var bestNeighborList = neighbors.Where(nn => Math.Abs(nn.f - neighbors.Min(o => o.f)) < 0.0001).ToList();
-				//	if (bestNeighborList.Count > 0) {
-				//		var bestNeighbor = bestNeighborList[0];
-				//		if (bestNeighbor.f < current.f) {
-				//			//Console.WriteLine("Going to Neighbot EXpress town");
-				//			current = bestNeighbor;
-				//			evalNeighbor = true;
-				//		}
-				//	}
-				//}
+				if (neighbors.Count > 0) {
+					var bestNeighborList = neighbors.Where(nn => Math.Abs(nn.f - neighbors.Min(o => o.f)) < 0.0001).ToList();
+					if (bestNeighborList.Count > 0) {
+						var bestNeighbor = bestNeighborList[0];
+						if (bestNeighbor.f < current.f) {
+							Console.WriteLine("Going to Neighbot EXpress town " + bestNeighbor.isInOpenSet);
+							current = bestNeighbor;
+							evalNeighbor = true;
+						}
+					}
+				}
 
 
 				AStar.pouet++;
@@ -204,16 +190,18 @@ namespace server.src {
 
 					//openSet = openSet.Reverse();
 
-					//while (openSet.Count > 0) {
-					//	Node tmp = opeΩnSet.RemoveFirst();
-					//	//Console.WriteLine(tmp.GetHashCode());
-					//	Console.WriteLine(tmp.f);
-					//	//TypedReference tr = __makeref(tmp);
-					//	//Console.WriteLine(tr.);
-					//}
-					//Console.WriteLine("========== END");
+					//if (AStar.pouet > 50000) {
+					//	while (openSet.Count > 0) {
+					//		Node tmp = openSet.RemoveFirst();
+					//		//Console.WriteLine(tmp.GetHashCode());
+					//		Console.WriteLine(tmp.f);
+					//		//TypedReference tr = __makeref(tmp);
+					//		//Console.WriteLine(tr.);
+					//	}
 
-					//return null;
+					//	return null;
+					//}
+
 				}
 			}
 			return null;
@@ -221,13 +209,16 @@ namespace server.src {
 
 		public List<Node> GetNeighbors(ref Node current) {
 			List<string> hashes = current.GetNeighborHashes();
+			Console.WriteLine("GET NEIGHBORS. found " + hashes.Count);
 
 			List<Node> neighbors = new List<Node>();
 			foreach (var hash in hashes) {
-				//Console.WriteLine("hash: " + hash);
+				Console.WriteLine("hash: " + hash);
 				if (nodes.ContainsKey(hash)) {
+					Console.WriteLine("Contains " + hash);
 					neighbors.Add(nodes[hash]);	
 				} else {
+					Console.WriteLine("NOT Contains " + hash);
 					Node node = new Node(hash);
 					nodes.Add(node.hash, node);
 					neighbors.Add(node);
@@ -241,6 +232,8 @@ namespace server.src {
 			//	node.state.PrintBoard();
 			//	Console.WriteLine(node.hash);
 			//}
+			Console.WriteLine("END GET NEIGHBORS. return " + neighbors.Count);
+
 			return neighbors;
 		} 
 
@@ -380,6 +373,13 @@ namespace server.src {
 			//input.Add(new List<int>(new int[] { 11, 15, 14, 0 }));
 			//input.Add(new List<int>(new int[] { 10, 9, 8, 7 }));
 
+			// SOlvable
+			//input.Add(new List<int>(new int[] { 11, 22, 1, 5, 14 }));
+			//input.Add(new List<int>(new int[] { 23, 4, 9, 17, 24  }));
+			//input.Add(new List<int>(new int[] { 0, 21, 16, 7, 15 }));
+			//input.Add(new List<int>(new int[] { 18, 2, 19, 3, 12 }));
+			//input.Add(new List<int>(new int[] { 8, 20, 13, 6, 10 }));
+
 			Board b2 = Board.GetSnailSolution(input.Count);
 			Board b1 = new Board(input);
 
@@ -395,7 +395,7 @@ namespace server.src {
 
 			Validator validator = new Validator(input);
 			//try {
-			validator.Validate();
+			//validator.Validate();
 			//} catch (Exception e) {
 			//	Console.WriteLine(e.Message);
 			//	return;
@@ -419,3 +419,4 @@ namespace server.src {
 
 	}
 }
+

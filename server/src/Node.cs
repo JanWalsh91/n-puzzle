@@ -2,7 +2,12 @@
 using System.Collections.Generic;
 
 namespace server.src {
-	public class Node /* IComparable<Node> */ {
+
+	public class NodeWrapper {
+		public Node node { get; set; }
+	}
+
+	public class Node : IComparable<Node> {
 		public string hash;
 		public Node cameFrom;
 		public Board state;
@@ -36,9 +41,13 @@ namespace server.src {
 			this.hash = hash;
 		}
 
-		//public int CompareTo(Node other) {
-		//	return (int)(other.f - this.f);
-		//}
+		public int CompareTo(Node other) {
+			if (this.hash.Equals(other.hash)) {
+				Console.WriteLine("Equals hash");
+				return 0;
+			}
+			return ((this.f - other.f > 0) ? 1 : -1);
+		}
 
 		//public override bool Equals(object obj) {
 		//	if (obj.GetType() != typeof(Node)) {
