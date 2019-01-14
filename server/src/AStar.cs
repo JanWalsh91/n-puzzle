@@ -15,6 +15,9 @@ namespace server.src {
 		HeuristicFunction heuristicFunction;
 
 		Dictionary<string, Node> nodes = new Dictionary<string, Node>();
+		Dictionary<string, bool> inOpenSet = new Dictionary<string, bool>();
+		Dictionary<string, bool> inClosedSet = new Dictionary<string, bool>();
+
 		Hashtable closedSet;
 		OrderedSet<Node> openSet;
 
@@ -77,7 +80,7 @@ namespace server.src {
 
 			Node n = new Node(ref input);
 			nodes.Add(n.hash, n);
-			n.isInOpenSet = true;
+			inOpenSet.Add(n.hash, true);
 			openSet.Add(n);
 
 			n.g = 0;
@@ -87,14 +90,14 @@ namespace server.src {
 			Node current = null;
 
 			while (openSet.Count > 0) {
-				Console.WriteLine("WHILE START");
+				//Console.WriteLine("WHILE START");
 				if (!evalNeighbor) {
 					current = openSet.RemoveFirst();
 					//current.isInOpenSet = false;
 				} else {
 					evalNeighbor = false;
 				}
-				current.isInOpenSet = false;
+				inOpenSet[current.hash] = false;
 
 				//Console.WriteLine("set current to : " + current.hash);
 
@@ -103,9 +106,9 @@ namespace server.src {
 					return ReconstructPath(current);
 				}
 
-				Console.WriteLine("ADDED TO CLOSED SET " + current.hash);
-				current.isInClosedSet = true;
-				closedSet.Add(current.hash, current);
+				//Console.WriteLine("ADDED TO CLOSED SET " + current.hash);
+				inClosedSet[current.hash] = true;
+				closedSet[current.hash] = current;
 				
 				//closedSet[current.hash] = current;
 				//Console.WriteLine("CURRENT " + current.hash);
@@ -115,15 +118,16 @@ namespace server.src {
 					//Console.WriteLine("FOR START");
 
 					// If neighbor in closedSet
-					if (closedSet.ContainsKey(neighbors[i].hash) || neighbors[i].isInClosedSet) {
-						Console.WriteLine("SKIP " + neighbors[i].hash);
+					bool val;
+					if (inClosedSet.TryGetValue(neighbors[i].hash, out val) && val) {
+						//Console.WriteLine("SKIP " + neighbors[i].hash);
 						continue;
 					}
-					Console.WriteLine("CONTINUE " + neighbors[i].hash);
+					//Console.WriteLine("CONTINUE " + neighbors[i].hash);
 
 					float tentativeGScore = current.g + 1;
 
-					if (neighbors[i].isInOpenSet) {
+					if (inOpenSet.TryGetValue(neighbors[i].hash, out val) && val) {
 						if (tentativeGScore >= neighbors[i].g) {
 							// DOES NOT PASS HERE
 							//Console.WriteLine("continue");
@@ -135,9 +139,9 @@ namespace server.src {
 					neighbors[i].g = tentativeGScore;
 					neighbors[i].f = neighbors[i].g + heuristicFunction.heuristic(neighbors[i].state);
 
-					if (!neighbors[i].isInOpenSet) {
-						neighbors[i].isInOpenSet = true;
-						Console.WriteLine("ADDED TO OPENSET: " + neighbors[i].hash);
+					if (inOpenSet.TryGetValue(neighbors[i].hash, out val) || !val) {
+						inOpenSet[neighbors[i].hash] = true;
+						//Console.WriteLine("ADDED TO OPENSET: " + neighbors[i].hash);
 						openSet.Add(neighbors[i]);
 					} else {
 						//Console.WriteLine("READDED TO OPENSET: " + neighbors[i].hash);
@@ -164,17 +168,17 @@ namespace server.src {
 
 				}
 
-				if (neighbors.Count > 0) {
-					var bestNeighborList = neighbors.Where(nn => Math.Abs(nn.f - neighbors.Min(o => o.f)) < 0.0001).ToList();
-					if (bestNeighborList.Count > 0) {
-						var bestNeighbor = bestNeighborList[0];
-						if (bestNeighbor.f < current.f) {
-							Console.WriteLine("Going to Neighbot EXpress town " + bestNeighbor.isInOpenSet);
-							current = bestNeighbor;
-							evalNeighbor = true;
-						}
-					}
-				}
+				//if (neighbors.Count > 0) {
+				//	var bestNeighborList = neighbors.Where(nn => Math.Abs(nn.f - neighbors.Min(o => o.f)) < 0.0001).ToList();
+				//	if (bestNeighborList.Count > 0) {
+				//		var bestNeighbor = bestNeighborList[0];
+				//		if (bestNeighbor.f < current.f) {
+				//			//Console.WriteLine("Going to Neighbor Express town ");
+				//			current = bestNeighbor;
+				//			evalNeighbor = true;
+				//		}
+				//	}
+				//}
 
 
 				AStar.pouet++;
@@ -209,16 +213,16 @@ namespace server.src {
 
 		public List<Node> GetNeighbors(ref Node current) {
 			List<string> hashes = current.GetNeighborHashes();
-			Console.WriteLine("GET NEIGHBORS. found " + hashes.Count);
+			//Console.WriteLine("GET NEIGHBORS. found " + hashes.Count);
 
 			List<Node> neighbors = new List<Node>();
 			foreach (var hash in hashes) {
-				Console.WriteLine("hash: " + hash);
+				//Console.WriteLine("hash: " + hash);
 				if (nodes.ContainsKey(hash)) {
-					Console.WriteLine("Contains " + hash);
+					//Console.WriteLine("Contains " + hash);
 					neighbors.Add(nodes[hash]);	
 				} else {
-					Console.WriteLine("NOT Contains " + hash);
+					//Console.WriteLine("NOT Contains " + hash);
 					Node node = new Node(hash);
 					nodes.Add(node.hash, node);
 					neighbors.Add(node);
@@ -232,7 +236,7 @@ namespace server.src {
 			//	node.state.PrintBoard();
 			//	Console.WriteLine(node.hash);
 			//}
-			Console.WriteLine("END GET NEIGHBORS. return " + neighbors.Count);
+			//Console.WriteLine("END GET NEIGHBORS. return " + neighbors.Count);
 
 			return neighbors;
 		} 
@@ -333,10 +337,10 @@ namespace server.src {
 			//input.Add(new List<int>(new int[] { 3, 6, 7 }));
 
 			// Solvable
-			input.Add(new List<int>(new int[] { 3, 7, 4, 13 }));
-			input.Add(new List<int>(new int[] { 0, 8, 2, 12 }));
-			input.Add(new List<int>(new int[] { 11, 1, 9, 5 }));
-			input.Add(new List<int>(new int[] { 15, 6, 14, 10 }));
+			//input.Add(new List<int>(new int[] { 3, 7, 4, 13 }));
+			//input.Add(new List<int>(new int[] { 0, 8, 2, 12 }));
+			//input.Add(new List<int>(new int[] { 11, 1, 9, 5 }));
+			//input.Add(new List<int>(new int[] { 15, 6, 14, 10 }));
 
 			// Unsolvable
 			//input.Add(new List<int>(new int[] { 5, 3, 2 }));
@@ -368,12 +372,12 @@ namespace server.src {
 			//input.Add(new List<int>(new int[] { 7, 6, 5 }));
 
 			// Solvable BUG not solvable?
-			//input.Add(new List<int>(new int[] { 1, 2, 3, 4 }));
-			//input.Add(new List<int>(new int[] { 12, 13, 5, 6 }));
-			//input.Add(new List<int>(new int[] { 11, 15, 14, 0 }));
-			//input.Add(new List<int>(new int[] { 10, 9, 8, 7 }));
+			input.Add(new List<int>(new int[] { 1, 2, 3, 4 }));
+			input.Add(new List<int>(new int[] { 12, 13, 5, 6 }));
+			input.Add(new List<int>(new int[] { 11, 15, 14, 0 }));
+			input.Add(new List<int>(new int[] { 10, 9, 8, 7 }));
 
-			// SOlvable
+			// SooOO00lvable
 			//input.Add(new List<int>(new int[] { 11, 22, 1, 5, 14 }));
 			//input.Add(new List<int>(new int[] { 23, 4, 9, 17, 24  }));
 			//input.Add(new List<int>(new int[] { 0, 21, 16, 7, 15 }));

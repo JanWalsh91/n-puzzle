@@ -16,7 +16,7 @@ namespace server.src {
 			this.heuristics[0] = this.Manhattan;
 			this.heuristics[1] = this.A;
 			this.heuristics[2] = this.B;
-			this.heuristic = heuristics[0];
+			this.heuristic = heuristics[1];
 		}
 
 		public void SetHeuristic(Types type) {
