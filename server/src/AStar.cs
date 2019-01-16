@@ -252,6 +252,26 @@ namespace server.src {
 			}
 		}
 
+		public List<string> GetStringSolution(List<Node> moves) {
+			List<string> pathToSolution = new List<string>();
+			int emptyCellIndex;
+			emptyCellIndex = moves[0].state.GetList().IndexOf(0);
+			moves.RemoveAt(0);
+
+			foreach (var move in moves) {
+				List<int> currentList = move.state.GetList();
+				int newEmptyCellIndex = currentList.IndexOf(0);
+				if (newEmptyCellIndex / move.state.GetSize() == emptyCellIndex / move.state.GetSize()) {
+					pathToSolution.Add(newEmptyCellIndex < emptyCellIndex ? "Right" : "Left");
+
+				} else {
+					pathToSolution.Add(newEmptyCellIndex < emptyCellIndex ? "Down" : "Up");
+				}
+				emptyCellIndex = newEmptyCellIndex;
+			}
+			return pathToSolution;
+		}
+
 		// TEST ==========
 
 		internal class Comparer2 : Comparer<IntWrapper> {
@@ -277,163 +297,163 @@ namespace server.src {
 		}
 
 		// TEST END ==========
-		public static void Main(string[] argv) {
+		//public static void Main(string[] argv) {
 
 
-			//OrderedBag<IntWrapper> bag = new OrderedBag<IntWrapper>(new Comparer2());
-			//IntWrapper intWrapper = new IntWrapper(1.0f);
-			//bag.Add(intWrapper);
-			//PrintBag(bag);
-			//bag.Add(new IntWrapper(-1.0f));
-			//PrintBag(bag);
-			//bag.Add(new IntWrapper(2.0f));
-			//bag.Add(new IntWrapper(242.0f));
-			//bag.Add(new IntWrapper(242.5f));
-			//intWrapper.v = 999f;
-			//bag.Add(new IntWrapper(-1000f));
-			//PrintBag(bag);
-			//bag.
-			//return;
+		//OrderedBag<IntWrapper> bag = new OrderedBag<IntWrapper>(new Comparer2());
+		//IntWrapper intWrapper = new IntWrapper(1.0f);
+		//bag.Add(intWrapper);
+		//PrintBag(bag);
+		//bag.Add(new IntWrapper(-1.0f));
+		//PrintBag(bag);
+		//bag.Add(new IntWrapper(2.0f));
+		//bag.Add(new IntWrapper(242.0f));
+		//bag.Add(new IntWrapper(242.5f));
+		//intWrapper.v = 999f;
+		//bag.Add(new IntWrapper(-1000f));
+		//PrintBag(bag);
+		//bag.
+		//return;
 
-			//Parser parser = new Parser();
+		//Parser parser = new Parser();
 
-			//foreach (var str in argv) {
-			//List<List<int>> input = parser.SolveFromFile(argv[0]);
+		//foreach (var str in argv) {
+		//List<List<int>> input = parser.SolveFromFile(argv[0]);
 
-			//Board board = new Board(input);
-			//board.PrintBoard();
+		//Board board = new Board(input);
+		//board.PrintBoard();
 
-			//}
-			//return;
+		//}
+		//return;
 
-			List<List<int>> input = new List<List<int>>();
+		//List<List<int>> input = new List<List<int>>();
 
-			//input.Add(new List<int>(new int[] { 3, 2 }));
-			//input.Add(new List<int>(new int[] { 1, 0 }));
+		//input.Add(new List<int>(new int[] { 3, 2 }));
+		//input.Add(new List<int>(new int[] { 1, 0 }));
 
-			// Unsolvable
-			//input.Add(new List<int>(new int[] { 7, 4, 0 }));
-			//input.Add(new List<int>(new int[] { 6, 8, 1 }));
-			//input.Add(new List<int>(new int[] { 5, 3, 2 }));
+		// Unsolvable
+		//input.Add(new List<int>(new int[] { 7, 4, 0 }));
+		//input.Add(new List<int>(new int[] { 6, 8, 1 }));
+		//input.Add(new List<int>(new int[] { 5, 3, 2 }));
 
-			// Solvable
-			//input.Add(new List<int>(new int[] { 2, 4, 1 }));
-			//input.Add(new List<int>(new int[] { 6, 5, 3 }));
-			//input.Add(new List<int>(new int[] { 8, 7, 0 }));
+		// Solvable
+		//input.Add(new List<int>(new int[] { 2, 4, 1 }));
+		//input.Add(new List<int>(new int[] { 6, 5, 3 }));
+		//input.Add(new List<int>(new int[] { 8, 7, 0 }));
 
-			// Solvable
-			//input.Add(new List<int>(new int[] { 1, 8, 7 }));
-			//input.Add(new List<int>(new int[] { 5, 0, 2 }));
-			//input.Add(new List<int>(new int[] { 6, 4, 3 }));
+		// Solvable
+		//input.Add(new List<int>(new int[] { 1, 8, 7 }));
+		//input.Add(new List<int>(new int[] { 5, 0, 2 }));
+		//input.Add(new List<int>(new int[] { 6, 4, 3 }));
 
-			// Solvable
-			//input.Add(new List<int>(new int[] { 7, 1, 0 }));
-			//input.Add(new List<int>(new int[] { 6, 8, 5 }));
-			//input.Add(new List<int>(new int[] { 2, 3, 4 }));
+		// Solvable
+		//input.Add(new List<int>(new int[] { 7, 1, 0 }));
+		//input.Add(new List<int>(new int[] { 6, 8, 5 }));
+		//input.Add(new List<int>(new int[] { 2, 3, 4 }));
 
-			// Solvable
-			//input.Add(new List<int>(new int[] { 1, 8, 5 }));
-			//input.Add(new List<int>(new int[] { 4, 0, 2 }));
-			//input.Add(new List<int>(new int[] { 3, 6, 7 }));
+		// Solvable
+		//input.Add(new List<int>(new int[] { 1, 8, 5 }));
+		//input.Add(new List<int>(new int[] { 4, 0, 2 }));
+		//input.Add(new List<int>(new int[] { 3, 6, 7 }));
 
-			// Solvable
-			//input.Add(new List<int>(new int[] { 3, 7, 4, 13 }));
-			//input.Add(new List<int>(new int[] { 0, 8, 2, 12 }));
-			//input.Add(new List<int>(new int[] { 11, 1, 9, 5 }));
-			//input.Add(new List<int>(new int[] { 15, 6, 14, 10 }));
+		// Solvable
+		//input.Add(new List<int>(new int[] { 3, 7, 4, 13 }));
+		//input.Add(new List<int>(new int[] { 0, 8, 2, 12 }));
+		//input.Add(new List<int>(new int[] { 11, 1, 9, 5 }));
+		//input.Add(new List<int>(new int[] { 15, 6, 14, 10 }));
 
-			// Unsolvable
-			//input.Add(new List<int>(new int[] { 5, 3, 2 }));
-			//input.Add(new List<int>(new int[] { 6, 7, 1 }));
-			//input.Add(new List<int>(new int[] { 8, 4, 0 }));
+		// Unsolvable
+		//input.Add(new List<int>(new int[] { 5, 3, 2 }));
+		//input.Add(new List<int>(new int[] { 6, 7, 1 }));
+		//input.Add(new List<int>(new int[] { 8, 4, 0 }));
 
-			// Unsolvable
-			//input.Add(new List<int>(new int[] { 5, 15, 10, 11 }));
-			//input.Add(new List<int>(new int[] { 9, 1, 0, 12 }));
-			//input.Add(new List<int>(new int[] { 2, 6, 7, 13 }));
-			//input.Add(new List<int>(new int[] { 8, 3, 4, 14 }));
+		// Unsolvable
+		//input.Add(new List<int>(new int[] { 5, 15, 10, 11 }));
+		//input.Add(new List<int>(new int[] { 9, 1, 0, 12 }));
+		//input.Add(new List<int>(new int[] { 2, 6, 7, 13 }));
+		//input.Add(new List<int>(new int[] { 8, 3, 4, 14 }));
 
-			// Unsolvable
-			//input.Add(new List<int>(new int[] { 14, 10, 6, 15, 8 }));
-			//input.Add(new List<int>(new int[] { 12, 20, 19, 23, 21 }));
-			//input.Add(new List<int>(new int[] { 9, 5, 17, 7, 24 }));
-			//input.Add(new List<int>(new int[] { 1, 0, 13, 4, 3 }));
-			//input.Add(new List<int>(new int[] { 11, 18, 2, 16, 22 }));
-
-
-			// Not Solvable
-			//input.Add(new List<int>(new int[] { 2, 1, 3 }));
-			//input.Add(new List<int>(new int[] { 8, 0, 4 }));
-			//input.Add(new List<int>(new int[] { 7, 6, 5 }));
-
-			//Solvable
-			//input.Add(new List<int>(new int[] { 1, 2, 3 }));
-			//input.Add(new List<int>(new int[] { 8, 0, 4 }));
-			//input.Add(new List<int>(new int[] { 7, 6, 5 }));
-
-			// Solvable BUG not solvable?
-			//input.Add(new List<int>(new int[] { 1, 2, 3, 4 }));
-			//input.Add(new List<int>(new int[] { 12, 13, 5, 6 }));
-			//input.Add(new List<int>(new int[] { 11, 15, 14, 0 }));
-			//input.Add(new List<int>(new int[] { 10, 9, 8, 7 }));
-
-			// SooOO00lvable
-			input.Add(new List<int>(new int[] { 11, 22, 1, 5, 14 }));
-			input.Add(new List<int>(new int[] { 23, 4, 9, 17, 24  }));
-			input.Add(new List<int>(new int[] { 0, 21, 16, 7, 15 }));
-			input.Add(new List<int>(new int[] { 18, 2, 19, 3, 12 }));
-			input.Add(new List<int>(new int[] { 8, 20, 13, 6, 10 }));
-
-			// Solvable
-			//input.Add(new List<int>(new int[] { 16, 19, 3, 17, 31, 22 }));
-			//input.Add(new List<int>(new int[] { 20, 1, 18, 26, 15, 11 }));
-			//input.Add(new List<int>(new int[] { 4, 8, 28, 6, 34, 12 }));
-			//input.Add(new List<int>(new int[] { 0, 32, 13, 29, 21, 30 }));
-			//input.Add(new List<int>(new int[] { 27, 9, 7, 25, 10, 35 }));
-			//input.Add(new List<int>(new int[] { 2, 33, 14, 5, 24, 23 }));
-
-			Board b2 = Board.GetSnailSolution(input.Count);
-			Board b1 = new Board(input);
+		// Unsolvable
+		//input.Add(new List<int>(new int[] { 14, 10, 6, 15, 8 }));
+		//input.Add(new List<int>(new int[] { 12, 20, 19, 23, 21 }));
+		//input.Add(new List<int>(new int[] { 9, 5, 17, 7, 24 }));
+		//input.Add(new List<int>(new int[] { 1, 0, 13, 4, 3 }));
+		//input.Add(new List<int>(new int[] { 11, 18, 2, 16, 22 }));
 
 
-			//Console.WriteLine("B1:");
-			//b1.PrintBoard();
-			//Console.WriteLine("B2:");
-			//b2.PrintBoard();
-			//List<Board> boards = Board.GetNeighbors(b1);
-			//foreach (var board in boards) {
-			//board.PrintBoard();
-			//}
+		// Not Solvable
+		//input.Add(new List<int>(new int[] { 2, 1, 3 }));
+		//input.Add(new List<int>(new int[] { 8, 0, 4 }));
+		//input.Add(new List<int>(new int[] { 7, 6, 5 }));
 
-			Validator validator = new Validator(input);
-			//try {
-			//validator.Validate();
-			//} catch (Exception e) {
-			//	Console.WriteLine(e.Message);
-			//	return;
-			//}
-			//return;
+		//Solvable
+		//input.Add(new List<int>(new int[] { 1, 2, 3 }));
+		//input.Add(new List<int>(new int[] { 8, 0, 4 }));
+		//input.Add(new List<int>(new int[] { 7, 6, 5 }));
 
-			AStar aStar = null;
-			try {
-				aStar = new AStar(ref b1, ref b2);
-			} catch (OutOfMemoryException oome) {
-				Console.WriteLine(":( " + oome.Message);
-				return;
-			}
+		// Solvable BUG not solvable?
+		//input.Add(new List<int>(new int[] { 1, 2, 3, 4 }));
+		//input.Add(new List<int>(new int[] { 12, 13, 5, 6 }));
+		//input.Add(new List<int>(new int[] { 11, 15, 14, 0 }));
+		//input.Add(new List<int>(new int[] { 10, 9, 8, 7 }));
 
-			List<Node> solution = aStar.Resolve();
-			if (solution != null) {
-				aStar.PrintSolution(solution);
-			}
+		// SooOO00lvable
+		//input.Add(new List<int>(new int[] { 11, 22, 1, 5, 14 }));
+		//input.Add(new List<int>(new int[] { 23, 4, 9, 17, 24  }));
+		//input.Add(new List<int>(new int[] { 0, 21, 16, 7, 15 }));
+		//input.Add(new List<int>(new int[] { 18, 2, 19, 3, 12 }));
+		//input.Add(new List<int>(new int[] { 8, 20, 13, 6, 10 }));
+
+		// Solvable
+		//input.Add(new List<int>(new int[] { 16, 19, 3, 17, 31, 22 }));
+		//input.Add(new List<int>(new int[] { 20, 1, 18, 26, 15, 11 }));
+		//input.Add(new List<int>(new int[] { 4, 8, 28, 6, 34, 12 }));
+		//input.Add(new List<int>(new int[] { 0, 32, 13, 29, 21, 30 }));
+		//input.Add(new List<int>(new int[] { 27, 9, 7, 25, 10, 35 }));
+		//input.Add(new List<int>(new int[] { 2, 33, 14, 5, 24, 23 }));
+
+		//Board b2 = Board.GetSnailSolution(input.Count);
+		//Board b1 = new Board(input);
 
 
-			//Console.WriteLine("OpenSet.Count: " + aStar.openSet.Count);
-			//Console.WriteLine("ClosedSet.Count: " + aStar.closedSet.Count);
-			//if (solution != null) {
-			//	Console.WriteLine("Nunber of Moves to solution: " + solution.Count);
-			//}
-		}
+		//Console.WriteLine("B1:");
+		//b1.PrintBoard();
+		//Console.WriteLine("B2:");
+		//b2.PrintBoard();
+		//List<Board> boards = Board.GetNeighbors(b1);
+		//foreach (var board in boards) {
+		//board.PrintBoard();
+		//}
+
+		//Validator validator = new Validator(input);
+		//try {
+		//validator.Validate();
+		//} catch (Exception e) {
+		//	Console.WriteLine(e.Message);
+		//	return;
+		//}
+		//return;
+
+		//AStar aStar = null;
+		//try {
+		//	aStar = new AStar(ref b1, ref b2);
+		//} catch (OutOfMemoryException oome) {
+		//	Console.WriteLine(":( " + oome.Message);
+		//	return;
+		//}
+
+		//List<Node> solution = aStar.Resolve();
+		//if (solution != null) {
+		//	aStar.PrintSolution(solution);
+		//}
+
+
+		//Console.WriteLine("OpenSet.Count: " + aStar.openSet.Count);
+		//Console.WriteLine("ClosedSet.Count: " + aStar.closedSet.Count);
+		//if (solution != null) {
+		//	Console.WriteLine("Nunber of Moves to solution: " + solution.Count);
+		//}
+	//}
 
 	}
 }
