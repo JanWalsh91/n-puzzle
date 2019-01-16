@@ -14,10 +14,10 @@ public class TcpTimeClient {
 		List<List<int>> input = new List<List<int>>();
 
 		// Solvable
-		//input.Add(new List<int>(new int[] { 2, 4, 1 }));
-		//input.Add(new List<int>(new int[] { 6, 5, 3 }));
-		//input.Add(new List<int>(new int[] { 8, 7, 0 }));
-	
+		input.Add(new List<int>(new int[] { 2, 4, 1 }));
+		input.Add(new List<int>(new int[] { 6, 5, 3 }));
+		input.Add(new List<int>(new int[] { 8, 7, 0 }));
+
 
 		try {
 			TcpClient client = new TcpClient(hostName, portNum);
