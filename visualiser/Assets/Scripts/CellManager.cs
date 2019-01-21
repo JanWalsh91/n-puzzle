@@ -4,30 +4,28 @@ using UnityEngine;
 
 public class CellManager : MonoBehaviour {
 
-	private bool selected;
-	private Animator animator;
+	//private bool selected;
 
-	void Start () {
-		selected = false;
-		animator = GetComponent<Animator>();
-	}
+	//void Start () {
+	//	selected = false;
+	//}
 
-	void Update() {
-		if (selected) {
-			// Use animation to move the cell
-			if (Input.GetKeyDown(KeyCode.RightArrow)) {
-				animator.SetInteger("Direction", 1);
-			}
-		}
-	}
+	//void Update() {
+	//	if (selected) {
+	//		// Use animation to move the cell
+	//		if (Input.GetKeyDown(KeyCode.RightArrow)) {
+
+	//		}
+	//	}
+	//}
 	
 
-	public bool IsSelected() {
-		return selected;
-	}
+	//public bool IsSelected() {
+	//	return selected;
+	//}
 
-	public void SetSelected(bool selected) {
-		this.selected = selected;
-	}
+	//public void SetSelected(bool selected) {
+	//	this.selected = selected;
+	//}
 
 }
