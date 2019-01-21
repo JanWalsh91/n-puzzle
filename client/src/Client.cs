@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Net.Sockets;
 using System.Runtime.Serialization.Formatters.Binary;
+using client.src;
 using System.Text;
 
 public class TcpTimeClient {
@@ -10,21 +11,39 @@ public class TcpTimeClient {
 
 	public static int Main(String[] args) {
 
+		List<List<int>> input;
 
-		List<List<int>> input = new List<List<int>>();
+		if (args.Length > 0) {
+			try {
+				Parser parser = new Parser();
+				input = parser.SolveFromFile(args[0]);
+			} catch (ParserException pe) {
+				Console.WriteLine(pe.Message);
+				return 1;
+			}
+		} else {
+			input = new List<List<int>>();
+			
+			// Solvable
+			input.Add(new List<int>(new int[] { 2, 4, 1 }));
+			input.Add(new List<int>(new int[] { 6, 5, 3 }));
+			input.Add(new List<int>(new int[] { 8, 7, 0 }));
+		}
 
-		// Solvable
-		input.Add(new List<int>(new int[] { 2, 4, 1 }));
-		input.Add(new List<int>(new int[] { 6, 5, 3 }));
-		input.Add(new List<int>(new int[] { 8, 7, 0 }));
+		Validator validator = new Validator(input);
+
+		try {
+			validator.Validate();
+		} catch (Exception e) {
+			Console.WriteLine(e.Message);
+			return 1;
+		}
 
 
 		try {
 			TcpClient client = new TcpClient(hostName, portNum);
 
 			NetworkStream ns = client.GetStream();
-
-
 
 			BinaryFormatter bf = new BinaryFormatter();
 			bf.Serialize(ns, input);
@@ -43,7 +62,8 @@ public class TcpTimeClient {
 			client.Close();
 
 		} catch (Exception e) {
-			Console.WriteLine(e.ToString());
+			//Console.WriteLine(e.ToString());
+			Console.WriteLine("Connection error: " + e.Message);
 		}
 
 		return 0;
