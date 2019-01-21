@@ -24,34 +24,30 @@ namespace server.src {
 				if (lines[i].Length != 0) {
 
 					if (N == -1) {
+						// First line that corresponds to the puzzle dimension
+
 						bool success = Int32.TryParse(lines[i], out N);
 						//Console.WriteLine("N is now: " + N);
 						if (!success) {
-							throw new Exception("Parser 1");
+							throw new ParserException("Wrong format at " + fileName + ":" + (i + 1));
 						}
 						input = new List<List<int>>(N);
 					} else {
-						//Console.WriteLine("Currentline; " + currentLine);
-						//Console.WriteLine("Count; " + input.Count);
+						// Regular line
 						input.Add(new List<int>(N));
 						List<string> values = lines[i].Split(null).ToList();
 
 						values.ForEach(s => s.Trim());
 						values = values.Where(s => s.Length != 0).ToList();
 
-						//Console.WriteLine("===");
-						//values.ForEach(Console.WriteLine);
-						//Console.WriteLine("===");
-
-
 						if (values.Count != N) {
-							throw new Exception("Parser 2");
+							throw new ParserException("Wrong format (missing / too many values) at " + fileName + ":" + (i + 1));
 						}
 						for (int y = 0; y < N; y++) {
 							int tmp;
 							bool success = Int32.TryParse(values[y], out tmp);
 							if (!success) {
-								throw new Exception("Parser 3");
+								throw new ParserException("Wrong format (should be integers) at " + fileName + ":" + (i + 1));
 							}
 							//Console.WriteLine("i: " + currentLine + ", y: " + y);
 							input[currentLine].Add(tmp);
@@ -62,9 +58,15 @@ namespace server.src {
 				}
 			}
 			if (input.Count != N) {
-				throw new Exception("Parser 4");
+				throw new ParserException("Wrong format (missing / too many values)" + " in " + fileName);
 			}
 			return input;
 		}
+	}
+
+	public class ParserException : Exception {
+		public ParserException() { }
+		public ParserException(string message) : base(message) { }
+		public ParserException(string message, Exception inner) : base(message, inner) { }
 	}
 }

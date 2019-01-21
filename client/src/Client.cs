@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Net.Sockets;
 using System.Runtime.Serialization.Formatters.Binary;
-using client.src;
+using server.src;
 using System.Text;
 
 public class TcpTimeClient {

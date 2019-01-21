@@ -46,8 +46,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="src\Client.cs" />
-    <Compile Include="src\Parser.cs" />
-    <Compile Include="src\Validator.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\server\server.csproj">
