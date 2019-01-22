@@ -22,8 +22,9 @@ public class GameManager : MonoBehaviour {
 
 	private Dictionary<string, BoardManager.MoveDirection> stringToMoveDirection;
 	private Dictionary<BoardManager.MoveDirection, BoardManager.MoveDirection> oppositeMoveDirection;
+	//private Dictionary<KeyCode, BoardManager.MoveDirection> keyCodeToMoveDirection;
 
-	private bool threadEnd = false;
+	private bool needToUpdateNbStep = false;
 
 	void Start() {
 		parser = new Parser();
@@ -43,14 +44,38 @@ public class GameManager : MonoBehaviour {
 		oppositeMoveDirection.Add(BoardManager.MoveDirection.Left, BoardManager.MoveDirection.Right);
 		oppositeMoveDirection.Add(BoardManager.MoveDirection.Up, BoardManager.MoveDirection.Down);
 		oppositeMoveDirection.Add(BoardManager.MoveDirection.Down, BoardManager.MoveDirection.Up);
+
+		//keyCodeToMoveDirection = new Dictionary<KeyCode, BoardManager.MoveDirection>();
+		//keyCodeToMoveDirection.Add(KeyCode.RightArrow, BoardManager.MoveDirection.Right);
+		//keyCodeToMoveDirection.Add(KeyCode.LeftArrow, BoardManager.MoveDirection.Left);
+		//keyCodeToMoveDirection.Add(KeyCode.UpArrow, BoardManager.MoveDirection.Up);
+		//keyCodeToMoveDirection.Add(KeyCode.DownArrow, BoardManager.MoveDirection.Down);
+
 	}
 
 	void Update() {
 		//Debug.Log("Size: " + solutionNextMoves.Count);
-		if (threadEnd) {
-			threadEnd = false;
+		if (needToUpdateNbStep) {
+			needToUpdateNbStep = false;
 			nbStep.text = solutionNextMoves.Count.ToString();
+		}
 
+		if (Input.GetKeyDown(KeyCode.RightArrow)) {
+			boardManager.AddMovements(BoardManager.MoveDirection.Right);
+			solutionNextMoves.AddLast(BoardManager.MoveDirection.Left);
+			needToUpdateNbStep = true;
+		} else if (Input.GetKeyDown(KeyCode.LeftArrow)) {
+			boardManager.AddMovements(BoardManager.MoveDirection.Left);
+			solutionNextMoves.AddLast(BoardManager.MoveDirection.Right);
+			needToUpdateNbStep = true;
+		} else if (Input.GetKeyDown(KeyCode.UpArrow)) {
+			boardManager.AddMovements(BoardManager.MoveDirection.Up);
+			solutionNextMoves.AddLast(BoardManager.MoveDirection.Down);
+			needToUpdateNbStep = true;
+		} else if (Input.GetKeyDown(KeyCode.DownArrow)) {
+			boardManager.AddMovements(BoardManager.MoveDirection.Down);
+			solutionNextMoves.AddLast(BoardManager.MoveDirection.Up);
+			needToUpdateNbStep = true;
 		}
 	}
 	
@@ -78,6 +103,7 @@ public class GameManager : MonoBehaviour {
 		while (solutionNextMoves.Count > 0) {
 			NextStep();
 		}
+		// Create a event in the board manager to update the step to solution counter
 	}
 
 	public void OpenFile() {
@@ -99,7 +125,7 @@ public class GameManager : MonoBehaviour {
 				solutionNextMoves.AddFirst(stringToMoveDirection[solution[i]]);
 				
 			}
-			threadEnd = true;
+			needToUpdateNbStep = true;
 		}));
 		serverCommunicationThread.IsBackground = true;
 		serverCommunicationThread.Start();

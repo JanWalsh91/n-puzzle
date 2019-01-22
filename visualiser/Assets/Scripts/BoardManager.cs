@@ -81,15 +81,6 @@ public class BoardManager : MonoBehaviour {
 	}
 
 	void Update() {
-		if (Input.GetKeyDown(KeyCode.RightArrow)) {
-			movements.Enqueue(MoveDirection.Right);
-		} else if (Input.GetKeyDown(KeyCode.LeftArrow)) {
-			movements.Enqueue(MoveDirection.Left);
-		} else if (Input.GetKeyDown(KeyCode.UpArrow)) {
-			movements.Enqueue(MoveDirection.Up);
-		} else if (Input.GetKeyDown(KeyCode.DownArrow)) {
-			movements.Enqueue(MoveDirection.Down);
-		}
 
 		if (movingCell != null) {
 			//Debug.Log("movingCell.transform.position: " + movingCell.transform.position);
