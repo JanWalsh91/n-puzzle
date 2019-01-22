@@ -24,7 +24,7 @@ public class BoardManager : MonoBehaviour {
 	private Vector3 velocity;
 	private Vector3 targetDestination;
 
-	enum MoveDirection {
+	public enum MoveDirection {
 		Down,
 		Up,
 		Left,
@@ -71,6 +71,13 @@ public class BoardManager : MonoBehaviour {
 			spawnPosition.z -= cellSize.y + gap;
 		}
 		GetClosestCells();
+	}
+
+	public void AddMovements(params MoveDirection[] moves) {
+		foreach (var item in moves) {
+			movements.Enqueue(item);
+		}
+		Debug.Log("Enqueue, size is now: " + movements.Count);
 	}
 
 	void Update() {
