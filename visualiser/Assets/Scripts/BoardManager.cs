@@ -6,7 +6,7 @@ public class BoardManager : MonoBehaviour {
 
 	public int N;
 	public GameObject cellPrefab;
-	public float movingSpeed = 0.2f;
+	public float movingSpeed = 0.015f;
 
 	private Vector2 cellSize;
 
@@ -32,22 +32,36 @@ public class BoardManager : MonoBehaviour {
 	}
 
 	void Start() {
+
+		BuildBoard(null);
+		movements = new Queue<MoveDirection>();
+	}
+
+	public void BuildBoard(List<List<int>> input) {
 		Vector3 size = cellPrefab.GetComponent<Renderer>().bounds.size;
 		cellSize.x = size.x;
 		cellSize.y = size.z;
 
-		float gap = (3 - cellSize.x * N) / 3.0f; // Harcoded 3, buerk
 
 		Vector3 spawnPosition = new Vector3(-1f, 0.05f, 1f);
+		float gap = (3 - cellSize.x * N) / 3.0f; // Harcoded 3, buerk
+
+		foreach (Transform item in transform) {
+			Destroy(item.gameObject);
+		}
 
 		cells = new List<CellManager>();
 		for (int i = 0; i < N; i++) {
 			for (int j = 0; j < N; j++) {
 				GameObject instance = Instantiate(cellPrefab, spawnPosition, Quaternion.identity, transform);
-				instance.GetComponentInChildren<TextMesh>().text = (i == N - 1 && j == N - 1) ? "0" : (i * N + j + 1).ToString();
+				if (input == null) {
+					instance.GetComponentInChildren<TextMesh>().text = (i == N - 1 && j == N - 1) ? "0" : (i * N + j + 1).ToString();
+				} else {
+					instance.GetComponentInChildren<TextMesh>().text = input[i][j].ToString();
+				}
 				spawnPosition.x += cellSize.x + gap;
 				cells.Add(instance.GetComponent<CellManager>());
-				if (i == N - 1 && j == N - 1) {
+				if ((input == null && i == N - 1 && j == N - 1) || input != null && input[i][j] == 0) {
 					instance.GetComponent<MeshRenderer>().enabled = false;
 					instance.GetComponentInChildren<TextMesh>().gameObject.SetActive(false);
 					emptyCell = cells[cells.Count - 1];
@@ -56,14 +70,7 @@ public class BoardManager : MonoBehaviour {
 			spawnPosition.x = -1f;
 			spawnPosition.z -= cellSize.y + gap;
 		}
-
-		////////
-		
-		movements = new Queue<MoveDirection>();
-		StartCoroutine(MovePiece());
 		GetClosestCells();
-
-		
 	}
 
 	void Update() {
@@ -80,6 +87,46 @@ public class BoardManager : MonoBehaviour {
 		if (movingCell != null) {
 			//Debug.Log("movingCell.transform.position: " + movingCell.transform.position);
 			movingCell.transform.position = Vector3.SmoothDamp(movingCell.transform.position, targetDestination, ref velocity, movingSpeed);
+			if (movingCell.transform.position == targetDestination) {
+				Debug.Log("Here, done");
+				movingCell = null;
+				GetClosestCells();
+			}
+		} else if (movements.Count > 0) {
+			MoveDirection move = movements.Dequeue();
+			Debug.Log(move.ToString());
+
+			targetDestination = emptyCell.transform.position;
+			switch (move) {
+				case MoveDirection.Down:
+					if (!up) {
+						break;
+					}
+					emptyCell.transform.position = up.transform.position;
+					movingCell = up.gameObject;
+					break;
+				case MoveDirection.Up:
+					if (!down) {
+						break;
+					}
+					emptyCell.transform.position = down.transform.position;
+					movingCell = down.gameObject;
+					break;
+				case MoveDirection.Left:
+					if (!right) {
+						break;
+					}
+					emptyCell.transform.position = right.transform.position;
+					movingCell = right.gameObject;
+					break;
+				case MoveDirection.Right:
+					if (!left) {
+						break;
+					}
+					emptyCell.transform.position = left.transform.position;
+					movingCell = left.gameObject;
+					break;
+			}
 		}
 	}
 
@@ -91,63 +138,37 @@ public class BoardManager : MonoBehaviour {
 			if (item.transform.Equals(emptyCell.transform)) {
 				continue;
 			}
-			if (item.transform.position.x < emptyCell.transform.position.x && item.transform.position.z == emptyCell.transform.position.z) {
+			if (item.transform.position.x < emptyCell.transform.position.x && Mathf.Abs(item.transform.position.z - emptyCell.transform.position.z) < 0.01f) {
 				left = item.GetComponent<CellManager>();
 				//Debug.Log("Here 1");
-			} else if (item.transform.position.x > emptyCell.transform.position.x && item.transform.position.z == emptyCell.transform.position.z) {
+				Debug.Log(left.GetComponentInChildren<TextMesh>().text);
+			} else if (item.transform.position.x > emptyCell.transform.position.x && Mathf.Abs(item.transform.position.z - emptyCell.transform.position.z) < 0.01f) {
 				right = item.GetComponent<CellManager>();
 				//Debug.Log("Here 2");
-			} else if (item.transform.position.x == emptyCell.transform.position.x && item.transform.position.z > emptyCell.transform.position.z) {
+				Debug.Log(right.GetComponentInChildren<TextMesh>().text);
+
+			} else if (Mathf.Abs(item.transform.position.x - emptyCell.transform.position.x) < 0.01f && item.transform.position.z > emptyCell.transform.position.z) {
 				up = item.GetComponent<CellManager>();
 				//Debug.Log("Here 3");
-			} else if (item.transform.position.x == emptyCell.transform.position.x && item.transform.position.z < emptyCell.transform.position.z) {
+				Debug.Log(up.GetComponentInChildren<TextMesh>().text);
+
+			} else if (Mathf.Abs(item.transform.position.x - emptyCell.transform.position.x) < 0.01f && item.transform.position.z < emptyCell.transform.position.z) {
 				down = item.GetComponent<CellManager>();
 				//Debug.Log("Here 4");
+				Debug.Log(down.GetComponentInChildren<TextMesh>().text);
+
 			}
 			//Debug.Log(item.GetComponentInChildren<TextMesh>().text);
 		}
 	}
 
-	IEnumerator MovePiece() {
+	//IEnumerator MovePiece() {
 
-		while (true) {
-			if (movements.Count > 0) {
-				MoveDirection move = movements.Dequeue();
-				Debug.Log(move.ToString());
-				targetDestination = emptyCell.transform.position;
-				switch (move) {
-					case MoveDirection.Down:
-						if (!up) {
-							break;
-						}
-						emptyCell.transform.position = up.transform.position;
-						movingCell = up.gameObject;
-						break;
-					case MoveDirection.Up:
-						if (!down) {
-							break;
-						}
-						emptyCell.transform.position = down.transform.position;
-						movingCell = down.gameObject;
-						break;
-					case MoveDirection.Left:
-						if (!right) {
-							break;
-						}
-						emptyCell.transform.position = right.transform.position;
-						movingCell = right.gameObject;
-						break;
-					case MoveDirection.Right:
-						if (!left) {
-							break;
-						}
-						emptyCell.transform.position = left.transform.position;
-						movingCell = left.gameObject;
-						break;
-				}
-				GetClosestCells();
-			}
-			yield return new WaitForSeconds(movingSpeed);
-		}
-	}
+	//	while (true) {
+	//		if (movements.Count > 0) {
+				
+	//		}
+	//		yield return new WaitForSeconds(movingSpeed);
+	//	}
+	//}
 }

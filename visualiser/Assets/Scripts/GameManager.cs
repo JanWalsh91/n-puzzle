@@ -1,38 +1,32 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using UnityEditor;
 using UnityEngine;
+
 
 public class GameManager : MonoBehaviour {
 
+	public BoardManager boardManager;
+
+
+	private Parser parser;
+	private Client client;
 
 	void Start() {
-
-		
+		parser = new Parser();
+		client = new Client();
 	}
 
 	void Update() {
-		//if (Input.GetMouseButtonDown(0)) {
+	}
 
-		//	Ray ray = cam.ScreenPointToRay(Input.mousePosition);
-		//	RaycastHit hit;
-		//	if (Physics.Raycast(ray, out hit, 50f)) {
-		//		//draw invisible ray cast/vector
-		//		Debug.DrawLine(ray.origin, hit.point);
-		//		//log hit area to the console
-		//		Debug.Log(hit.point);
+	public void OpenFile() {
+		string fileName = EditorUtility.OpenFilePanel("Open n-puzzle file", ".", null);
 
-		//		foreach (var item in cells) {
-		//			item.SetSelected(false);
-		//		}
-
-		//		if (hit.transform.CompareTag("Cell")) {
-		//			CellManager cm = hit.transform.GetComponent<CellManager>();
-		//			cm.SetSelected(true);
-		//		}
-		//	}
-
-		//}
-		
+		List<List<int>> input = parser.SolveFromFile(fileName);
+		boardManager.BuildBoard(input);
+		client.CallServer(input);
 	}
 }
