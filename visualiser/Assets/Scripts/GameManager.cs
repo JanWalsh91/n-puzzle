@@ -26,6 +26,9 @@ public class GameManager : MonoBehaviour {
 
 	private bool needToUpdateNbStep = false;
 
+	public delegate void OnLoadFileAction(int N);
+	public static event OnLoadFileAction OnLoadFile; 
+
 	void Start() {
 		parser = new Parser();
 		solution = null;
@@ -110,8 +113,10 @@ public class GameManager : MonoBehaviour {
 		string fileName = EditorUtility.OpenFilePanel("Open n-puzzle file", ".", null);
 
 		List<List<int>> input = parser.SolveFromFile(fileName);
+		boardManager.N = input.Count;
 		boardManager.BuildBoard(input);
-
+		OnLoadFile(input.Count);
+		// TODO: handle unsupported size
 		Thread serverCommunicationThread = new Thread(new ThreadStart(() => {
 			solution = client.CallServer(input);
 

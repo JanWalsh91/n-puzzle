@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class BoardManager : MonoBehaviour {
 
+	[Range(3, 7)]
 	public int N;
 	public GameObject cellPrefab;
 	public float movingSpeed = 0.015f;
@@ -39,12 +40,24 @@ public class BoardManager : MonoBehaviour {
 
 	public void BuildBoard(List<List<int>> input) {
 		Vector3 size = cellPrefab.GetComponent<Renderer>().bounds.size;
+		for (int i = 3; i < N; i++) {
+			Debug.Log("[i: " + i + "] = " + size.x);
+			size.x /= 1.35f;
+			size.z /= 1.35f;
+
+		}
+		//cellPrefab.transform.localScale = size;
+	
 		cellSize.x = size.x;
 		cellSize.y = size.z;
 
+		Debug.Log("size: " + size);
 
-		Vector3 spawnPosition = new Vector3(-1f, 0.05f, 1f);
-		float gap = (3 - cellSize.x * N) / 3.0f; // Harcoded 3, buerk
+		Vector3 spawnPosition = new Vector3(-1.5f, 0.05f, 1.5f);
+		float gap = (3 - cellSize.x * N) / (float)N; // 3 == board size
+		spawnPosition.x += gap / 2f + size.x / 2.0f;
+		spawnPosition.z -= gap / 2f + size.z / 2.0f;
+
 
 		foreach (Transform item in transform) {
 			Destroy(item.gameObject);
@@ -54,6 +67,7 @@ public class BoardManager : MonoBehaviour {
 		for (int i = 0; i < N; i++) {
 			for (int j = 0; j < N; j++) {
 				GameObject instance = Instantiate(cellPrefab, spawnPosition, Quaternion.identity, transform);
+				instance.transform.localScale = size;
 				if (input == null) {
 					instance.GetComponentInChildren<TextMesh>().text = (i == N - 1 && j == N - 1) ? "0" : (i * N + j + 1).ToString();
 				} else {
@@ -67,7 +81,7 @@ public class BoardManager : MonoBehaviour {
 					emptyCell = cells[cells.Count - 1];
 				}
 			}
-			spawnPosition.x = -1f;
+			spawnPosition.x = -1.5f + gap / 2f + size.x / 2.0f;
 			spawnPosition.z -= cellSize.y + gap;
 		}
 		GetClosestCells();
@@ -139,21 +153,21 @@ public class BoardManager : MonoBehaviour {
 			if (item.transform.position.x < emptyCell.transform.position.x && Mathf.Abs(item.transform.position.z - emptyCell.transform.position.z) < 0.01f) {
 				left = item.GetComponent<CellManager>();
 				//Debug.Log("Here 1");
-				Debug.Log(left.GetComponentInChildren<TextMesh>().text);
+				//Debug.Log(left.GetComponentInChildren<TextMesh>().text);
 			} else if (item.transform.position.x > emptyCell.transform.position.x && Mathf.Abs(item.transform.position.z - emptyCell.transform.position.z) < 0.01f) {
 				right = item.GetComponent<CellManager>();
 				//Debug.Log("Here 2");
-				Debug.Log(right.GetComponentInChildren<TextMesh>().text);
+				//Debug.Log(right.GetComponentInChildren<TextMesh>().text);
 
 			} else if (Mathf.Abs(item.transform.position.x - emptyCell.transform.position.x) < 0.01f && item.transform.position.z > emptyCell.transform.position.z) {
 				up = item.GetComponent<CellManager>();
 				//Debug.Log("Here 3");
-				Debug.Log(up.GetComponentInChildren<TextMesh>().text);
+				//Debug.Log(up.GetComponentInChildren<TextMesh>().text);
 
 			} else if (Mathf.Abs(item.transform.position.x - emptyCell.transform.position.x) < 0.01f && item.transform.position.z < emptyCell.transform.position.z) {
 				down = item.GetComponent<CellManager>();
 				//Debug.Log("Here 4");
-				Debug.Log(down.GetComponentInChildren<TextMesh>().text);
+				//Debug.Log(down.GetComponentInChildren<TextMesh>().text);
 
 			}
 			//Debug.Log(item.GetComponentInChildren<TextMesh>().text);
