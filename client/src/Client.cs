@@ -24,25 +24,25 @@ public class TcpTimeClient {
 			}
 		} else {
 			input = new List<List<int>>();
-			
+
 			// Solvable
-			input.Add(new List<int>(new int[] { 2, 4, 1 }));
-			input.Add(new List<int>(new int[] { 6, 5, 3 }));
-			input.Add(new List<int>(new int[] { 8, 7, 0 }));
+			//input.Add(new List<int>(new int[] { 2, 4, 1 }));
+			//input.Add(new List<int>(new int[] { 6, 5, 3 }));
+			//input.Add(new List<int>(new int[] { 8, 7, 0 }));
 
-			//input.Add(new List<int>(new int[] { 1, 2, 3 }));
-			//input.Add(new List<int>(new int[] { 4, 5, 6 }));
-			//input.Add(new List<int>(new int[] { 7, 0, 8 }));
+			input.Add(new List<int>(new int[] { 1, 2, 3 }));
+			input.Add(new List<int>(new int[] { 4, 5, 8 }));
+			input.Add(new List<int>(new int[] { 6, 7, 0 }));
 		}
 
-		Validator validator = new Validator(input);
+		//Validator validator = new Validator(input);
 
-		try {
-			validator.Validate();
-		} catch (Exception e) {
-			Console.WriteLine(e.Message);
-			return 1;
-		}
+		//try {
+		//	validator.Validate((Board.SolutionType)1);
+		//} catch (Exception e) {
+		//	Console.WriteLine(e.Message);
+		//	return 1;
+		//}
 
 
 		try {
@@ -50,7 +50,7 @@ public class TcpTimeClient {
 
 			NetworkStream ns = client.GetStream();
 
-			input.Add(new List<int>{0, 0});
+			input.Add(new List<int>{1, 0});
 
 			BinaryFormatter bf = new BinaryFormatter();
 

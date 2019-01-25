@@ -16,11 +16,11 @@ namespace server.src {
 			this.input = input;
 		}
 
-		public void Validate() {
+		public void Validate(Board.SolutionType solutionType) {
 			this.size = input.Count * input.Count - 1;
 			ValidateShape();
 			ValidateNumbers();
-			ValidateInversions();
+			ValidateInversions(solutionType);
 			Console.WriteLine("Done here");
 		}
 
@@ -67,8 +67,9 @@ namespace server.src {
 			}
 		}
 
-		private void ValidateInversions() {
-			int numberOfInversions = CountNumberOfInversions();
+		private void ValidateInversions(Board.SolutionType solutionType) {
+
+			int numberOfInversions = solutionType == Board.SolutionType.Snail ? CountNumberOfSnailInversions() : CountNumberOfRegularInversions();
 
 			if (numberOfInversions == 0) {
 				return;
@@ -95,7 +96,25 @@ namespace server.src {
 
 		}
 
-		private int CountNumberOfInversions() {
+		private int CountNumberOfRegularInversions() {
+			int num = 0;
+
+			List<int> inputList = new List<int>();
+			foreach (var item in input) {
+				inputList.AddRange(item);
+			}
+
+			for (int i = 0; i < size; i++) {
+				for (int j = i + 1; j < size + 1; j++) {
+					if (inputList[j] != 0 && inputList[i] != 0 && inputList[i] > inputList[j]) {
+						num++;
+					}
+				}
+			}
+			return num;
+		}
+
+		private int CountNumberOfSnailInversions() {
 			int num = 0;
 
 			int deltaX = 1;

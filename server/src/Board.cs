@@ -7,6 +7,11 @@ namespace server.src {
 		List<int> list = new List<int>();
 		int size;								// N
 
+		public enum SolutionType {
+			Snail,
+			Regular
+		}
+
 		public Board(List<List<int>> input) {
 			// make list
 			for (int i = 0; i < input.Count; i++) {

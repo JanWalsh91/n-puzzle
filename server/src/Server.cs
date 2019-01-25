@@ -5,8 +5,6 @@ using System.Text;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Collections.Generic;
 using System.Linq;
-using System.Xml.Serialization;
-using System.Xml;
 
 namespace server.src {
 	public class Server {
@@ -35,28 +33,11 @@ namespace server.src {
 
 				// Read request
 				BinaryFormatter bf = new BinaryFormatter();
-				//XmlSerializer ser = new XmlSerializer(typeof(Data));
-
-				//Data data = (Data)ser.Deserialize(ns);
-
-				//Console.WriteLine(data.input.Count);
-
-				//byte[] bytes = new byte[1024];
-				//List<byte> byteList = new List<byte>();
-				//int nbBytes = 0;
-				//do {
-				//	nbBytes = ns.Read(bytes, 0, bytes.Length);
-				//	byteList.AddRange(bytes.Take(nbBytes));
-				//} while (ns.DataAvailable);
-
-				//Data pouet = new Data();
-				//pouet.input = bf.Deserialize()
-				//pouet.heuristicFunction = BitConverter.ToInt32(byteList.ToArray(), byteList.Count - 8);
-				//pouet.solutionType = BitConverter.ToInt32(byteList.ToArray(), byteList.Count - 4);
-
 
 				List<List<int>> input = (List<List<int>>)bf.Deserialize(ns);
 
+				// parameters[0]: Solution Type
+				// parameters[1]: Heuristic Function
 				List<int> parameters = input[input.Count - 1];
 				input.RemoveAt(input.Count - 1);
 
@@ -66,7 +47,7 @@ namespace server.src {
 				
 				Validator validator = new Validator(input);
 				try {
-					validator.Validate();
+					validator.Validate((Board.SolutionType)parameters[0]);
 				} catch (ValidatorException ve) {
 					Console.WriteLine(ve.Message);
 					bf.Serialize(ns, new List<string> { "Error", ve.Message });
