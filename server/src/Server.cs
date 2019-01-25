@@ -60,16 +60,17 @@ namespace server.src {
 				List<int> parameters = input[input.Count - 1];
 				input.RemoveAt(input.Count - 1);
 
-				//Data data = pouet;
-
-				//List<List<int>> input;
-				//input = (List<List<int>>)bf.Deserialize(ns);
+				foreach (var item in input) {
+					Console.WriteLine(String.Join(" - ", item));
+				}
 				
 				Validator validator = new Validator(input);
 				try {
 					validator.Validate();
 				} catch (ValidatorException ve) {
 					Console.WriteLine(ve.Message);
+					bf.Serialize(ns, new List<string> { "Error", ve.Message });
+					continue;
 				} catch (Exception e) {
 					//TODO: handle, something very bad happened in that case
 					Console.WriteLine(e.Message);

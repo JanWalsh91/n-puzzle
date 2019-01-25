@@ -16,33 +16,29 @@ public class Client: MonoBehaviour {
 		
 		try {
 			TcpClient client = new TcpClient(hostName, portNum);
-
 			NetworkStream ns = client.GetStream();
-
 			BinaryFormatter bf = new BinaryFormatter();
 
 			input.Add(new List<int> { 0, 0 });
-
 			try {
 				bf.Serialize(ns, input);
+				input.RemoveAt(input.Count - 1);
 			} catch (Exception e) {
 				Debug.Log(e.Message);
 			}
 			List<string> solution;
 			solution = (List<string>)bf.Deserialize(ns);
-
-			//byte[] bytes = new byte[1024];
-			//int bytesRead = ns.Read(bytes, 0, bytes.Length);
-			//Console.WriteLine(Encoding.ASCII.GetString(bytes, 0, bytesRead));
-
+			if (solution[0].Equals("Error")) {
+				Debug.Log(solution[1]);
+				// TODO: Maybe raise an exception... Thread stuff?
+			}
 
 			client.Close();
 			return solution;
 		} catch (Exception e) {
-			//Console.WriteLine(e.ToString());
+			// TODO: Exception?
 			Debug.Log("Connection error: " + e.Message);
 		}
-
 		return null;
 	}
 }

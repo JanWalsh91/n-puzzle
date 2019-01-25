@@ -12,15 +12,16 @@ public class BoardManager : MonoBehaviour {
 	private Vector2 cellSize;
 
 	// Create getter
-	public List<CellManager> cells;
+	public List<Cell> cells;
+	public List<List<int>> values;
 	private Queue<MoveDirection> movements;
 
-	private CellManager emptyCell;
+	private Cell emptyCell;
 
-	private CellManager left;
-	private CellManager right;
-	private CellManager up;
-	private CellManager down;
+	private Cell left;
+	private Cell right;
+	private Cell up;
+	private Cell down;
 
 	private GameObject movingCell = null;
 	private Vector3 velocity;
@@ -47,7 +48,6 @@ public class BoardManager : MonoBehaviour {
 			size.z /= 1.35f;
 
 		}
-		//cellPrefab.transform.localScale = size;
 	
 		cellSize.x = size.x;
 		cellSize.y = size.z;
@@ -64,18 +64,28 @@ public class BoardManager : MonoBehaviour {
 			Destroy(item.gameObject);
 		}
 
-		cells = new List<CellManager>();
+		if (input != null) {
+			values = input;
+		} else {
+			values = new List<List<int>>();
+		}
+
+		cells = new List<Cell>();
 		for (int i = 0; i < N; i++) {
+			values.Add(new List<int>());
 			for (int j = 0; j < N; j++) {
 				GameObject instance = Instantiate(cellPrefab, spawnPosition, Quaternion.identity, transform);
 				instance.transform.localScale = size;
 				if (input == null) {
 					instance.GetComponentInChildren<TextMesh>().text = (i == N - 1 && j == N - 1) ? "0" : (i * N + j + 1).ToString();
+					values[i].Add((i == N - 1 && j == N - 1) ? 0 : (i * N + j + 1));
 				} else {
 					instance.GetComponentInChildren<TextMesh>().text = input[i][j].ToString();
 				}
 				spawnPosition.x += cellSize.x + gap;
-				cells.Add(instance.GetComponent<CellManager>());
+				Cell cell = instance.GetComponent<Cell>();
+				cells.Add(cell);
+				cell.value = values[i][j];
 				if ((input == null && i == N - 1 && j == N - 1) || input != null && input[i][j] == 0) {
 					instance.GetComponent<MeshRenderer>().enabled = false;
 					instance.GetComponentInChildren<TextMesh>().gameObject.SetActive(false);
@@ -92,22 +102,18 @@ public class BoardManager : MonoBehaviour {
 		foreach (var item in moves) {
 			movements.Enqueue(item);
 		}
-		//Debug.Log("Enqueue, size is now: " + movements.Count);
 	}
 
 	void Update() {
 
 		if (movingCell != null) {
-			//Debug.Log("movingCell.transform.position: " + movingCell.transform.position);
 			movingCell.transform.position = Vector3.SmoothDamp(movingCell.transform.position, targetDestination, ref velocity, movingSpeed);
 			if (movingCell.transform.position == targetDestination) {
-				//Debug.Log("Here, done");
 				movingCell = null;
 				GetClosestCells();
 			}
 		} else if (movements.Count > 0) {
 			MoveDirection move = movements.Dequeue();
-			//Debug.Log(move.ToString());
 
 			targetDestination = emptyCell.transform.position;
 			switch (move) {
@@ -117,6 +123,14 @@ public class BoardManager : MonoBehaviour {
 					}
 					emptyCell.transform.position = up.transform.position;
 					movingCell = up.gameObject;
+					for (int i = 0; i < N; i++) {
+						int j = values[i].FindIndex(o => o == up.value);
+						if (j > -1) {
+							values[i + 1][j] = up.value;
+							values[i][j] = 0;
+							break;
+						}
+					}
 					break;
 				case MoveDirection.Up:
 					if (!down) {
@@ -124,6 +138,14 @@ public class BoardManager : MonoBehaviour {
 					}
 					emptyCell.transform.position = down.transform.position;
 					movingCell = down.gameObject;
+					for (int i = 0; i < N; i++) {
+						int j = values[i].FindIndex(o => o == down.value);
+						if (j > -1) {
+							values[i - 1][j] = down.value;
+							values[i][j] = 0;
+							break;
+						}
+					}
 					break;
 				case MoveDirection.Left:
 					if (!right) {
@@ -131,6 +153,14 @@ public class BoardManager : MonoBehaviour {
 					}
 					emptyCell.transform.position = right.transform.position;
 					movingCell = right.gameObject;
+					for (int i = 0; i < N; i++) {
+						int j = values[i].FindIndex(o => o == right.value);
+						if (j > -1) {
+							values[i][j - 1] = right.value;
+							values[i][j] = 0;
+							break;
+						}
+					}
 					break;
 				case MoveDirection.Right:
 					if (!left) {
@@ -138,6 +168,14 @@ public class BoardManager : MonoBehaviour {
 					}
 					emptyCell.transform.position = left.transform.position;
 					movingCell = left.gameObject;
+					for (int i = 0; i < N; i++) {
+						int j = values[i].FindIndex(o => o == left.value);
+						if (j > -1) {
+							values[i][j + 1] = left.value;
+							values[i][j] = 0;
+							break;
+						}
+					}
 					break;
 			}
 		}
@@ -145,43 +183,20 @@ public class BoardManager : MonoBehaviour {
 
 	void GetClosestCells() {
 		Collider[] colliders = Physics.OverlapSphere(emptyCell.transform.position, cellSize.x + (cellSize.y / 4.0f), LayerMask.GetMask("Cell"));
-		//Debug.Log("Found: " + colliders.Length);
 		left = right = up = down = null;
 		foreach (var item in colliders) {
 			if (item.transform.Equals(emptyCell.transform)) {
 				continue;
 			}
 			if (item.transform.position.x < emptyCell.transform.position.x && Mathf.Abs(item.transform.position.z - emptyCell.transform.position.z) < 0.01f) {
-				left = item.GetComponent<CellManager>();
-				//Debug.Log("Here 1");
-				//Debug.Log(left.GetComponentInChildren<TextMesh>().text);
+				left = item.GetComponent<Cell>();
 			} else if (item.transform.position.x > emptyCell.transform.position.x && Mathf.Abs(item.transform.position.z - emptyCell.transform.position.z) < 0.01f) {
-				right = item.GetComponent<CellManager>();
-				//Debug.Log("Here 2");
-				//Debug.Log(right.GetComponentInChildren<TextMesh>().text);
-
+				right = item.GetComponent<Cell>();
 			} else if (Mathf.Abs(item.transform.position.x - emptyCell.transform.position.x) < 0.01f && item.transform.position.z > emptyCell.transform.position.z) {
-				up = item.GetComponent<CellManager>();
-				//Debug.Log("Here 3");
-				//Debug.Log(up.GetComponentInChildren<TextMesh>().text);
-
+				up = item.GetComponent<Cell>();
 			} else if (Mathf.Abs(item.transform.position.x - emptyCell.transform.position.x) < 0.01f && item.transform.position.z < emptyCell.transform.position.z) {
-				down = item.GetComponent<CellManager>();
-				//Debug.Log("Here 4");
-				//Debug.Log(down.GetComponentInChildren<TextMesh>().text);
-
+				down = item.GetComponent<Cell>();
 			}
-			//Debug.Log(item.GetComponentInChildren<TextMesh>().text);
 		}
 	}
-
-	//IEnumerator MovePiece() {
-
-	//	while (true) {
-	//		if (movements.Count > 0) {
-				
-	//		}
-	//		yield return new WaitForSeconds(movingSpeed);
-	//	}
-	//}
 }

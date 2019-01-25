@@ -7,8 +7,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "client", "client\client.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "server", "server\server.csproj", "{88B74D12-050A-46B3-87D7-87B3C510BD07}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembly-CSharp", "visualiser\Assembly-CSharp.csproj", "{B164021B-4914-58A1-5B8F-81B158E97D0A}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -23,10 +21,6 @@ Global
 		{88B74D12-050A-46B3-87D7-87B3C510BD07}.Debug|x86.Build.0 = Debug|x86
 		{88B74D12-050A-46B3-87D7-87B3C510BD07}.Release|x86.ActiveCfg = Release|x86
 		{88B74D12-050A-46B3-87D7-87B3C510BD07}.Release|x86.Build.0 = Release|x86
-		{B164021B-4914-58A1-5B8F-81B158E97D0A}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{B164021B-4914-58A1-5B8F-81B158E97D0A}.Debug|x86.Build.0 = Debug|Any CPU
-		{B164021B-4914-58A1-5B8F-81B158E97D0A}.Release|x86.ActiveCfg = Release|Any CPU
-		{B164021B-4914-58A1-5B8F-81B158E97D0A}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

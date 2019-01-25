@@ -22,7 +22,6 @@ public class GameManager : MonoBehaviour {
 
 	private Dictionary<string, BoardManager.MoveDirection> stringToMoveDirection;
 	private Dictionary<BoardManager.MoveDirection, BoardManager.MoveDirection> oppositeMoveDirection;
-	//private Dictionary<KeyCode, BoardManager.MoveDirection> keyCodeToMoveDirection;
 
 	private bool needToUpdateNbStep = false;
 
@@ -47,17 +46,9 @@ public class GameManager : MonoBehaviour {
 		oppositeMoveDirection.Add(BoardManager.MoveDirection.Left, BoardManager.MoveDirection.Right);
 		oppositeMoveDirection.Add(BoardManager.MoveDirection.Up, BoardManager.MoveDirection.Down);
 		oppositeMoveDirection.Add(BoardManager.MoveDirection.Down, BoardManager.MoveDirection.Up);
-
-		//keyCodeToMoveDirection = new Dictionary<KeyCode, BoardManager.MoveDirection>();
-		//keyCodeToMoveDirection.Add(KeyCode.RightArrow, BoardManager.MoveDirection.Right);
-		//keyCodeToMoveDirection.Add(KeyCode.LeftArrow, BoardManager.MoveDirection.Left);
-		//keyCodeToMoveDirection.Add(KeyCode.UpArrow, BoardManager.MoveDirection.Up);
-		//keyCodeToMoveDirection.Add(KeyCode.DownArrow, BoardManager.MoveDirection.Down);
-
 	}
 
 	void Update() {
-		//Debug.Log("Size: " + solutionNextMoves.Count);
 		if (needToUpdateNbStep) {
 			needToUpdateNbStep = false;
 			nbStep.text = solutionNextMoves.Count.ToString();
@@ -119,11 +110,8 @@ public class GameManager : MonoBehaviour {
 			}
 
 			for (int i = 0; i < solution.Count; i++) {
-				//for (int i = solution.Count - 1; i >= 0; i--) {
-
-				Debug.Log("Solution: " + solution[i]);
+				//Debug.Log("Solution: " + solution[i]);
 				solutionNextMoves.AddFirst(stringToMoveDirection[solution[i]]);
-
 			}
 			needToUpdateNbStep = true;
 		}));
@@ -132,22 +120,7 @@ public class GameManager : MonoBehaviour {
 	}
 
 	public void SolveBoard() {
-		//boardManager.cells.Sort((c1, c2) => (int)(c2.transform.position.x - c1.transform.position.x));
-		//boardManager.cells.Sort((c1, c2) => (int)(c1.transform.position.z - c2.transform.position.z));
-
-
-
-		//boardManager.cells = boardManager.cells.OrderByDescending(c => c.transform.position.z).ThenBy(c => c.transform.position.x).ToList();
-
-
-
-		//List<string> list = new List<string>();
-
-		//foreach (var item in boardManager.cells) {
-		//	TextMesh textMesh = item.GetComponentInChildren<TextMesh>();
-		//	list.Add(textMesh == null ? "0" : textMesh.text);
-		//}
-		//Debug.Log(String.Join(" - ", list));
+		Solve(boardManager.values);
 	}
 
 	public void OpenFile() {
