@@ -14,43 +14,27 @@ public class Client: MonoBehaviour {
 
 	public List<string> CallServer(List<List<int>> input) {
 		
-		//Validator validator = new Validator(input);
-
-		//try {
-		//	validator.Validate();
-		//} catch (Exception e) {
-		//	Console.WriteLine(e.Message);
-		//	return 1;
-		//}
-
-
 		try {
 			TcpClient client = new TcpClient(hostName, portNum);
 
 			NetworkStream ns = client.GetStream();
 
 			BinaryFormatter bf = new BinaryFormatter();
-			bf.Serialize(ns, input);
 
+			input.Add(new List<int> { 0, 0 });
+
+			try {
+				bf.Serialize(ns, input);
+			} catch (Exception e) {
+				Debug.Log(e.Message);
+			}
 			List<string> solution;
 			solution = (List<string>)bf.Deserialize(ns);
-
-			foreach (var item in solution) {
-				Debug.Log("Client: " + item);
-				//	if (item.Equals("Right")) {
-				//		boardManager.AddMovements(BoardManager.MoveDirection.Right);
-				//	} else if (item.Equals("Left")) {
-				//		boardManager.AddMovements(BoardManager.MoveDirection.Left);
-				//	} else if (item.Equals("Up")) {
-				//		boardManager.AddMovements(BoardManager.MoveDirection.Up);
-				//	} else if (item.Equals("Down")) {
-				//		boardManager.AddMovements(BoardManager.MoveDirection.Down);
-				//	}
-			}
 
 			//byte[] bytes = new byte[1024];
 			//int bytesRead = ns.Read(bytes, 0, bytes.Length);
 			//Console.WriteLine(Encoding.ASCII.GetString(bytes, 0, bytesRead));
+
 
 			client.Close();
 			return solution;

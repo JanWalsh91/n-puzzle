@@ -120,6 +120,10 @@ public class GameManager : MonoBehaviour {
 		Thread serverCommunicationThread = new Thread(new ThreadStart(() => {
 			solution = client.CallServer(input);
 
+			if (solution == null) {
+				Debug.Log("Null solution, woups");
+			}
+
 			Debug.Log("Inside Thread, count: " + solution.Count);
 
 

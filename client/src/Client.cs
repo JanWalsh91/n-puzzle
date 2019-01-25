@@ -4,6 +4,7 @@ using System.Net.Sockets;
 using System.Runtime.Serialization.Formatters.Binary;
 using server.src;
 using System.Text;
+using System.Xml.Serialization;
 
 public class TcpTimeClient {
 	private const int portNum = 2000;
@@ -28,6 +29,10 @@ public class TcpTimeClient {
 			input.Add(new List<int>(new int[] { 2, 4, 1 }));
 			input.Add(new List<int>(new int[] { 6, 5, 3 }));
 			input.Add(new List<int>(new int[] { 8, 7, 0 }));
+
+			//input.Add(new List<int>(new int[] { 1, 2, 3 }));
+			//input.Add(new List<int>(new int[] { 4, 5, 6 }));
+			//input.Add(new List<int>(new int[] { 7, 0, 8 }));
 		}
 
 		Validator validator = new Validator(input);
@@ -45,8 +50,14 @@ public class TcpTimeClient {
 
 			NetworkStream ns = client.GetStream();
 
+			input.Add(new List<int>{0, 0});
+
 			BinaryFormatter bf = new BinaryFormatter();
+
+			//XmlSerializer ser = new XmlSerializer(typeof(server.src.Server.Data));
+
 			bf.Serialize(ns, input);
+			//ser.Serialize(ns, data);
 
 			List<string> solution;
 			solution = (List<string>)bf.Deserialize(ns);

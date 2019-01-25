@@ -28,7 +28,7 @@ namespace server.src {
 			this.sideLength = input.Count;
 			foreach (var i in input) {
 				if (i.Count != this.sideLength) {
-					throw new Exception("V: Invalid input shape");
+					throw new ValidatorException("Invalid input shape");
 				}
 			}
 		}
@@ -58,12 +58,12 @@ namespace server.src {
 			for (int i = 1; i < copy.Count; i++) {
 				if (copy[i] - 1 != copy[i - 1]) {
 					//Console.WriteLine("Pas content parce que : " + (copy[i] - 1) + " vs " + copy[i]]);
-					throw new Exception("V: Input numbers non-contiguous");
+					throw new ValidatorException("Input numbers non-contiguous");
 				}
 			}
 
 			if (copy[0] != 0) {
-				throw new Exception("V: Missing empty square");
+				throw new ValidatorException("Missing empty cell");
 			}
 		}
 
@@ -77,18 +77,18 @@ namespace server.src {
 			//If N is odd, then puzzle instance is solvable if number of inversions is even in the input state.
 			if (this.sideLength % 2 == 1) {
 				if (numberOfInversions % 2 == 1) {
-					throw new Exception("V: Unsolvable (1)");
+					throw new ValidatorException("Unsolvable puzzle (1)");
 				}
 			} else {
 				//If N is even, puzzle instance is solvable if
 				//the blank is on an even row counting from the bottom(second-last, fourth - last, etc.) and number of inversions is odd.
 				if (this.onEvenRow && numberOfInversions % 2 == 0) {
 					Console.WriteLine("Inersions: " + numberOfInversions + " onEvenRow: " + onEvenRow);
-					throw new Exception("V: Unsolvable (2)");
+					throw new ValidatorException("Unsolvable puzzle (2)");
 				} else {
 					//the blank is on an odd row counting from the bottom(last, third-last, fifth - last, etc.) and number of inversions is even.
 					if (numberOfInversions % 2 != 0) {
-						throw new Exception("V: Unsolvable (3)");
+						throw new ValidatorException("Unsolvable puzzle (3)");
 					}	
 				}
 			}
@@ -147,6 +147,7 @@ namespace server.src {
 			return num;
 		}
 
+
 		//public static void Main () {
 
 		//	try {
@@ -170,3 +171,8 @@ namespace server.src {
 }
 
 
+public class ValidatorException : Exception {
+	public ValidatorException() { }
+	public ValidatorException(string message) : base(message) { }
+	public ValidatorException(string message, Exception inner) : base(message, inner) { }
+}

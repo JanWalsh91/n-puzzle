@@ -68,6 +68,13 @@ namespace server.src {
 			return this.list;
 		}
 
+		public static Board GetRegularSolution(int N) {
+			List<int> list = Enumerable.Range(1, N * N - 1).ToList();
+			list.Add(0);
+			Board board = new Board(list);
+			return board;
+		}
+
 		public static Board GetSnailSolution(int N) {
 			List<List<int>> list = new List<List<int>>();
 			for (int i = 0; i < N; i++) {
