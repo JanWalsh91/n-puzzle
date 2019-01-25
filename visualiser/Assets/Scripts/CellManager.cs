@@ -18,7 +18,7 @@ public class CellManager : MonoBehaviour {
 	//		}
 	//	}
 	//}
-	
+
 
 	//public bool IsSelected() {
 	//	return selected;

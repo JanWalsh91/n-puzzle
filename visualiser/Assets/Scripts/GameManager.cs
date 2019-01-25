@@ -6,7 +6,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Threading;
-
+using System.Linq;
 
 public class GameManager : MonoBehaviour {
 
@@ -109,14 +109,8 @@ public class GameManager : MonoBehaviour {
 		// Create a event in the board manager to update the step to solution counter
 	}
 
-	public void OpenFile() {
-		string fileName = EditorUtility.OpenFilePanel("Open n-puzzle file", ".", null);
+	private void Solve(List<List<int>> input) {
 
-		List<List<int>> input = parser.SolveFromFile(fileName);
-		boardManager.N = input.Count;
-		boardManager.BuildBoard(input);
-		OnLoadFile(input.Count);
-		// TODO: handle unsupported size
 		Thread serverCommunicationThread = new Thread(new ThreadStart(() => {
 			solution = client.CallServer(input);
 
@@ -124,22 +118,45 @@ public class GameManager : MonoBehaviour {
 				Debug.Log("Null solution, woups");
 			}
 
-			Debug.Log("Inside Thread, count: " + solution.Count);
-
-
 			for (int i = 0; i < solution.Count; i++) {
-			//for (int i = solution.Count - 1; i >= 0; i--) {
+				//for (int i = solution.Count - 1; i >= 0; i--) {
 
 				Debug.Log("Solution: " + solution[i]);
 				solutionNextMoves.AddFirst(stringToMoveDirection[solution[i]]);
-				
+
 			}
 			needToUpdateNbStep = true;
 		}));
 		serverCommunicationThread.IsBackground = true;
 		serverCommunicationThread.Start();
-		Debug.Log("Starting thread");
+	}
 
-		//client.CallServer(input);
+	public void SolveBoard() {
+		//boardManager.cells.Sort((c1, c2) => (int)(c2.transform.position.x - c1.transform.position.x));
+		//boardManager.cells.Sort((c1, c2) => (int)(c1.transform.position.z - c2.transform.position.z));
+
+
+
+		//boardManager.cells = boardManager.cells.OrderByDescending(c => c.transform.position.z).ThenBy(c => c.transform.position.x).ToList();
+
+
+
+		//List<string> list = new List<string>();
+
+		//foreach (var item in boardManager.cells) {
+		//	TextMesh textMesh = item.GetComponentInChildren<TextMesh>();
+		//	list.Add(textMesh == null ? "0" : textMesh.text);
+		//}
+		//Debug.Log(String.Join(" - ", list));
+	}
+
+	public void OpenFile() {
+		string fileName = EditorUtility.OpenFilePanel("Open n-puzzle file", ".", null);
+		List<List<int>> input = parser.SolveFromFile(fileName);
+		boardManager.N = input.Count;
+		boardManager.BuildBoard(input);
+		OnLoadFile(input.Count);
+		// TODO: handle unsupported size
+		Solve(input);
 	}
 }

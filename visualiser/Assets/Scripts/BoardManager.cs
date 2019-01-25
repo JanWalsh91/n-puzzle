@@ -11,7 +11,8 @@ public class BoardManager : MonoBehaviour {
 
 	private Vector2 cellSize;
 
-	private List<CellManager> cells;
+	// Create getter
+	public List<CellManager> cells;
 	private Queue<MoveDirection> movements;
 
 	private CellManager emptyCell;
@@ -91,7 +92,7 @@ public class BoardManager : MonoBehaviour {
 		foreach (var item in moves) {
 			movements.Enqueue(item);
 		}
-		Debug.Log("Enqueue, size is now: " + movements.Count);
+		//Debug.Log("Enqueue, size is now: " + movements.Count);
 	}
 
 	void Update() {
@@ -100,13 +101,13 @@ public class BoardManager : MonoBehaviour {
 			//Debug.Log("movingCell.transform.position: " + movingCell.transform.position);
 			movingCell.transform.position = Vector3.SmoothDamp(movingCell.transform.position, targetDestination, ref velocity, movingSpeed);
 			if (movingCell.transform.position == targetDestination) {
-				Debug.Log("Here, done");
+				//Debug.Log("Here, done");
 				movingCell = null;
 				GetClosestCells();
 			}
 		} else if (movements.Count > 0) {
 			MoveDirection move = movements.Dequeue();
-			Debug.Log(move.ToString());
+			//Debug.Log(move.ToString());
 
 			targetDestination = emptyCell.transform.position;
 			switch (move) {
@@ -144,7 +145,7 @@ public class BoardManager : MonoBehaviour {
 
 	void GetClosestCells() {
 		Collider[] colliders = Physics.OverlapSphere(emptyCell.transform.position, cellSize.x + (cellSize.y / 4.0f), LayerMask.GetMask("Cell"));
-		Debug.Log("Found: " + colliders.Length);
+		//Debug.Log("Found: " + colliders.Length);
 		left = right = up = down = null;
 		foreach (var item in colliders) {
 			if (item.transform.Equals(emptyCell.transform)) {
