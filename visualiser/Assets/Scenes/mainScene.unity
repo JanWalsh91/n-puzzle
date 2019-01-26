@@ -1537,6 +1537,7 @@ MonoBehaviour:
   portNum: 2000
   hostName: localhost
   boardManager: {fileID: 1698529027}
+  gameManager: {fileID: 1859270597}
   errorMessage: 
 --- !u!4 &573364174
 Transform:
@@ -1642,7 +1643,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1029097100}
-        m_MethodName: OnSizeChange
+        m_MethodName: OnSolutionTypeChange
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -2736,7 +2737,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1029097100}
-        m_MethodName: OnSizeChange
+        m_MethodName: OnHeuristicFunctionChange
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -3035,6 +3036,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sizeDropdown: {fileID: 1117726431}
+  heuristicFunction: {fileID: 923099113}
+  solutionType: {fileID: 601462009}
   hostInputField: {fileID: 1065933282}
   portInputField: {fileID: 616704830}
   errorPanel: {fileID: 150580987}
@@ -5270,6 +5273,8 @@ MonoBehaviour:
   client: {fileID: 573364173}
   nbStep: {fileID: 1107233346}
   uiManager: {fileID: 1029097100}
+  heuristicFunction: 0
+  solutionType: 0
 --- !u!4 &1859270598
 Transform:
   m_ObjectHideFlags: 0

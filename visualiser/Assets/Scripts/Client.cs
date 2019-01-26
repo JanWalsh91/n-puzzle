@@ -12,6 +12,7 @@ public class Client: MonoBehaviour {
 	public string hostName = "localhost";
 
 	public BoardManager boardManager;
+	public GameManager gameManager;
 	//public UIManager uiManager;
 
 	public string errorMessage;
@@ -21,13 +22,13 @@ public class Client: MonoBehaviour {
 	}
 
 	public List<string> CallServer(List<List<int>> input) {
-		
 		try {
 			TcpClient client = new TcpClient(hostName, portNum);
 			NetworkStream ns = client.GetStream();
 			BinaryFormatter bf = new BinaryFormatter();
 
-			input.Add(new List<int> { 0, 0 });
+			input.Add(new List<int> { gameManager.solutionType, gameManager.heuristicFunction });
+
 			try {
 				bf.Serialize(ns, input);
 				input.RemoveAt(input.Count - 1);
@@ -36,17 +37,14 @@ public class Client: MonoBehaviour {
 			}
 			List<string> solution;
 			solution = (List<string>)bf.Deserialize(ns);
-			if (solution[0].Equals("Error")) {
-				Debug.Log(solution[1]);
+			if (solution != null && solution.Count > 0 && solution[0].Equals("Error")) {
+				errorMessage = solution[1];
 				// TODO: Maybe raise an exception... Thread stuff?
 			}
 
 			client.Close();
 			return solution;
 		} catch (Exception e) {
-			// TODO: Exception?
-			Debug.Log("Connection error: " + e.Message);
-			//uiManager.DisplayError(e.Message);
 			errorMessage = e.Message;
 		}
 		return null;

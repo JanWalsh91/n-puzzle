@@ -15,6 +15,9 @@ public class GameManager : MonoBehaviour {
 	public Text nbStep;
 	public UIManager uiManager;
 
+	public int heuristicFunction = 0;
+	public int solutionType = 0;
+
 	private Parser parser;
 	private List<string> solution;
 
@@ -62,20 +65,16 @@ public class GameManager : MonoBehaviour {
 
 		if (Input.GetKeyDown(KeyCode.RightArrow)) {
 			boardManager.AddMovements(BoardManager.MoveDirection.Right);
-			solutionNextMoves.AddLast(BoardManager.MoveDirection.Left);
-			needToUpdateNbStep = true;
+			//solutionNextMoves.AddLast(BoardManager.MoveDirection.Left);
 		} else if (Input.GetKeyDown(KeyCode.LeftArrow)) {
 			boardManager.AddMovements(BoardManager.MoveDirection.Left);
-			solutionNextMoves.AddLast(BoardManager.MoveDirection.Right);
-			needToUpdateNbStep = true;
+			//solutionNextMoves.AddLast(BoardManager.MoveDirection.Right);
 		} else if (Input.GetKeyDown(KeyCode.UpArrow)) {
 			boardManager.AddMovements(BoardManager.MoveDirection.Up);
-			solutionNextMoves.AddLast(BoardManager.MoveDirection.Down);
-			needToUpdateNbStep = true;
+			//solutionNextMoves.AddLast(BoardManager.MoveDirection.Down);
 		} else if (Input.GetKeyDown(KeyCode.DownArrow)) {
 			boardManager.AddMovements(BoardManager.MoveDirection.Down);
-			solutionNextMoves.AddLast(BoardManager.MoveDirection.Up);
-			needToUpdateNbStep = true;
+			//solutionNextMoves.AddLast(BoardManager.MoveDirection.Up);
 		}
 	}
 	

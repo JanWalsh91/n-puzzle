@@ -7,6 +7,8 @@ using UnityEngine.UI;
 public class UIManager : MonoBehaviour {
 
 	public Dropdown sizeDropdown;
+	public Dropdown heuristicFunction;
+	public Dropdown solutionType;
 	public InputField hostInputField;
 	public InputField portInputField;
 	public RectTransform errorPanel;
@@ -50,8 +52,6 @@ public class UIManager : MonoBehaviour {
 	}
 
 	public void OnSizeChange() {
-		Debug.Log(sizeDropdown.value);
-
 		gameManager.boardManager.N = sizeDropdown.value + 3;
 		gameManager.boardManager.BuildBoard(null);
 	}
@@ -64,9 +64,16 @@ public class UIManager : MonoBehaviour {
 		client.portNum = int.Parse(portInputField.text);
 	}
 
+	public void OnHeuristicFunctionChange() {
+		gameManager.heuristicFunction = heuristicFunction.value;
+	}
+
+	public void OnSolutionTypeChange() {
+		gameManager.solutionType = solutionType.value;
+	}
+
 	public void DisplayError(string message) {
 		errorMessage.text = "Error: " + message;
-		Debug.Log("Set Trigger");
 		animator.SetTrigger("Display");
 	}
 }

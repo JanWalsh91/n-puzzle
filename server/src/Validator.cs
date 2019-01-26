@@ -86,7 +86,7 @@ namespace server.src {
 				if (this.onEvenRow && numberOfInversions % 2 == 0) {
 					Console.WriteLine("Inersions: " + numberOfInversions + " onEvenRow: " + onEvenRow);
 					throw new ValidatorException("Unsolvable puzzle (2)");
-				} else {
+				} else if (!this.onEvenRow && numberOfInversions % 2 == 1) {
 					//the blank is on an odd row counting from the bottom(last, third-last, fifth - last, etc.) and number of inversions is even.
 					if (numberOfInversions % 2 != 0) {
 						throw new ValidatorException("Unsolvable puzzle (3)");
