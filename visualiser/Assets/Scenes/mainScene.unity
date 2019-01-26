@@ -5273,6 +5273,7 @@ MonoBehaviour:
   client: {fileID: 573364173}
   nbStep: {fileID: 1107233346}
   uiManager: {fileID: 1029097100}
+  cam: {fileID: 534669904}
   heuristicFunction: 0
   solutionType: 0
 --- !u!4 &1859270598

@@ -14,6 +14,7 @@ public class GameManager : MonoBehaviour {
 	public Client client;
 	public Text nbStep;
 	public UIManager uiManager;
+	public Camera cam;
 
 	public int heuristicFunction = 0;
 	public int solutionType = 0;
@@ -29,12 +30,18 @@ public class GameManager : MonoBehaviour {
 
 	private bool needToUpdateNbStep = false;
 
+	private Cell swapFirstCell;
+	private Cell swapSecondCell;
+
 	public delegate void OnLoadFileAction(int N);
 	public static event OnLoadFileAction OnLoadFile; 
 
 	void Start() {
 		parser = new Parser();
 		solution = null;
+
+		swapFirstCell = null;
+		swapSecondCell = null;
 
 		solutionNextMoves = new LinkedList<BoardManager.MoveDirection>();
 		solutionPrevMoves = new LinkedList<BoardManager.MoveDirection>();
@@ -75,6 +82,62 @@ public class GameManager : MonoBehaviour {
 		} else if (Input.GetKeyDown(KeyCode.DownArrow)) {
 			boardManager.AddMovements(BoardManager.MoveDirection.Down);
 			//solutionNextMoves.AddLast(BoardManager.MoveDirection.Up);
+		}
+
+		if (Input.GetMouseButtonDown(0)) {
+			RaycastHit hit;
+			Ray ray = cam.ScreenPointToRay(Input.mousePosition);
+
+			if (Physics.Raycast(ray, out hit)) {
+				if (hit.collider.CompareTag("Cell")) {
+					Debug.Log(hit.collider.gameObject);
+					if (swapFirstCell == null) {
+						swapFirstCell = hit.collider.GetComponent<Cell>();
+						// If hit the empty cell, do nothing... Or..?
+						if (swapFirstCell.value == 0) {
+							swapFirstCell = null;
+						}
+					} else {
+						swapSecondCell = hit.collider.GetComponent<Cell>();
+						// TODO: thing and try
+						if (swapSecondCell.value != 0) {
+							Vector3 tmpPos = swapSecondCell.transform.position;
+							swapSecondCell.transform.position = swapFirstCell.transform.position;
+							swapFirstCell.transform.position = tmpPos;
+
+							// Find in values list, boardManager
+
+							int iFirstCell = -1, iSecondCell = -1;
+							int jFirstCell = -1, jSecondCell = -1;
+
+							for (int i = 0; i < boardManager.N; i++) {
+								if (jFirstCell == -1) {
+									iFirstCell = i;
+									jFirstCell = boardManager.values[i].FindIndex(o => o == swapFirstCell.value);
+								}
+								if (jSecondCell == -1) {
+									iSecondCell = i;
+									jSecondCell = boardManager.values[i].FindIndex(o => o == swapSecondCell.value);
+								}
+							}
+							if (jFirstCell != -1 && jSecondCell != -1) {
+								int tmp = boardManager.values[iFirstCell][jFirstCell];
+								boardManager.values[iFirstCell][jFirstCell] = boardManager.values[iSecondCell][jSecondCell];
+								boardManager.values[iSecondCell][jSecondCell] = tmp;
+
+								for (int i = 0; i < boardManager.N; i++) {
+									Debug.Log(String.Join(" - ", boardManager.values[i]));
+								}
+							}
+
+							swapFirstCell = null;
+							swapSecondCell = null;
+						} else {
+							swapSecondCell = null;
+						}
+					}
+				}
+			}
 		}
 	}
 	
