@@ -40,9 +40,9 @@ public class BoardManager : MonoBehaviour {
 		movements = new Queue<MoveDirection>();
 	}
 
-	private void OnDrawGizmos() {
-		Gizmos.DrawSphere(new Vector3(-1.5f, 0.05f, 1.5f), 0.25f);
-	}
+	//private void OnDrawGizmos() {
+	//	Gizmos.DrawSphere(new Vector3(-1.5f, 0.05f, 1.5f), 0.25f);
+	//}
 
 	public void BuildBoard(List<List<int>> input) {
 		Vector3 size = cellPrefab.GetComponent<Renderer>().bounds.size;
@@ -111,6 +111,10 @@ public class BoardManager : MonoBehaviour {
 		foreach (var item in moves) {
 			movements.Enqueue(item);
 		}
+	}
+
+	public void ClearMovements() {
+		movements.Clear();
 	}
 
 	void Update() {

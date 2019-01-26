@@ -11,10 +11,12 @@ using System.Linq;
 public class GameManager : MonoBehaviour {
 
 	public BoardManager boardManager;
+	public GameObject woodenBoard;
 	public Client client;
 	public Text nbStep;
 	public UIManager uiManager;
 	public Camera cam;
+	public Tray tray;
 
 	public int heuristicFunction = 0;
 	public int solutionType = 0;
@@ -33,10 +35,16 @@ public class GameManager : MonoBehaviour {
 	private Cell swapFirstCell;
 	private Cell swapSecondCell;
 
+	private Quaternion originalWoodenBoardRotation, inverseWoodenBoardRotation, desiredRotation;
+
 	public delegate void OnLoadFileAction(int N);
-	public static event OnLoadFileAction OnLoadFile; 
+	public static event OnLoadFileAction OnLoadFile;
+
+	private float elaspedTime;
+	private float rotationSpeed = 0.5f;
 
 	void Start() {
+		elaspedTime = 0f;
 		parser = new Parser();
 		solution = null;
 
@@ -57,9 +65,23 @@ public class GameManager : MonoBehaviour {
 		oppositeMoveDirection.Add(BoardManager.MoveDirection.Left, BoardManager.MoveDirection.Right);
 		oppositeMoveDirection.Add(BoardManager.MoveDirection.Up, BoardManager.MoveDirection.Down);
 		oppositeMoveDirection.Add(BoardManager.MoveDirection.Down, BoardManager.MoveDirection.Up);
+
+		originalWoodenBoardRotation = woodenBoard.transform.rotation;
+		inverseWoodenBoardRotation = originalWoodenBoardRotation * Quaternion.Euler(Vector3.up * 180f);
+		Debug.Log(originalWoodenBoardRotation);
+		desiredRotation = originalWoodenBoardRotation;
 	}
 
 	void Update() {
+
+		//Debug.Log(woodenBoard.transform.localEulerAngles);
+
+		//woodenBoard.transform.Rotate(new Vector3(0f, 1f, 0f), Space.Self);
+		if (Quaternion.Angle(woodenBoard.transform.rotation, desiredRotation) > 0.1f) {
+			elaspedTime += Time.deltaTime * rotationSpeed;
+			woodenBoard.transform.rotation = Quaternion.Lerp(woodenBoard.transform.rotation, desiredRotation, elaspedTime);
+		}
+
 		if (needToUpdateNbStep) {
 			needToUpdateNbStep = false;
 			nbStep.text = solutionNextMoves.Count.ToString();
@@ -168,7 +190,24 @@ public class GameManager : MonoBehaviour {
 		// Create a event in the board manager to update the step to solution counter
 	}
 
+	public void GoToSettings() {
+		//woodenBoard.transform.Rotate(new Vector3(90f, 0f, 0f));
+		//woodenBoard.transform.rotation = inverseWoodenBoardRotation;
+		elaspedTime = 0f;
+		desiredRotation = inverseWoodenBoardRotation;
+		tray.Close();
+		tray.Lock();
+	}
+
 	private void Solve(List<List<int>> input) {
+
+		solutionNextMoves.Clear();
+		solutionPrevMoves.Clear();
+		boardManager.ClearMovements();
+		if (solution != null) {
+			solution.Clear();
+		}
+		nbStep.text = "0";
 
 		Thread serverCommunicationThread = new Thread(new ThreadStart(() => {
 			solution = client.CallServer(input);
