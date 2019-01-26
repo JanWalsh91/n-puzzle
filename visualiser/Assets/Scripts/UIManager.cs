@@ -9,16 +9,18 @@ public class UIManager : MonoBehaviour {
 	public Dropdown sizeDropdown;
 	public InputField hostInputField;
 	public InputField portInputField;
-
+	public RectTransform errorPanel;
+	public Text errorMessage;
 	public GameManager gameManager;
 
 	private Client client;
+	private Animator animator;
 
 
 	void Start() {
-		gameManager = GameObject.FindObjectOfType<GameManager>();
+		gameManager = FindObjectOfType<GameManager>();
 
-		client = GameObject.FindObjectOfType<Client>();
+		client = FindObjectOfType<Client>();
 
 		List<string> options = new List<string>();
 		for (int i = 3; i < 8; i++) {
@@ -31,6 +33,8 @@ public class UIManager : MonoBehaviour {
 
 		hostInputField.onValueChanged.AddListener(delegate { OnHostChange(); });
 		portInputField.onValueChanged.AddListener(delegate { OnPortChange(); });
+
+		animator = errorPanel.GetComponent<Animator>();
 	}
 
 	void OnEnable() {
@@ -58,5 +62,11 @@ public class UIManager : MonoBehaviour {
 
 	public void OnPortChange() {
 		client.portNum = int.Parse(portInputField.text);
+	}
+
+	public void DisplayError(string message) {
+		errorMessage.text = "Error: " + message;
+		Debug.Log("Set Trigger");
+		animator.SetTrigger("Display");
 	}
 }

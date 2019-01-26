@@ -10,7 +10,15 @@ public class Client: MonoBehaviour {
 
 	public int portNum = 2000;
 	public string hostName = "localhost";
+
 	public BoardManager boardManager;
+	//public UIManager uiManager;
+
+	public string errorMessage;
+
+	void Start() {
+		errorMessage = null;
+	}
 
 	public List<string> CallServer(List<List<int>> input) {
 		
@@ -38,6 +46,8 @@ public class Client: MonoBehaviour {
 		} catch (Exception e) {
 			// TODO: Exception?
 			Debug.Log("Connection error: " + e.Message);
+			//uiManager.DisplayError(e.Message);
+			errorMessage = e.Message;
 		}
 		return null;
 	}

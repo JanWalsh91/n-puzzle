@@ -13,6 +13,7 @@ public class GameManager : MonoBehaviour {
 	public BoardManager boardManager;
 	public Client client;
 	public Text nbStep;
+	public UIManager uiManager;
 
 	private Parser parser;
 	private List<string> solution;
@@ -52,6 +53,11 @@ public class GameManager : MonoBehaviour {
 		if (needToUpdateNbStep) {
 			needToUpdateNbStep = false;
 			nbStep.text = solutionNextMoves.Count.ToString();
+		}
+
+		if (client.errorMessage != null) {
+			uiManager.DisplayError(client.errorMessage);
+			client.errorMessage = null;
 		}
 
 		if (Input.GetKeyDown(KeyCode.RightArrow)) {
@@ -106,11 +112,10 @@ public class GameManager : MonoBehaviour {
 			solution = client.CallServer(input);
 
 			if (solution == null) {
-				Debug.Log("Null solution, woups");
+				return;
 			}
 
 			for (int i = 0; i < solution.Count; i++) {
-				//Debug.Log("Solution: " + solution[i]);
 				solutionNextMoves.AddFirst(stringToMoveDirection[solution[i]]);
 			}
 			needToUpdateNbStep = true;
@@ -126,10 +131,9 @@ public class GameManager : MonoBehaviour {
 	public void OpenFile() {
 		string fileName = EditorUtility.OpenFilePanel("Open n-puzzle file", ".", null);
 		List<List<int>> input = parser.SolveFromFile(fileName);
+		// TODO: handle unsupported size
 		boardManager.N = input.Count;
 		boardManager.BuildBoard(input);
 		OnLoadFile(input.Count);
-		// TODO: handle unsupported size
-		Solve(input);
 	}
 }
