@@ -1,11 +1,13 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Tray : MonoBehaviour {
 
 	private Animator animator;
 	public bool locked = false;
+	public GraphicRaycaster trayGraphicRaycaster;
 
 	void Start () {
 		animator = GetComponent<Animator>();
@@ -17,23 +19,27 @@ public class Tray : MonoBehaviour {
 	}
 
 	void OnMouseEnter() {
-		Debug.Log("MouseEnter");
+		//Debug.Log("MouseEnter");
 		Open();
 	}
 
 	void OnMouseExit() {
-		Debug.Log("MouseExit");
+		//Debug.Log("MouseExit");
 		Close();
 	}
 
 	public void Open() {
 		if (!locked) {
 			animator.SetTrigger("Open");
+			trayGraphicRaycaster.enabled = true;
 		}
 	}
 
 	public void Close() {
-		animator.SetTrigger("Close");
+		if (!locked) {
+			animator.SetTrigger("Close");
+			trayGraphicRaycaster.enabled = false;
+		}
 	}
 
 	public void Lock() {
