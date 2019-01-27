@@ -650,7 +650,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1859270597}
+      - m_Target: {fileID: 1029097100}
         m_MethodName: OpenFile
         m_Mode: 1
         m_Arguments:
@@ -6440,6 +6440,9 @@ MonoBehaviour:
   sideTrayAnimator: {fileID: 49967438}
   heuristicFunction: 0
   solutionType: 0
+  originalWoodenBoardRotation: {x: 0, y: 0, z: 0, w: 0}
+  inverseWoodenBoardRotation: {x: 0, y: 0, z: 0, w: 0}
+  desiredRotation: {x: 0, y: 0, z: 0, w: 0}
 --- !u!4 &1859270598
 Transform:
   m_ObjectHideFlags: 0

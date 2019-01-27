@@ -23,7 +23,7 @@ public class GameManager : MonoBehaviour {
 	public int heuristicFunction = 0;
 	public int solutionType = 0;
 
-	private Parser parser;
+	public Parser parser;
 	private List<string> solution;
 
 	private LinkedList<BoardManager.MoveDirection> solutionNextMoves;
@@ -37,10 +37,7 @@ public class GameManager : MonoBehaviour {
 	private Cell swapFirstCell;
 	private Cell swapSecondCell;
 
-	private Quaternion originalWoodenBoardRotation, inverseWoodenBoardRotation, desiredRotation;
-
-	public delegate void OnLoadFileAction(int N);
-	public static event OnLoadFileAction OnLoadFile;
+	public Quaternion originalWoodenBoardRotation, inverseWoodenBoardRotation, desiredRotation;
 
 	private float elaspedTime;
 	private float rotationSpeed = 0.5f;
@@ -72,11 +69,23 @@ public class GameManager : MonoBehaviour {
 		inverseWoodenBoardRotation = originalWoodenBoardRotation * Quaternion.Euler(Vector3.up * 180f);
 		Debug.Log(originalWoodenBoardRotation);
 		desiredRotation = originalWoodenBoardRotation;
+
+		//woodenBoard.transform.rotation = inverseWoodenBoardRotation;
+		//boardManager.N = 4;
+		//boardManager.BuildReversedBoard(null);
+		//woodenBoard.transform.rotation = originalWoodenBoardRotation;
 	}
 
 	void Update() {
 
 		//Debug.Log(woodenBoard.transform.localEulerAngles);
+
+		//TODO: To remove
+		if (Input.GetKeyDown(KeyCode.Comma)) {
+			GoToSettings();
+		} else if (Input.GetKeyDown(KeyCode.Period)) {
+			BackToBoard();
+		}
 
 		//woodenBoard.transform.Rotate(new Vector3(0f, 1f, 0f), Space.Self);
 		if (Quaternion.Angle(woodenBoard.transform.rotation, desiredRotation) > 0.1f) {
@@ -243,14 +252,5 @@ public class GameManager : MonoBehaviour {
 
 	public void SolveBoard() {
 		Solve(boardManager.values);
-	}
-
-	public void OpenFile() {
-		string fileName = EditorUtility.OpenFilePanel("Open n-puzzle file", ".", null);
-		List<List<int>> input = parser.SolveFromFile(fileName);
-		// TODO: handle unsupported size
-		boardManager.N = input.Count;
-		boardManager.BuildBoard(input);
-		OnLoadFile(input.Count);
 	}
 }

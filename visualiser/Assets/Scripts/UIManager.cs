@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-
+using UnityEditor;
 
 public class UIManager : MonoBehaviour {
 
@@ -39,21 +39,13 @@ public class UIManager : MonoBehaviour {
 		animator = errorPanel.GetComponent<Animator>();
 	}
 
-	void OnEnable() {
-		GameManager.OnLoadFile += UpdateValue;
-	}
-
-	void OnDisable() {
-		GameManager.OnLoadFile -= UpdateValue;
-	}
-
 	public void UpdateValue(int N) {
 		sizeDropdown.value = N - 3;
 	}
 
 	public void OnSizeChange() {
 		gameManager.boardManager.N = sizeDropdown.value + 3;
-		gameManager.boardManager.BuildBoard(null);
+		gameManager.boardManager.BuildReversedBoard(null);
 	}
 
 	public void OnHostChange() {
@@ -75,5 +67,29 @@ public class UIManager : MonoBehaviour {
 	public void DisplayError(string message) {
 		errorMessage.text = "Error: " + message;
 		animator.SetTrigger("Display");
+	}
+
+	public void OpenFile() {
+		string fileName = EditorUtility.OpenFilePanel("Open n-puzzle file", ".", "np");
+		if (fileName == null || fileName.Length == 0) {
+			return;
+		}
+		List<List<int>> input = null;
+		try {
+			input = gameManager.parser.SolveFromFile(fileName);
+		} catch (ParserException pe) {
+			DisplayError(pe.Message);
+			return;
+		}
+
+		if (input.Count > 7) {
+			DisplayError("Unsupported size");
+			return;
+		}
+
+		sizeDropdown.value = input.Count - 3;
+		gameManager.boardManager.N = input.Count;
+		Debug.Log("New N: " + gameManager.boardManager.N);
+		gameManager.boardManager.BuildReversedBoard(input);
 	}
 }

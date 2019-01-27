@@ -40,26 +40,26 @@ public class BoardManager : MonoBehaviour {
 		movements = new Queue<MoveDirection>();
 	}
 
-	//private void OnDrawGizmos() {
-	//	Gizmos.DrawSphere(new Vector3(-1.5f, 0.05f, 1.5f), 0.25f);
-	//}
+	private void OnDrawGizmos() {
+		Gizmos.DrawSphere(new Vector3(-1.5f, 0.05f, 1.5f), 0.25f);
+		Gizmos.DrawSphere(new Vector3(1.5f, -0.05f, 1.5f), 0.25f);
+	}
 
 	public void BuildBoard(List<List<int>> input) {
 		Vector3 size = cellPrefab.GetComponent<Renderer>().bounds.size;
-
-		//Vector3 size = cellPrefab.transform.localScale;
+		Vector3 scale = cellPrefab.transform.localScale;
 
 		for (int i = 3; i < N; i++) {
 			Debug.Log("[i: " + i + "] = " + size.x);
 			size.x /= 1.35f;
 			size.z /= 1.35f;
+
+			scale.x /= 1.35f;
+			scale.y /= 1.35f;
 		}
 	
 		cellSize.x = size.x;
 		cellSize.y = size.z;
-
-		Debug.Log("size: " + size);
-		Debug.Log("Renderer size: " + cellPrefab.GetComponent<Renderer>().bounds.size);
 
 		Vector3 spawnPosition = new Vector3(-1.5f, 0.05f, 1.5f);
 
@@ -71,7 +71,6 @@ public class BoardManager : MonoBehaviour {
 		Quaternion rotation = cellPrefab.transform.rotation;
 
 		foreach (Transform item in transform) {
-			//rotation = item.transform.rotation;
 			Destroy(item.gameObject);
 		}
 
@@ -86,7 +85,7 @@ public class BoardManager : MonoBehaviour {
 			values.Add(new List<int>());
 			for (int j = 0; j < N; j++) {
 				GameObject instance = Instantiate(cellPrefab, spawnPosition, rotation, transform);
-				//instance.transform.localScale = size;
+				instance.transform.localScale = scale;
 				if (input == null) {
 					instance.GetComponentInChildren<TextMesh>().text = (i == N - 1 && j == N - 1) ? "0" : (i * N + j + 1).ToString();
 					values[i].Add((i == N - 1 && j == N - 1) ? 0 : (i * N + j + 1));
@@ -107,6 +106,14 @@ public class BoardManager : MonoBehaviour {
 			spawnPosition.z -= cellSize.y + gap;
 		}
 		GetClosestCells();
+	}
+
+	public void BuildReversedBoard(List<List<int>> input) {
+		GameManager gameManager = FindObjectOfType<GameManager>();
+		transform.parent.rotation = gameManager.originalWoodenBoardRotation;
+		BuildBoard(input);
+		transform.parent.rotation = gameManager.inverseWoodenBoardRotation;
+
 	}
 
 	public void AddMovements(params MoveDirection[] moves) {
