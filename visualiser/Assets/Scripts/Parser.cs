@@ -14,7 +14,6 @@ public class Parser {
 		int currentLine = 0;
 
 		for (int i = 0; i < lines.Length; i++) {
-			//Console.WriteLine(lines[i]);
 
 			lines[i] = lines[i].Trim();
 			//Console.WriteLine("-" + lines[i] + "-");

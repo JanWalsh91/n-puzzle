@@ -68,8 +68,10 @@ public class BoardManager : MonoBehaviour {
 		spawnPosition.x += gap / 2f + size.x / 2.0f;
 		spawnPosition.z -= gap / 2f + size.z / 2.0f;
 
+		Quaternion rotation = cellPrefab.transform.rotation;
 
 		foreach (Transform item in transform) {
+			//rotation = item.transform.rotation;
 			Destroy(item.gameObject);
 		}
 
@@ -83,7 +85,7 @@ public class BoardManager : MonoBehaviour {
 		for (int i = 0; i < N; i++) {
 			values.Add(new List<int>());
 			for (int j = 0; j < N; j++) {
-				GameObject instance = Instantiate(cellPrefab, spawnPosition, cellPrefab.transform.rotation, transform);
+				GameObject instance = Instantiate(cellPrefab, spawnPosition, rotation, transform);
 				//instance.transform.localScale = size;
 				if (input == null) {
 					instance.GetComponentInChildren<TextMesh>().text = (i == N - 1 && j == N - 1) ? "0" : (i * N + j + 1).ToString();
@@ -194,7 +196,7 @@ public class BoardManager : MonoBehaviour {
 		}
 	}
 
-	void GetClosestCells() {
+	public void GetClosestCells() {
 		Collider[] colliders = Physics.OverlapSphere(emptyCell.transform.position, cellSize.x + (cellSize.y / 4.0f) * 2, LayerMask.GetMask("Cell"));
 		left = right = up = down = null;
 		Debug.Log("Sphere size: " + (cellSize.x + (cellSize.y / 4.0f)));

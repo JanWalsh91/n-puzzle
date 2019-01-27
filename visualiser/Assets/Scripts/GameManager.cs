@@ -7,6 +7,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Threading;
 using System.Linq;
+using UnityEngine.EventSystems;
 
 public class GameManager : MonoBehaviour {
 
@@ -17,6 +18,7 @@ public class GameManager : MonoBehaviour {
 	public UIManager uiManager;
 	public Camera cam;
 	public Tray tray;
+	public Animator sideTrayAnimator;
 
 	public int heuristicFunction = 0;
 	public int solutionType = 0;
@@ -84,12 +86,14 @@ public class GameManager : MonoBehaviour {
 
 		if (needToUpdateNbStep) {
 			needToUpdateNbStep = false;
+			sideTrayAnimator.SetTrigger("Close");
 			nbStep.text = solutionNextMoves.Count.ToString();
 		}
 
 		if (client.errorMessage != null) {
 			uiManager.DisplayError(client.errorMessage);
 			client.errorMessage = null;
+			sideTrayAnimator.SetTrigger("Close");
 		}
 
 		if (Input.GetKeyDown(KeyCode.RightArrow)) {
@@ -111,8 +115,10 @@ public class GameManager : MonoBehaviour {
 			Ray ray = cam.ScreenPointToRay(Input.mousePosition);
 
 			if (Physics.Raycast(ray, out hit)) {
+
 				if (hit.collider.CompareTag("Cell")) {
-					Debug.Log(hit.collider.gameObject);
+					Debug.Log("Event System stuff: " + EventSystem.current.IsPointerOverGameObject());
+					Debug.Log("Will Swap: " + hit.collider.gameObject);
 					if (swapFirstCell == null) {
 						swapFirstCell = hit.collider.GetComponent<Cell>();
 						// If hit the empty cell, do nothing... Or..?
@@ -154,6 +160,9 @@ public class GameManager : MonoBehaviour {
 
 							swapFirstCell = null;
 							swapSecondCell = null;
+							boardManager.GetClosestCells();
+
+
 						} else {
 							swapSecondCell = null;
 						}
@@ -199,6 +208,12 @@ public class GameManager : MonoBehaviour {
 		tray.Lock();
 	}
 
+	public void BackToBoard() {
+		elaspedTime = 0f;
+		desiredRotation = originalWoodenBoardRotation;
+		tray.Unlock();
+	}
+
 	private void Solve(List<List<int>> input) {
 
 		solutionNextMoves.Clear();
@@ -209,6 +224,7 @@ public class GameManager : MonoBehaviour {
 		}
 		nbStep.text = "0";
 
+		sideTrayAnimator.SetTrigger("Open");
 		Thread serverCommunicationThread = new Thread(new ThreadStart(() => {
 			solution = client.CallServer(input);
 
