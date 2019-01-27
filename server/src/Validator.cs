@@ -102,6 +102,24 @@ namespace server.src {
 			if (numberOfInversions % 2 != numberOfInversionsSolution % 2) {
 				throw new ValidatorException("Unsolvable puzzle");
 			}
+
+			//if (this.sideLength % 2 == 1) {
+			//	if (numberOfInversions % 2 == 1) {
+			//		throw new ValidatorException("Unsolvable puzzle (1)");
+			//	}
+			//} else {
+			//	//If N is even, puzzle instance is solvable if
+			//	//the blank is on an even row counting from the bottom(second-last, fourth - last, etc.) and number of inversions is odd.
+			//	if (this.onEvenRow && numberOfInversions % 2 == 0) {
+			//		Console.WriteLine("Inersions: " + numberOfInversions + " onEvenRow: " + onEvenRow);
+			//		throw new ValidatorException("Unsolvable puzzle (2)");
+			//	} else if (!this.onEvenRow && numberOfInversions % 2 == 1) {
+			//		//the blank is on an odd row counting from the bottom(last, third-last, fifth - last, etc.) and number of inversions is even.
+			//		if (numberOfInversions % 2 != 0) {
+			//			throw new ValidatorException("Unsolvable puzzle (3)");
+			//		}
+			//	}
+			//}
 		}
 
 		private int CountNumberOfRegularInversions(List<List<int>> toCheck) {
