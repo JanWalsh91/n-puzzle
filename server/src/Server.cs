@@ -56,26 +56,34 @@ namespace server.src {
 					//TODO: handle, something very bad happened in that case
 					Console.WriteLine(e.Message);
 				}
-				AStar aStar = null;
+				//AStar aStar = null;
+				IDA ida = null;
 
 				Board b1 = new Board(input);
 				Board b2 = solutionTypeList[parameters[0]](input.Count);
 				
 				try {
-					aStar = new AStar(ref b1, ref b2);
+					//aStar = new AStar(ref b1, ref b2);
+					ida = new IDA(ref b1, ref b2);
 				} catch (OutOfMemoryException oome) {
 					Console.WriteLine(":( " + oome.Message);
 				}
 
 				// TODO: Verify that
-				aStar.SetHeuristicFunction((HeuristicFunction.Types)parameters[1]);
+				//aStar.SetHeuristicFunction((HeuristicFunction.Types)parameters[1]);
+				ida.SetHeuristicFunction((HeuristicFunction.Types)parameters[1]);
 
-				List<Node> solution = aStar.Resolve();
-				
+				//List<Node> solution = aStar.Resolve();
+				List<Node> solution = ida.Resolve();
+
+
 				// Send response. Probably need try catch
 				if (solution != null) {
-					aStar.PrintSolution(solution);
-					bf.Serialize(ns, aStar.GetStringSolution(solution));
+					//aStar.PrintSolution(solution);
+					ida.PrintSolution(solution);
+					//bf.Serialize(ns, aStar.GetStringSolution(solution));
+					//bf.Serialize(ns, aStar.GetStringSolution(solution));
+					bf.Serialize(ns, ida.GetStringSolution(solution));
 					//aStar.PrintStringSolution(solution);
 				}
 				

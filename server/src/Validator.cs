@@ -21,7 +21,6 @@ namespace server.src {
 			ValidateShape();
 			ValidateNumbers();
 			ValidateInversions(solutionType);
-			Console.WriteLine("Done here");
 		}
 
 		private void ValidateShape() {

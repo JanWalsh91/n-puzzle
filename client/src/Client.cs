@@ -26,14 +26,20 @@ public class TcpTimeClient {
 			input = new List<List<int>>();
 
 			// Solvable
-			//input.Add(new List<int>(new int[] { 2, 4, 1 }));
-			//input.Add(new List<int>(new int[] { 6, 5, 3 }));
-			//input.Add(new List<int>(new int[] { 8, 7, 0 }));
+			input.Add(new List<int>(new int[] { 2, 4, 1 }));
+			input.Add(new List<int>(new int[] { 6, 5, 3 }));
+			input.Add(new List<int>(new int[] { 8, 7, 0 }));
 
-			input.Add(new List<int>(new int[] { 1, 2, 3 }));
-			input.Add(new List<int>(new int[] { 4, 5, 8 }));
-			input.Add(new List<int>(new int[] { 6, 7, 0 }));
+			//input.Add(new List<int>(new int[] { 1, 2, 3 }));
+			//input.Add(new List<int>(new int[] { 4, 5, 8 }));
+			//input.Add(new List<int>(new int[] { 6, 0, 7 }));
+		
+
+			//input.Add(new List<int>(new int[] { 1, 2, 3 }));
+			//input.Add(new List<int>(new int[] { 8, 6, 4 }));
+			//input.Add(new List<int>(new int[] { 7, 5, 0 }));
 		}
+
 
 		//Validator validator = new Validator(input);
 
@@ -50,7 +56,7 @@ public class TcpTimeClient {
 
 			NetworkStream ns = client.GetStream();
 
-			input.Add(new List<int>{1, 0});
+			input.Add(new List<int>{0, 0});
 
 			BinaryFormatter bf = new BinaryFormatter();
 
