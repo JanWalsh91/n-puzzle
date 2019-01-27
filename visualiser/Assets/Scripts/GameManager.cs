@@ -67,7 +67,7 @@ public class GameManager : MonoBehaviour {
 
 		originalWoodenBoardRotation = woodenBoard.transform.rotation;
 		inverseWoodenBoardRotation = originalWoodenBoardRotation * Quaternion.Euler(Vector3.up * 180f);
-		Debug.Log(originalWoodenBoardRotation);
+		//Debug.Log(originalWoodenBoardRotation);
 		desiredRotation = originalWoodenBoardRotation;
 
 		//woodenBoard.transform.rotation = inverseWoodenBoardRotation;
@@ -234,6 +234,11 @@ public class GameManager : MonoBehaviour {
 		nbStep.text = "0";
 
 		sideTrayAnimator.SetTrigger("Open");
+
+		foreach (var item in input) {
+			Debug.Log(String.Join(" - ", item));
+		}
+
 		Thread serverCommunicationThread = new Thread(new ThreadStart(() => {
 			solution = client.CallServer(input);
 

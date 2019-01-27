@@ -56,7 +56,7 @@ public class TcpTimeClient {
 
 			NetworkStream ns = client.GetStream();
 
-			input.Add(new List<int>{0, 0});
+			input.Add(new List<int>{1, 0});
 
 			BinaryFormatter bf = new BinaryFormatter();
 

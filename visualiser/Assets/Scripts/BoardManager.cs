@@ -50,7 +50,7 @@ public class BoardManager : MonoBehaviour {
 		Vector3 scale = cellPrefab.transform.localScale;
 
 		for (int i = 3; i < N; i++) {
-			Debug.Log("[i: " + i + "] = " + size.x);
+			//Debug.Log("[i: " + i + "] = " + size.x);
 			size.x /= 1.35f;
 			size.z /= 1.35f;
 
@@ -75,20 +75,40 @@ public class BoardManager : MonoBehaviour {
 		}
 
 		if (input != null) {
+			values = null;
 			values = input;
 		} else {
 			values = new List<List<int>>();
 		}
 
+		if (input != null) {
+			Debug.Log(" === BuildBoard Input === BEGIN");
+			foreach (var item in input) {
+				Debug.Log(System.String.Join(" - ", item));
+			}
+		}
+		Debug.Log(" === BuildBoard Input === END");
+
+		Debug.Log("Values: ");
+		foreach (var item in values) {
+			Debug.Log(System.String.Join(" - ", item));
+		}
+
+
 		cells = new List<Cell>();
+		Debug.Log("Building a " + N + " x " + N + " board.");
 		for (int i = 0; i < N; i++) {
-			values.Add(new List<int>());
+			Debug.Log("Adding a new List<int>");
+			if (input == null) {
+				values.Add(new List<int>());
+			}
 			for (int j = 0; j < N; j++) {
 				GameObject instance = Instantiate(cellPrefab, spawnPosition, rotation, transform);
 				instance.transform.localScale = scale;
 				if (input == null) {
 					instance.GetComponentInChildren<TextMesh>().text = (i == N - 1 && j == N - 1) ? "0" : (i * N + j + 1).ToString();
 					values[i].Add((i == N - 1 && j == N - 1) ? 0 : (i * N + j + 1));
+					Debug.Log("Adding an int: " + ((i == N - 1 && j == N - 1) ? 0 : (i * N + j + 1)));
 				} else {
 					instance.GetComponentInChildren<TextMesh>().text = input[i][j].ToString();
 				}
@@ -105,11 +125,26 @@ public class BoardManager : MonoBehaviour {
 			spawnPosition.x = -1.5f + gap / 2f + size.x / 2.0f;
 			spawnPosition.z -= cellSize.y + gap;
 		}
+
+		Debug.Log(" === BuildBoard Values, After Eveything === BEGIN");
+		foreach (var item in values) {
+			Debug.Log(System.String.Join(" - ", item));
+		}
+		Debug.Log(" === BuildBoard Values, After Eveything === END");
+
+
 		GetClosestCells();
 	}
 
 	public void BuildReversedBoard(List<List<int>> input) {
-		GameManager gameManager = FindObjectOfType<GameManager>();
+
+		Debug.Log(" === BuildReversedBoard === BEGIN");
+		foreach (var item in input) {
+			Debug.Log(System.String.Join(" - ", item));
+		}
+		Debug.Log(" === BuildReversedBoard === END");
+
+		GameManager gameManager = FindObjectOfType<GameManager>(); // TODO
 		transform.parent.rotation = gameManager.originalWoodenBoardRotation;
 		BuildBoard(input);
 		transform.parent.rotation = gameManager.inverseWoodenBoardRotation;
@@ -206,8 +241,8 @@ public class BoardManager : MonoBehaviour {
 	public void GetClosestCells() {
 		Collider[] colliders = Physics.OverlapSphere(emptyCell.transform.position, cellSize.x + (cellSize.y / 4.0f) * 2, LayerMask.GetMask("Cell"));
 		left = right = up = down = null;
-		Debug.Log("Sphere size: " + (cellSize.x + (cellSize.y / 4.0f)));
-		Debug.Log(colliders.Length);
+		//Debug.Log("Sphere size: " + (cellSize.x + (cellSize.y / 4.0f)));
+		//Debug.Log(colliders.Length);
 		foreach (var item in colliders) {
 			if (item.transform.Equals(emptyCell.transform)) {
 				continue;

@@ -7,13 +7,15 @@ namespace server.src {
 	public class Validator {
 
 		List<List<int>> input;
+		List<List<int>> solution;
 		int size;									// N * N - 1
 		int sideLength;								// N
 		List<int> listOfNumbers = new List<int>();
 		bool onEvenRow = false;
 
-		public Validator(List<List<int>> input) {
+		public Validator(List<List<int>> input, List<List<int>> solution) {
 			this.input = input;
+			this.solution = solution;
 		}
 
 		public void Validate(Board.SolutionType solutionType) {
@@ -68,38 +70,45 @@ namespace server.src {
 
 		private void ValidateInversions(Board.SolutionType solutionType) {
 
-			int numberOfInversions = solutionType == Board.SolutionType.Snail ? CountNumberOfSnailInversions() : CountNumberOfRegularInversions();
+			//int numberOfInversions = solutionType == Board.SolutionType.Snail ? CountNumberOfSnailInversions(input) : CountNumberOfRegularInversions(input);
+			//int numberOfInversionsSolution = solutionType == Board.SolutionType.Snail ? CountNumberOfSnailInversions(solution) : CountNumberOfRegularInversions(solution);
 
-			if (numberOfInversions == 0) {
-				return;
-			}
+			int numberOfInversions = CountNumberOfRegularInversions(input);
+			int numberOfInversionsSolution = CountNumberOfRegularInversions(solution);
 
-			//If N is odd, then puzzle instance is solvable if number of inversions is even in the input state.
-			if (this.sideLength % 2 == 1) {
-				if (numberOfInversions % 2 == 1) {
-					throw new ValidatorException("Unsolvable puzzle (1)");
-				}
-			} else {
-				//If N is even, puzzle instance is solvable if
-				//the blank is on an even row counting from the bottom(second-last, fourth - last, etc.) and number of inversions is odd.
-				if (this.onEvenRow && numberOfInversions % 2 == 0) {
-					Console.WriteLine("Inersions: " + numberOfInversions + " onEvenRow: " + onEvenRow);
-					throw new ValidatorException("Unsolvable puzzle (2)");
-				} else if (!this.onEvenRow && numberOfInversions % 2 == 1) {
-					//the blank is on an odd row counting from the bottom(last, third-last, fifth - last, etc.) and number of inversions is even.
-					if (numberOfInversions % 2 != 0) {
-						throw new ValidatorException("Unsolvable puzzle (3)");
-					}	
+			int start0Index = -1;
+			int goal0Index = -1;
+
+			for (int i = 0; i < input.Count; i++) {
+				start0Index = input[i].FindIndex(c => c == 0);
+				if (start0Index > -1) {
+					start0Index = i * input.Count + start0Index;
+					break;
 				}
 			}
+			for (int i = 0; i < solution.Count; i++) {
+				goal0Index = solution[i].FindIndex(c => c == 0);
+				if (goal0Index > -1) {
+					goal0Index = i * solution.Count + goal0Index;
+					break;
+				}
+			}
+			if (input.Count % 2 == 0) { // In this case, the row of the '0' tile matters
+				numberOfInversions += start0Index / input.Count;
+				numberOfInversionsSolution += goal0Index / solution.Count;
+			}
 
+
+			if (numberOfInversions % 2 != numberOfInversionsSolution % 2) {
+				throw new ValidatorException("Unsolvable puzzle");
+			}
 		}
 
-		private int CountNumberOfRegularInversions() {
+		private int CountNumberOfRegularInversions(List<List<int>> toCheck) {
 			int num = 0;
 
 			List<int> inputList = new List<int>();
-			foreach (var item in input) {
+			foreach (var item in toCheck) {
 				inputList.AddRange(item);
 			}
 
@@ -110,60 +119,63 @@ namespace server.src {
 					}
 				}
 			}
-			return num;
-		}
-
-		private int CountNumberOfSnailInversions() {
-			int num = 0;
-
-			int deltaX = 1;
-			int deltaY = 0;
-			int x = 0;
-			int y = 0;
-
-			int stepsTaken = 1;
-			int stepsToTake = sideLength;
-			bool repeat = false;
-
-			List<int> unrolledSnail = new List<int>();
-
-			while (stepsToTake > 0) {
-				unrolledSnail.Add(input[y][x]);
-				x += deltaX;
-				y += deltaY;
-				stepsTaken++;
-
-				if (stepsTaken == stepsToTake) {
-					Board.UpdateDirection(ref deltaX, ref deltaY);
-					if (!repeat) {
-						stepsToTake--;
-						repeat = true;
-					} else {
-						repeat = false;
-					}
-					stepsTaken = 0;
-				}
-			}
-			unrolledSnail.Add(input[y][x]);
-
-			//for (int z = 0; z < unrolledSnail.Count; z++) {
-			//	Console.WriteLine(unrolledSnail[z]);
-			//}
-
-			for (int i = 0; i < sideLength * sideLength - 1; i++) {
-				for (int j = i + 1; j < sideLength * sideLength; j++) {
-					// count pairs(i, j) such that i appears 
-					// before j, but i > j. 
-					if (unrolledSnail[j] != 0 && unrolledSnail[i] != 0 && unrolledSnail[i] > unrolledSnail[j]) {
-						num++;
-					}
-				}
-			}
-
 			Console.WriteLine("Number of inversions: " + num);
-
 			return num;
 		}
+
+		//private int CountNumberOfSnailInversions(List<List<int>> toCheck) {
+		//	int num = 0;
+
+		//	int deltaX = 1;
+		//	int deltaY = 0;
+		//	int x = 0;
+		//	int y = 0;
+
+		//	int stepsTaken = 1;
+		//	int stepsToTake = sideLength;
+		//	bool repeat = false;
+
+		//	List<int> unrolledSnail = new List<int>();
+
+		//	while (stepsToTake > 0) {
+		//		unrolledSnail.Add(toCheck[y][x]);
+		//		x += deltaX;
+		//		y += deltaY;
+		//		stepsTaken++;
+
+		//		if (stepsTaken == stepsToTake) {
+		//			Board.UpdateDirection(ref deltaX, ref deltaY);
+		//			if (!repeat) {
+		//				stepsToTake--;
+		//				repeat = true;
+		//			} else {
+		//				repeat = false;
+		//			}
+		//			stepsTaken = 0;
+		//		}
+		//	}
+		//	unrolledSnail.Add(toCheck[y][x]);
+
+		//	Console.WriteLine("=== Unrolled snail === ");
+		//	for (int z = 0; z < unrolledSnail.Count; z++) {
+		//		Console.WriteLine(unrolledSnail[z]);
+		//	}
+
+		//	for (int i = 0; i < sideLength * sideLength - 1; i++) {
+		//		for (int j = i + 1; j < sideLength * sideLength; j++) {
+		//			// count pairs(i, j) such that i appears 
+		//			// before j, but i > j. 
+		//			if (unrolledSnail[j] != 0 && unrolledSnail[i] != 0 && unrolledSnail[i] > unrolledSnail[j]) {
+		//				//Console.WriteLine("Inversion: " + unrolledSnail[i] + " > " + unrolledSnail[j]);
+		//				num++;
+		//			}
+		//		}
+		//	}
+
+		//	Console.WriteLine("Number of inversions: " + num);
+
+		//	return num;
+		//}
 
 
 		//public static void Main () {

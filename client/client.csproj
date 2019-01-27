@@ -5,7 +5,7 @@
     <ProjectGuid>{060B381C-2618-47B5-B5E7-5327BBCE5CCB}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <NoStandardLibraries>false</NoStandardLibraries>
-    <AssemblyName>ConsoleApplication</AssemblyName>
+    <AssemblyName>client</AssemblyName>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>

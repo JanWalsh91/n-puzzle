@@ -17,6 +17,7 @@ public class UIManager : MonoBehaviour {
 
 	private Client client;
 	private Animator animator;
+	private bool rebuild = true;
 
 
 	void Start() {
@@ -45,7 +46,9 @@ public class UIManager : MonoBehaviour {
 
 	public void OnSizeChange() {
 		gameManager.boardManager.N = sizeDropdown.value + 3;
-		gameManager.boardManager.BuildReversedBoard(null);
+		if (rebuild) {
+			gameManager.boardManager.BuildReversedBoard(null);
+		}
 	}
 
 	public void OnHostChange() {
@@ -77,19 +80,25 @@ public class UIManager : MonoBehaviour {
 		List<List<int>> input = null;
 		try {
 			input = gameManager.parser.SolveFromFile(fileName);
+			//gameManager.boardManager.values = input;
 		} catch (ParserException pe) {
 			DisplayError(pe.Message);
 			return;
 		}
 
+		//foreach (var item in input) {
+		//	Debug.Log(System.String.Join(" - ", item));
+		//}
+
 		if (input.Count > 7) {
 			DisplayError("Unsupported size");
 			return;
 		}
-
+		rebuild = false;
 		sizeDropdown.value = input.Count - 3;
+		rebuild = true;
 		gameManager.boardManager.N = input.Count;
-		Debug.Log("New N: " + gameManager.boardManager.N);
+		//Debug.Log("New N: " + gameManager.boardManager.N);
 		gameManager.boardManager.BuildReversedBoard(input);
 	}
 }

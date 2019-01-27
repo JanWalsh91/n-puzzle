@@ -44,8 +44,20 @@ namespace server.src {
 				foreach (var item in input) {
 					Console.WriteLine(String.Join(" - ", item));
 				}
-				
-				Validator validator = new Validator(input);
+
+				Board bSol = solutionTypeList[parameters[0]](input.Count);
+
+				Console.WriteLine("Solution Board:" );
+				bSol.PrintBoard();
+
+				Console.WriteLine("Original Board: ");
+				foreach (var item in input) {
+					Console.WriteLine(String.Join(" - ", item));
+				}
+
+				Console.WriteLine("Solution Type: " + parameters[0]);
+
+				Validator validator = new Validator(input, bSol.Get2DList());
 				try {
 					validator.Validate((Board.SolutionType)parameters[0]);
 				} catch (ValidatorException ve) {
@@ -55,16 +67,17 @@ namespace server.src {
 				} catch (Exception e) {
 					//TODO: handle, something very bad happened in that case
 					Console.WriteLine(e.Message);
+					continue;
 				}
+
 				//AStar aStar = null;
 				IDA ida = null;
 
 				Board b1 = new Board(input);
-				Board b2 = solutionTypeList[parameters[0]](input.Count);
-				
+
 				try {
 					//aStar = new AStar(ref b1, ref b2);
-					ida = new IDA(ref b1, ref b2);
+					ida = new IDA(ref b1, ref bSol);
 				} catch (OutOfMemoryException oome) {
 					Console.WriteLine(":( " + oome.Message);
 				}
