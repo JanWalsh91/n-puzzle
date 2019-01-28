@@ -8,9 +8,12 @@ using Crosstales.FB;
 
 public class UIManager : MonoBehaviour {
 
-	public Dropdown sizeDropdown;
+	public Slider speed;
+	public Dropdown algorithmType;
 	public Dropdown heuristicFunction;
 	public Dropdown solutionType;
+	public Dropdown sizeDropdown;
+	public Toggle greedySearch;
 	public InputField hostInputField;
 	public InputField portInputField;
 	public RectTransform errorPanel;
@@ -20,17 +23,18 @@ public class UIManager : MonoBehaviour {
 	private Client client;
 	private Animator animator;
 	private bool rebuild = true;
+	private Text greedySearchText;
 
 	//[DllImport("user32.dll")]
 	//private static extern void OpenFileDialog();
 
 	void Start() {
 		gameManager = FindObjectOfType<GameManager>();
-
 		client = FindObjectOfType<Client>();
+		greedySearchText = greedySearch.GetComponentInChildren<Text>();
 
 		List<string> options = new List<string>();
-		for (int i = 3; i < 8; i++) {
+		for (int i = 3; i < 6; i++) {
 			options.Add(i.ToString() + " x " + i.ToString());
 		}
 		sizeDropdown.AddOptions(options);
@@ -63,6 +67,12 @@ public class UIManager : MonoBehaviour {
 		client.portNum = int.Parse(portInputField.text);
 	}
 
+	public void OnAlgorithmTypeChange() {
+		gameManager.algorithmType = algorithmType.value;
+		greedySearch.interactable = algorithmType.value == 0;
+		greedySearchText.color = new Color(greedySearchText.color.r, greedySearchText.color.g, greedySearchText.color.b, algorithmType.value == 0 ? 1f : 0.2f);
+	}
+
 	public void OnHeuristicFunctionChange() {
 		gameManager.heuristicFunction = heuristicFunction.value;
 	}
@@ -71,9 +81,17 @@ public class UIManager : MonoBehaviour {
 		gameManager.solutionType = solutionType.value;
 	}
 
+	public void OnGreedySearchChange() {
+		gameManager.isGreedy = System.Convert.ToInt32(greedySearch.isOn);
+	}
+
 	public void DisplayError(string message) {
 		errorMessage.text = "Error: " + message;
 		animator.SetTrigger("Display");
+	}
+
+	public void OnSpeedChange() {
+		gameManager.boardManager.movingSpeed = 0.1f / speed.value;
 	}
 
 	public void OpenFile() {

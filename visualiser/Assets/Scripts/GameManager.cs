@@ -20,8 +20,13 @@ public class GameManager : MonoBehaviour {
 	public Tray tray;
 	public Animator sideTrayAnimator;
 
+	public int algorithmType = 0;
 	public int heuristicFunction = 0;
 	public int solutionType = 0;
+	public int isGreedy = 0;
+
+	public Material swapCellOriginalMaterial;
+	public Material swapCellSelectedMaterial;
 
 	public Parser parser;
 	private List<string> solution;
@@ -36,11 +41,14 @@ public class GameManager : MonoBehaviour {
 
 	private Cell swapFirstCell;
 	private Cell swapSecondCell;
+	//private MeshRenderer swapFirstCellMeshRenderer;
+	//private MeshRenderer swapSecondCellMeshRenderer;
 
 	public Quaternion originalWoodenBoardRotation, inverseWoodenBoardRotation, desiredRotation;
 
 	private float elaspedTime;
 	private float rotationSpeed = 0.5f;
+	private bool inSettings = false;
 
 	void Start() {
 		elaspedTime = 0f;
@@ -78,13 +86,15 @@ public class GameManager : MonoBehaviour {
 
 	void Update() {
 
-		//Debug.Log(woodenBoard.transform.localEulerAngles);
-
 		//TODO: To remove
 		if (Input.GetKeyDown(KeyCode.Comma)) {
 			GoToSettings();
 		} else if (Input.GetKeyDown(KeyCode.Period)) {
 			BackToBoard();
+		}
+
+		if (Input.GetKeyDown(KeyCode.Escape)) {
+			Application.Quit();
 		}
 
 		//woodenBoard.transform.Rotate(new Vector3(0f, 1f, 0f), Space.Self);
@@ -105,18 +115,20 @@ public class GameManager : MonoBehaviour {
 			sideTrayAnimator.SetTrigger("Close");
 		}
 
-		if (Input.GetKeyDown(KeyCode.RightArrow)) {
-			boardManager.AddMovements(BoardManager.MoveDirection.Right);
-			//solutionNextMoves.AddLast(BoardManager.MoveDirection.Left);
-		} else if (Input.GetKeyDown(KeyCode.LeftArrow)) {
-			boardManager.AddMovements(BoardManager.MoveDirection.Left);
-			//solutionNextMoves.AddLast(BoardManager.MoveDirection.Right);
-		} else if (Input.GetKeyDown(KeyCode.UpArrow)) {
-			boardManager.AddMovements(BoardManager.MoveDirection.Up);
-			//solutionNextMoves.AddLast(BoardManager.MoveDirection.Down);
-		} else if (Input.GetKeyDown(KeyCode.DownArrow)) {
-			boardManager.AddMovements(BoardManager.MoveDirection.Down);
-			//solutionNextMoves.AddLast(BoardManager.MoveDirection.Up);
+		if (!inSettings) {
+			if (Input.GetKeyDown(KeyCode.RightArrow)) {
+				boardManager.AddMovements(BoardManager.MoveDirection.Right);
+				//solutionNextMoves.AddLast(BoardManager.MoveDirection.Left);
+			} else if (Input.GetKeyDown(KeyCode.LeftArrow)) {
+				boardManager.AddMovements(BoardManager.MoveDirection.Left);
+				//solutionNextMoves.AddLast(BoardManager.MoveDirection.Right);
+			} else if (Input.GetKeyDown(KeyCode.UpArrow)) {
+				boardManager.AddMovements(BoardManager.MoveDirection.Up);
+				//solutionNextMoves.AddLast(BoardManager.MoveDirection.Down);
+			} else if (Input.GetKeyDown(KeyCode.DownArrow)) {
+				boardManager.AddMovements(BoardManager.MoveDirection.Down);
+				//solutionNextMoves.AddLast(BoardManager.MoveDirection.Up);
+			}
 		}
 
 		if (Input.GetMouseButtonDown(0)) {
@@ -133,11 +145,15 @@ public class GameManager : MonoBehaviour {
 						// If hit the empty cell, do nothing... Or..?
 						if (swapFirstCell.value == 0) {
 							swapFirstCell = null;
+							//swapFirstCell.GetComponent<MeshRenderer>().material = swapCellOriginalMaterial;
+						} else {
+							swapFirstCell.GetComponent<MeshRenderer>().material = swapCellSelectedMaterial;
 						}
 					} else {
 						swapSecondCell = hit.collider.GetComponent<Cell>();
-						// TODO: thing and try
+
 						if (swapSecondCell.value != 0) {
+							swapFirstCell.GetComponent<MeshRenderer>().material = swapCellOriginalMaterial;
 							Vector3 tmpPos = swapSecondCell.transform.position;
 							swapSecondCell.transform.position = swapFirstCell.transform.position;
 							swapFirstCell.transform.position = tmpPos;
@@ -211,6 +227,7 @@ public class GameManager : MonoBehaviour {
 	public void GoToSettings() {
 		//woodenBoard.transform.Rotate(new Vector3(90f, 0f, 0f));
 		//woodenBoard.transform.rotation = inverseWoodenBoardRotation;
+		inSettings = true;
 		elaspedTime = 0f;
 		desiredRotation = inverseWoodenBoardRotation;
 		tray.Close();
@@ -221,6 +238,7 @@ public class GameManager : MonoBehaviour {
 		elaspedTime = 0f;
 		desiredRotation = originalWoodenBoardRotation;
 		tray.Unlock();
+		inSettings = false;
 	}
 
 	private void Solve(List<List<int>> input) {
