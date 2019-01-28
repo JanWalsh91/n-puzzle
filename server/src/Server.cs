@@ -91,6 +91,10 @@ namespace server.src {
 				List<int> parameters = input[input.Count - 1];
 				input.RemoveAt(input.Count - 1);
 
+				foreach (var item in parameters) {
+					Console.WriteLine(item);
+				}
+
 				foreach (var item in input) {
 					Console.WriteLine(String.Join(" - ", item));
 				}
@@ -106,6 +110,7 @@ namespace server.src {
 				}
 
 				Console.WriteLine("Solution Type: " + parameters[1]);
+
 
 				Validator validator = new Validator(input, bSol.Get2DList());
 				try {
