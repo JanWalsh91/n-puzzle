@@ -54,10 +54,9 @@ public class TcpTimeClient {
 
 			// parameters[0]: Algo Type (0, 1)
 			// parameters[1]: Solution Type (0, 1)
-			// parameters[2]: Heuristic Function (0, 1, 2, 3) MANHATTAN, OKLOP, EUCLIDIAN, UNIFORMCOST
+			// parameters[2]: Heuristic Function (0, 1, 2, 3, 4) { MANHATTAN, EUCLIDIAN, OKCLOP, GWYNEFIS, UNIFORMCOST }
 			// parameters[3]: Greedy Search (0, 1) (0: no, 1: yes, only for A*)
-			input.Add(new List<int>{0, 1, 1, 0});
-
+			input.Add(new List<int>{0, 0, 0, 0});
 
 			BinaryFormatter bf = new BinaryFormatter();
 

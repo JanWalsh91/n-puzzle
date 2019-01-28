@@ -4,21 +4,22 @@ using System.Collections.Generic;
 namespace server.src {
 	public class HeuristicFunction {
 
-		public enum Types { MANHATTAN, OKLOP, EUCLIDIAN, UNIFORMCOST };
+		public enum Types { MANHATTAN, EUCLIDIAN, OKCLOP, GWYNEFIS, UNIFORMCOST };
 
 		public delegate float heuristicDelegate(Board board);
 		public heuristicDelegate heuristic;
 
-		heuristicDelegate[] heuristics = new heuristicDelegate[4];
+		heuristicDelegate[] heuristics = new heuristicDelegate[5];
 
 		Board solution;
 
 		public HeuristicFunction(ref Board solution) {
 			this.solution = solution;
 			this.heuristics[0] = this.Manhattan;
-			this.heuristics[1] = this.Oklop;
-			this.heuristics[2] = this.Euclidian;
-			this.heuristics[3] = this.UniformCost;
+			this.heuristics[1] = this.Euclidian;
+			this.heuristics[2] = this.Oklop;
+			this.heuristics[3] = this.Gwynefis;
+			this.heuristics[4] = this.UniformCost;
 			this.heuristic = heuristics[1];
 		}
 
@@ -66,16 +67,33 @@ namespace server.src {
 				int sml = Math.Min(hDist, vDist);
 				int hMvt = 5 * big - (big > 1 ? 4 : 0);
 				int dMvt = (big - sml) * 6 - ((big - sml) > 1 ? 2 : 0);
+				cost += hMvt + dMvt;
+			}
+
+			return cost;
+		}
+
+		private float Gwynefis(Board board) {
+			float cost = 0.0f;
+			List<int> list = board.GetList();
+
+			for (int i = 0; i < board.GetSize() * board.GetSize(); i++) {
+				int i2 = this.solution.GetIndexOf(list[i]);
+				int hDist = Math.Abs(i2 % board.GetSize() - i % board.GetSize());
+				int vDist = Math.Abs(i2 / board.GetSize() - i / board.GetSize());
+				int big = Math.Max(hDist, vDist);
+				int sml = Math.Min(hDist, vDist);
+				int hMvt = 5 * big - (big > 1 ? 4 : 0);
+				int dMvt = (big - sml) * 6 - ((big - sml) > 1 ? 2 : 0);
 				int add = hMvt + dMvt;
-				if (add == 0) { add -= 1000; }
-				cost += add;
+				cost += add + (add == 0 ? ReduceCostForCorrectPiece() : 0);
 			}
 
 			return cost + ReduceCostPerCompleteLine(board);
 		}
 
-		private float UniformCost(Board board) {
-			return 0.0f;
+		private float ReduceCostForCorrectPiece() {
+			return -1000;
 		}
 
 		private float ReduceCostPerCompleteLine(Board board) {
@@ -95,8 +113,12 @@ namespace server.src {
 					}
 				}
 				if (ok) { reducedCost -= size * 100; }
-}
+			}
 			return reducedCost;
+		}
+
+		private float UniformCost(Board board) {
+			return 0.0f;
 		}
 	}
 }
