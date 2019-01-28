@@ -41,6 +41,9 @@ namespace server.src {
 			// Add Complexity In Size
 			pathToSolution.Add("Complexity In Size: " + algorithm.GetSizeComplexity());
 
+			// Add Elasped Time
+			pathToSolution.Add("Elapsed Time: " + algorithm.GetElaspedMS() + "ms");
+
 			return pathToSolution;
 		}
 
@@ -92,7 +95,7 @@ namespace server.src {
 					Console.WriteLine(String.Join(" - ", item));
 				}
 
-				Board bSol = solutionTypeList[parameters[0]](input.Count);
+				Board bSol = solutionTypeList[parameters[1]](input.Count);
 
 				Console.WriteLine("Solution Board:" );
 				bSol.PrintBoard();
@@ -102,7 +105,7 @@ namespace server.src {
 					Console.WriteLine(String.Join(" - ", item));
 				}
 
-				Console.WriteLine("Solution Type: " + parameters[0]);
+				Console.WriteLine("Solution Type: " + parameters[1]);
 
 				Validator validator = new Validator(input, bSol.Get2DList());
 				try {
@@ -153,6 +156,7 @@ namespace server.src {
 
 				if (solution != null) {
 					PrintSolution(solution);
+					Console.WriteLine("Elapsed Time: " + algorithm.GetElaspedMS() + "ms");
 					bf.Serialize(ns, GetStringSolution(solution, algorithm));
 				}
 				

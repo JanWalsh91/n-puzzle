@@ -26,9 +26,9 @@ public class TcpTimeClient {
 			input = new List<List<int>>();
 
 			// Solvable
-			input.Add(new List<int>(new int[] { 2, 4, 1 }));
-			input.Add(new List<int>(new int[] { 6, 5, 3 }));
-			input.Add(new List<int>(new int[] { 8, 7, 0 }));
+			//input.Add(new List<int>(new int[] { 2, 4, 1 }));
+			//input.Add(new List<int>(new int[] { 6, 5, 3 }));
+			//input.Add(new List<int>(new int[] { 8, 7, 0 }));
 
 			//input.Add(new List<int>(new int[] { 1, 2, 3 }));
 			//input.Add(new List<int>(new int[] { 4, 5, 8 }));
@@ -38,6 +38,11 @@ public class TcpTimeClient {
 			//input.Add(new List<int>(new int[] { 1, 2, 3 }));
 			//input.Add(new List<int>(new int[] { 8, 6, 4 }));
 			//input.Add(new List<int>(new int[] { 7, 5, 0 }));
+
+			input.Add(new List<int>(new int[] { 2, 4, 1, 9 }));
+			input.Add(new List<int>(new int[] { 6, 5, 3, 10 }));
+			input.Add(new List<int>(new int[] { 8, 7, 0, 11 }));
+			input.Add(new List<int>(new int[] { 12, 13, 15, 14 }));
 		}
 
 
@@ -51,7 +56,7 @@ public class TcpTimeClient {
 			// parameters[1]: Solution Type (0, 1)
 			// parameters[2]: Heuristic Function (0, 1, 2, 3) MANHATTAN, OKLOP, EUCLIDIAN, UNIFORMCOST
 			// parameters[3]: Greedy Search (0, 1) (0: no, 1: yes, only for A*)
-			input.Add(new List<int>{0, 0, 0, 1});
+			input.Add(new List<int>{0, 1, 1, 0});
 
 
 			BinaryFormatter bf = new BinaryFormatter();

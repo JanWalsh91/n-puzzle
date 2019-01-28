@@ -16,6 +16,8 @@ namespace server.src {
 		private int currentSize = 1;
 
 		public override List<Node> Resolve(CancellationToken ct) {
+			this.StartTimer();
+
 			Node root = new Node(ref this.input);
 			root.g = 0;
 			root.f = heuristicFunction.heuristic(root.state);
@@ -28,8 +30,10 @@ namespace server.src {
 				if (Math.Abs(t) < 0.001f) {
 					List<Node> finalPath = new List<Node>(this.path);
 					finalPath.Reverse();
+					this.StopTimer();
 					return finalPath; // FOUND
 				} else if (float.IsPositiveInfinity(t)) {
+					this.StopTimer();
 					return new List<Node>(); // NOT FOUND
 				}
 				bound = t;

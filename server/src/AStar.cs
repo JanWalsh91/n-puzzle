@@ -42,10 +42,12 @@ namespace server.src {
 				current = current.cameFrom;
 			}
 			totalPath.Reverse();
+			this.StopTimer();
 			return totalPath;
 		}
 
 		public override List<Node> Resolve(CancellationToken ct) {
+			this.StartTimer();
 
 			closedSet = new Hashtable();
 
@@ -139,6 +141,7 @@ namespace server.src {
 					Console.WriteLine("==========");
 				}
 			}
+			this.StopTimer();
 			return null;
 		}
 
