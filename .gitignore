@@ -1,6 +1,7 @@
 run
 *.exe*
 *.DS_Store*
+*.app
 
 *.np
 
