@@ -97,6 +97,23 @@ public class GameManager : MonoBehaviour {
 			Application.Quit();
 		}
 
+		if (Input.GetKeyDown(KeyCode.Keypad3)) {
+			boardManager.N = 3;
+			boardManager.BuildBoard(null);
+		}
+		if (Input.GetKeyDown(KeyCode.Keypad4)) {
+			boardManager.N = 4;
+			boardManager.BuildBoard(null);
+		}
+		if (Input.GetKeyDown(KeyCode.Keypad5)) {
+			boardManager.N = 5;
+			boardManager.BuildBoard(null);
+		}
+		if (Input.GetKeyDown(KeyCode.Keypad6)) {
+			boardManager.N = 6;
+			boardManager.BuildBoard(null);
+		}
+
 		//woodenBoard.transform.Rotate(new Vector3(0f, 1f, 0f), Space.Self);
 		if (Quaternion.Angle(woodenBoard.transform.rotation, desiredRotation) > 0.1f) {
 			elaspedTime += Time.deltaTime * rotationSpeed;
@@ -104,6 +121,7 @@ public class GameManager : MonoBehaviour {
 		}
 
 		if (needToUpdateNbStep) {
+			Debug.Log("Need To Update Step");
 			needToUpdateNbStep = false;
 			sideTrayAnimator.SetTrigger("Close");
 			nbStep.text = solutionNextMoves.Count.ToString();
@@ -253,9 +271,9 @@ public class GameManager : MonoBehaviour {
 
 		sideTrayAnimator.SetTrigger("Open");
 
-		foreach (var item in input) {
-			Debug.Log(String.Join(" - ", item));
-		}
+		//foreach (var item in input) {
+		//	Debug.Log(String.Join(" - ", item));
+		//}
 
 		Thread serverCommunicationThread = new Thread(new ThreadStart(() => {
 			solution = client.CallServer(input);
@@ -263,10 +281,11 @@ public class GameManager : MonoBehaviour {
 			if (solution == null) {
 				return;
 			}
-
+			Debug.Log("Solution Count: " + solution.Count);
 			for (int i = 0; i < solution.Count; i++) {
 				solutionNextMoves.AddFirst(stringToMoveDirection[solution[i]]);
 			}
+			Debug.Log("Setting the boolean to true");
 			needToUpdateNbStep = true;
 		}));
 		serverCommunicationThread.IsBackground = true;

@@ -54,7 +54,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1799323227049282}
   m_LocalRotation: {x: -1, y: -0, z: 0, w: 0}
-  m_LocalPosition: {x: 0, y: 0, z: 0.02}
+  m_LocalPosition: {x: 0, y: -0, z: 0.001}
   m_LocalScale: {x: 0.000234375, y: 0.000234375, z: 0.00046875}
   m_Children: []
   m_Father: {fileID: 4270137252940440}
@@ -67,8 +67,8 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1761859348965296}
   m_LocalRotation: {x: -0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 0.093, y: 0.271, z: -0.677}
-  m_LocalScale: {x: 90, y: 90, z: 4}
+  m_LocalPosition: {x: 0.42617607, y: 0.224, z: 0.095}
+  m_LocalScale: {x: 90, y: 90, z: 90}
   m_Children:
   - {fileID: 4161591182651162}
   m_Father: {fileID: 0}
@@ -150,7 +150,7 @@ MeshFilter:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1761859348965296}
-  m_Mesh: {fileID: 4300000, guid: abf1fae6fec9e439fb6772b15d62efff, type: 3}
+  m_Mesh: {fileID: 4300000, guid: 5861b980b493240baaffdf63d3c0df32, type: 3}
 --- !u!65 &65626816954321252
 BoxCollider:
   m_ObjectHideFlags: 1
@@ -161,8 +161,8 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 0.009999999, y: 0.010000001, z: 0.022660067}
-  m_Center: {x: 0, y: 0, z: 0.006330033}
+  m_Size: {x: 0.009999999, y: 0.010000001, z: 0.002266007}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!102 &102595112636874942
 TextMesh:
   serializedVersion: 3

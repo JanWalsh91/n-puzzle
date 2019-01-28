@@ -44,7 +44,10 @@ public class Client: MonoBehaviour {
 			if (solution != null && solution.Count > 0 && solution[0].Equals("Error")) {
 				errorMessage = solution[1];
 				// TODO: Maybe raise an exception... Thread stuff?
-			} else {
+			}
+
+			if (solution.Count > 4) {
+				solution.RemoveAt(solution.Count - 1);
 				solution.RemoveAt(solution.Count - 1);
 				solution.RemoveAt(solution.Count - 1);
 				solution.RemoveAt(solution.Count - 1);

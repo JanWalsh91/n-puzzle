@@ -35,7 +35,7 @@ public class BoardManager : MonoBehaviour {
 	}
 
 	void Start() {
-
+		N = 4;
 		BuildBoard(null);
 		movements = new Queue<MoveDirection>();
 	}
@@ -46,28 +46,45 @@ public class BoardManager : MonoBehaviour {
 	}
 
 	public void BuildBoard(List<List<int>> input) {
-		Vector3 size = cellPrefab.GetComponent<Renderer>().bounds.size;
+		//Vector3 size = cellPrefab.GetComponent<Renderer>().bounds.size;
 		Vector3 scale = cellPrefab.transform.localScale;
 
-		for (int i = 3; i < N; i++) {
-			//Debug.Log("[i: " + i + "] = " + size.x);
-			size.x /= 1.35f;
-			size.z /= 1.35f;
+		Vector3 size = Vector3.one;// - (Vector3.one / 2f);
 
-			scale.x /= 1.35f;
-			scale.y /= 1.35f;
+		//float scaleFactor = 1f - 1f / 4f - 1f / 6f;
+
+
+		Debug.Log("Size: " + cellPrefab.GetComponent<Renderer>().bounds.size);
+
+		float scaleFactor = 1f;
+		float divide = 4f;
+		for (int i = 3; i < N; i++) {
+			//size.x /= 1.4f;
+			//size.z /= 1.4f;
+
+			//scale.x /= 1.3f;
+			//scale.y /= 1.3f;
+
+			scaleFactor -= 1f / divide;
+			divide += 2f;
 		}
+		scale *= scaleFactor;
 	
-		cellSize.x = size.x;
-		cellSize.y = size.z;
+		cellSize.x = size.x * scaleFactor;
+		cellSize.y = size.z * scaleFactor;
 
 		Vector3 spawnPosition = new Vector3(-1.5f, 0.05f, 1.5f);
 
-		float gap = (3 - cellSize.x * N) / (float)N + 0.01f; // 3 == board size
+		//float gap = (3 - cellSize.x * N) / (float)N + 0.01f; // 3 == board size
+		//float gap = (2.9f - cellSize.x * N) / (float)N - 0.01f; // 3 == board size
 
-		spawnPosition.x += gap / 2f + size.x / 2.0f;
-		spawnPosition.z -= gap / 2f + size.z / 2.0f;
+		float gap = 0.0f;
 
+		spawnPosition.x += gap / 2f + cellSize.x / 2f;
+		spawnPosition.z -= gap / 2f + cellSize.x / 2f;
+
+
+		Debug.Log("Gap: " + gap);
 		Quaternion rotation = cellPrefab.transform.rotation;
 
 		foreach (Transform item in transform) {
@@ -81,34 +98,19 @@ public class BoardManager : MonoBehaviour {
 			values = new List<List<int>>();
 		}
 
-		if (input != null) {
-			Debug.Log(" === BuildBoard Input === BEGIN");
-			foreach (var item in input) {
-				Debug.Log(System.String.Join(" - ", item));
-			}
-		}
-		Debug.Log(" === BuildBoard Input === END");
-
-		Debug.Log("Values: ");
-		foreach (var item in values) {
-			Debug.Log(System.String.Join(" - ", item));
-		}
-
-
 		cells = new List<Cell>();
-		Debug.Log("Building a " + N + " x " + N + " board.");
 		for (int i = 0; i < N; i++) {
-			Debug.Log("Adding a new List<int>");
 			if (input == null) {
 				values.Add(new List<int>());
 			}
+			spawnPosition.x = -1.5f - gap / 2f + cellSize.x / 2f;
 			for (int j = 0; j < N; j++) {
 				GameObject instance = Instantiate(cellPrefab, spawnPosition, rotation, transform);
 				instance.transform.localScale = scale;
 				if (input == null) {
 					instance.GetComponentInChildren<TextMesh>().text = (i == N - 1 && j == N - 1) ? "0" : (i * N + j + 1).ToString();
 					values[i].Add((i == N - 1 && j == N - 1) ? 0 : (i * N + j + 1));
-					Debug.Log("Adding an int: " + ((i == N - 1 && j == N - 1) ? 0 : (i * N + j + 1)));
+					//Debug.Log("Adding an int: " + ((i == N - 1 && j == N - 1) ? 0 : (i * N + j + 1)));
 				} else {
 					instance.GetComponentInChildren<TextMesh>().text = input[i][j].ToString();
 				}
@@ -121,16 +123,17 @@ public class BoardManager : MonoBehaviour {
 					instance.GetComponentInChildren<TextMesh>().gameObject.SetActive(false);
 					emptyCell = cells[cells.Count - 1];
 				}
+				spawnPosition.x += gap;
 			}
-			spawnPosition.x = -1.5f + gap / 2f + size.x / 2.0f;
+
 			spawnPosition.z -= cellSize.y + gap;
 		}
 
-		Debug.Log(" === BuildBoard Values, After Eveything === BEGIN");
-		foreach (var item in values) {
-			Debug.Log(System.String.Join(" - ", item));
-		}
-		Debug.Log(" === BuildBoard Values, After Eveything === END");
+		//Debug.Log(" === BuildBoard Values, After Eveything === BEGIN");
+		//foreach (var item in values) {
+		//	Debug.Log(System.String.Join(" - ", item));
+		//}
+		//Debug.Log(" === BuildBoard Values, After Eveything === END");
 
 
 		GetClosestCells();
