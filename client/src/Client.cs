@@ -41,22 +41,18 @@ public class TcpTimeClient {
 		}
 
 
-		//Validator validator = new Validator(input);
-
-		//try {
-		//	validator.Validate((Board.SolutionType)1);
-		//} catch (Exception e) {
-		//	Console.WriteLine(e.Message);
-		//	return 1;
-		//}
-
-
 		try {
 			TcpClient client = new TcpClient(hostName, portNum);
 
 			NetworkStream ns = client.GetStream();
 
-			input.Add(new List<int>{0, 1});
+
+			// parameters[0]: Algo Type (0, 1)
+			// parameters[1]: Solution Type (0, 1)
+			// parameters[2]: Heuristic Function (0, 1, 2) (2 is Uniform Search)
+			// parameters[3]: Greedy Search (0, 1) (1: yes, only for A*)
+			input.Add(new List<int>{0, 0, 0, 0});
+
 
 			BinaryFormatter bf = new BinaryFormatter();
 

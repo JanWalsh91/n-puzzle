@@ -62,6 +62,7 @@
     <Compile Include="src\Validator.cs" />
     <Compile Include="src\Parser.cs" />
     <Compile Include="src\IDA.cs" />
+    <Compile Include="src\Algorithm.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="src\Server.cs" />

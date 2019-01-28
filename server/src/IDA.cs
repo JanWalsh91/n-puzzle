@@ -1,13 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace server.src {
-	public class IDA {
-
-		Board input;
-		Board solution;
-
-		HeuristicFunction heuristicFunction;
+	public class IDA : Algorithm{
 
 		Stack<Node> path;
 
@@ -17,12 +13,9 @@ namespace server.src {
 			heuristicFunction = new HeuristicFunction(ref solution);
 		}
 
-		public void SetHeuristicFunction(HeuristicFunction.Types type) {
-			heuristicFunction.SetHeuristic(type);
-		}
+		private int currentSize = 1;
 
-		public List<Node> Resolve() {
-			Console.WriteLine("IDA Resolve");
+		public override List<Node> Resolve(CancellationToken ct) {
 			Node root = new Node(ref this.input);
 			root.g = 0;
 			root.f = heuristicFunction.heuristic(root.state);
@@ -31,74 +24,68 @@ namespace server.src {
 			this.path = new Stack<Node>(new Node[] { root });
 
 			while(true) {
-				float t = this.Search(0, bound);
+				float t = this.Search(0, bound, ct);
 				if (Math.Abs(t) < 0.001f) {
-					Console.WriteLine("FOUND RES");
 					List<Node> finalPath = new List<Node>(this.path);
 					finalPath.Reverse();
 					return finalPath; // FOUND
 				} else if (float.IsPositiveInfinity(t)) {
-					Console.WriteLine("NOT FOUND RES");
 					return new List<Node>(); // NOT FOUND
 				}
 				bound = t;
 			}
 		}
 
-		float Search(float g, float bound) {
-			Console.WriteLine("IDA Search.");
-			Console.WriteLine("\tBound: " + bound);
+		private float Search(float g, float bound, CancellationToken ct) {
+
+			if (ct.IsCancellationRequested) {
+				ct.ThrowIfCancellationRequested();
+			}
+
 			Node node = path.Peek();
-			Console.WriteLine("\tf: " + node.f);
 			float f = node.f;
 
 			if (f > bound) {
-				Console.WriteLine("Return f: " + f);
 				return f;
 			}
 			if (this.solution.Equals(node.state)) {
-				Console.WriteLine("FOUND end state");
 				return 0; // FOUND
 			}
 			float min = float.PositiveInfinity;
 			List<Node> neighbors = GetNeighbors(ref node);
 
-			Console.WriteLine("Neighbor Loop: " + neighbors.Count + " neighbors");
+			currentSize += neighbors.Count;
+
 			for (int i = 0; i < neighbors.Count; i++) {
 				if (!path.Contains(neighbors[i])) {
-					Console.WriteLine("\tNeihgbor: " + i);
 					neighbors[i].g = node.g + 1;
 					neighbors[i].f = neighbors[i].g + heuristicFunction.heuristic(neighbors[i].state);
 					path.Push(neighbors[i]);
-					float t = this.Search(0, bound);
+					UpdateTimeComplexity();
+					float t = this.Search(0, bound, ct);
 					if (Math.Abs(t) < 0.001f) {
-						Console.WriteLine("\tFOUND");
 						return 0; // FOUND
 					}
 					if (t < min) {
-						Console.WriteLine("\tUpdate min to t: " + t);
 						min = t;
 					}
 					path.Pop();
 				}
 			}
+			UpdateSizeComplexity();
+			currentSize -= neighbors.Count;
 			return min;
 		}
 
-		public List<Node> GetNeighbors(ref Node current) {
-			Console.WriteLine("GetNeighbors");
+		private List<Node> GetNeighbors(ref Node current) {
 			List<string> hashes = current.GetNeighborHashes();
-			//Console.WriteLine("GET NEIGHBORS. found " + hashes.Count);
-
 			List<Node> neighbors = new List<Node>();
 			List<Node> tmpPath = new List<Node>(path);
+
 			foreach (var hash in hashes) {
-				//Console.WriteLine("hash: " + hash);
 				if (tmpPath.Exists(x => x.hash == hash)) {
-					//Console.WriteLine("Contains " + hash);
 					neighbors.Add(tmpPath.Find(x => x.hash == hash));
 				} else {
-					//Console.WriteLine("NOT Contains " + hash);
 					Node node = new Node(hash);
 					neighbors.Add(node);
 				}
@@ -106,34 +93,14 @@ namespace server.src {
 			return neighbors;
 		}
 
-		public void PrintSolution(List<Node> moves) {
-			if (moves == null) {
-				Console.WriteLine("No Solution Found");
-			} else {
-				foreach (var move in moves) {
-					move.state.PrintBoard();
-				}
+		private void UpdateSizeComplexity() {
+			if (currentSize > sizeComplexity) {
+				sizeComplexity = currentSize;
 			}
 		}
 
-		public List<string> GetStringSolution(List<Node> moves) {
-			List<string> pathToSolution = new List<string>();
-			int emptyCellIndex;
-			emptyCellIndex = moves[0].state.GetList().IndexOf(0);
-			moves.RemoveAt(0);
-
-			foreach (var move in moves) {
-				List<int> currentList = move.state.GetList();
-				int newEmptyCellIndex = currentList.IndexOf(0);
-				if (newEmptyCellIndex / move.state.GetSize() == emptyCellIndex / move.state.GetSize()) {
-					pathToSolution.Add(newEmptyCellIndex < emptyCellIndex ? "Right" : "Left");
-
-				} else {
-					pathToSolution.Add(newEmptyCellIndex < emptyCellIndex ? "Down" : "Up");
-				}
-				emptyCellIndex = newEmptyCellIndex;
-			}
-			return pathToSolution;
+		private void UpdateTimeComplexity() {
+			timeComplexity++;
 		}
 	}
 }

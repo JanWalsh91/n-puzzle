@@ -14,11 +14,54 @@ namespace server.src {
 		private const int port = 2000;
 		private delegate Board SolutionType(int N);
 
+		private static List<string> GetStringSolution(List<Node> moves, Algorithm algorithm) {
+			List<string> pathToSolution = new List<string>();
+			int emptyCellIndex;
+			emptyCellIndex = moves[0].state.GetList().IndexOf(0);
+			moves.RemoveAt(0);
+
+			foreach (var move in moves) {
+				List<int> currentList = move.state.GetList();
+				int newEmptyCellIndex = currentList.IndexOf(0);
+				if (newEmptyCellIndex / move.state.GetSize() == emptyCellIndex / move.state.GetSize()) {
+					pathToSolution.Add(newEmptyCellIndex < emptyCellIndex ? "Right" : "Left");
+
+				} else {
+					pathToSolution.Add(newEmptyCellIndex < emptyCellIndex ? "Down" : "Up");
+				}
+				emptyCellIndex = newEmptyCellIndex;
+			}
+
+			// Add Number of Moves
+			pathToSolution.Add("Number of Moves: " + pathToSolution.Count.ToString());
+
+			// Add Complexity In Time
+			pathToSolution.Add("Complexity In Time: " + algorithm.GetTimeComplexity());
+
+			// Add Complexity In Size
+			pathToSolution.Add("Complexity In Size: " + algorithm.GetSizeComplexity());
+
+			return pathToSolution;
+		}
+
+		private static void PrintSolution(List<Node> moves) {
+			if (moves == null) {
+				Console.WriteLine("No Solution Found");
+			} else {
+				foreach (var move in moves) {
+					move.state.PrintBoard();
+				}
+			}
+		}
+
 		public static int Main(String[] args) {
 			List<SolutionType> solutionTypeList = new List<SolutionType>{
 				Board.GetSnailSolution,
 				Board.GetRegularSolution
 			};
+
+
+			Algorithm algorithm = null;
 
 			bool done = false;
 
@@ -38,8 +81,10 @@ namespace server.src {
 
 				List<List<int>> input = (List<List<int>>)bf.Deserialize(ns);
 
-				// parameters[0]: Solution Type
-				// parameters[1]: Heuristic Function
+				// parameters[0]: Algo Type (0, 1)
+				// parameters[1]: Solution Type (0, 1)
+				// parameters[2]: Heuristic Function (0, 1, 2) (2 is Uniform Search)
+				// parameters[3]: Greedy Search (0, 1) (0: no, 1: yes, only for A*)
 				List<int> parameters = input[input.Count - 1];
 				input.RemoveAt(input.Count - 1);
 
@@ -61,7 +106,7 @@ namespace server.src {
 
 				Validator validator = new Validator(input, bSol.Get2DList());
 				try {
-					validator.Validate((Board.SolutionType)parameters[0]);
+					validator.Validate((Board.SolutionType)parameters[1]);
 				} catch (ValidatorException ve) {
 					Console.WriteLine(ve.Message);
 					bf.Serialize(ns, new List<string> { "Error", ve.Message });
@@ -72,21 +117,19 @@ namespace server.src {
 					continue;
 				}
 
-				AStar aStar = null;
-				//IDA ida = null;
-
 				Board b1 = new Board(input);
 
 				try {
-					aStar = new AStar(ref b1, ref bSol);
-					//ida = new IDA(ref b1, ref bSol);
+					if (parameters[0] == 0) {
+						algorithm = new AStar(ref b1, ref bSol);
+					} else if (parameters[0] == 1) {
+						algorithm = new IDA(ref b1, ref bSol);
+					}
 				} catch (OutOfMemoryException oome) {
 					Console.WriteLine(":( " + oome.Message);
 				}
 
-				// TODO: Verify that
-				aStar.SetHeuristicFunction((HeuristicFunction.Types)parameters[1]);
-				//ida.SetHeuristicFunction((HeuristicFunction.Types)parameters[1]);
+				algorithm.SetHeuristicFunction((HeuristicFunction.Types)parameters[2]);
 
 
 				List<Node> solution = null;
@@ -95,7 +138,7 @@ namespace server.src {
 				CancellationTokenSource tokenSource = new CancellationTokenSource();
 				CancellationToken token = tokenSource.Token;
 
-				var task = Task.Run(() => aStar.Resolve(token), token);
+				var task = Task.Run(() => algorithm.Resolve(token), token);
 
 				tokenSource.CancelAfter(TimeSpan.FromSeconds(30));
 				try {
@@ -109,14 +152,9 @@ namespace server.src {
 					tokenSource.Dispose();
 				}
 
-				// Send response. Probably need try catch
 				if (solution != null) {
-					//aStar.PrintSolution(solution);
-					//ida.PrintSolution(solution);
-					bf.Serialize(ns, aStar.GetStringSolution(solution));
-
-					//bf.Serialize(ns, ida.GetStringSolution(solution));
-					//aStar.PrintSolution(solution);
+					PrintSolution(solution);
+					bf.Serialize(ns, GetStringSolution(solution, algorithm));
 				}
 				
 				ns.Close();
