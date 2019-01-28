@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net.Sockets;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
@@ -35,6 +36,9 @@ public class Client: MonoBehaviour {
 			} catch (Exception e) {
 				Debug.Log(e.Message);
 			}
+
+			ns.ReadTimeout = 10000;
+
 			List<string> solution;
 			solution = (List<string>)bf.Deserialize(ns);
 			if (solution != null && solution.Count > 0 && solution[0].Equals("Error")) {
@@ -44,6 +48,8 @@ public class Client: MonoBehaviour {
 
 			client.Close();
 			return solution;
+		} catch (IOException) {
+			errorMessage = "Time out";
 		} catch (Exception e) {
 			errorMessage = e.Message;
 		}

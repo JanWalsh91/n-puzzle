@@ -138,11 +138,11 @@ public class BoardManager : MonoBehaviour {
 
 	public void BuildReversedBoard(List<List<int>> input) {
 
-		Debug.Log(" === BuildReversedBoard === BEGIN");
-		foreach (var item in input) {
-			Debug.Log(System.String.Join(" - ", item));
-		}
-		Debug.Log(" === BuildReversedBoard === END");
+		//Debug.Log(" === BuildReversedBoard === BEGIN");
+		//foreach (var item in input) {
+		//	Debug.Log(System.String.Join(" - ", item));
+		//}
+		//Debug.Log(" === BuildReversedBoard === END");
 
 		GameManager gameManager = FindObjectOfType<GameManager>(); // TODO
 		transform.parent.rotation = gameManager.originalWoodenBoardRotation;

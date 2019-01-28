@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Wintellect.PowerCollections;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace server.src {
 	public class AStar {
@@ -69,8 +71,8 @@ namespace server.src {
 			return totalPath;
 		}
 
-		public List<Node> Resolve() {
-			
+		public List<Node> Resolve(CancellationToken ct) {
+
 			closedSet = new Hashtable();
 
 			//openSet = new OrderedSet<Node>(new Comparer());
@@ -90,6 +92,9 @@ namespace server.src {
 			Node current = null;
 
 			while (openSet.Count > 0) {
+				if (ct.IsCancellationRequested) {
+					ct.ThrowIfCancellationRequested();
+				}
 				//Console.WriteLine("WHILE START");
 				if (!evalNeighbor) {
 					current = openSet.RemoveFirst();

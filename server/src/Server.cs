@@ -5,6 +5,8 @@ using System.Text;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace server.src {
 	public class Server {
@@ -70,48 +72,55 @@ namespace server.src {
 					continue;
 				}
 
-				//AStar aStar = null;
-				IDA ida = null;
+				AStar aStar = null;
+				//IDA ida = null;
 
 				Board b1 = new Board(input);
 
 				try {
-					//aStar = new AStar(ref b1, ref b2);
-					ida = new IDA(ref b1, ref bSol);
+					aStar = new AStar(ref b1, ref bSol);
+					//ida = new IDA(ref b1, ref bSol);
 				} catch (OutOfMemoryException oome) {
 					Console.WriteLine(":( " + oome.Message);
 				}
 
 				// TODO: Verify that
-				//aStar.SetHeuristicFunction((HeuristicFunction.Types)parameters[1]);
-				ida.SetHeuristicFunction((HeuristicFunction.Types)parameters[1]);
+				aStar.SetHeuristicFunction((HeuristicFunction.Types)parameters[1]);
+				//ida.SetHeuristicFunction((HeuristicFunction.Types)parameters[1]);
 
-				//List<Node> solution = aStar.Resolve();
-				List<Node> solution = ida.Resolve();
 
+				List<Node> solution = null;
+
+
+				CancellationTokenSource tokenSource = new CancellationTokenSource();
+				CancellationToken token = tokenSource.Token;
+
+				var task = Task.Run(() => aStar.Resolve(token), token);
+
+				tokenSource.CancelAfter(TimeSpan.FromSeconds(30));
+				try {
+					task.Wait();
+					solution = task.Result;
+				} catch (AggregateException e) {
+					foreach (var v in e.InnerExceptions) {
+						Console.WriteLine(e.Message + " " + v.Message);
+					}
+				} finally {
+					tokenSource.Dispose();
+				}
 
 				// Send response. Probably need try catch
 				if (solution != null) {
 					//aStar.PrintSolution(solution);
-					ida.PrintSolution(solution);
-					//bf.Serialize(ns, aStar.GetStringSolution(solution));
-					//bf.Serialize(ns, aStar.GetStringSolution(solution));
-					bf.Serialize(ns, ida.GetStringSolution(solution));
-					//aStar.PrintStringSolution(solution);
+					//ida.PrintSolution(solution);
+					bf.Serialize(ns, aStar.GetStringSolution(solution));
+
+					//bf.Serialize(ns, ida.GetStringSolution(solution));
+					//aStar.PrintSolution(solution);
 				}
 				
 				ns.Close();
 				client.Close();
-				
-				// Send response (additional data?)
-				//byte[] byteTime = Encoding.ASCII.GetBytes(DateTime.Now.ToString());
-				//try {
-				//	ns.Write(byteTime, 0, byteTime.Length);
-				//	ns.Close();
-				//	client.Close();
-				//} catch (Exception e) {
-				//	Console.WriteLine(e.ToString());
-				//}
 			}
 			
 			listener.Stop();

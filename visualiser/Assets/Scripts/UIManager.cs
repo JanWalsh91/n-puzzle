@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEditor;
 using System.Runtime.InteropServices;
+using Crosstales.FB;
 
 public class UIManager : MonoBehaviour {
 
@@ -20,8 +21,8 @@ public class UIManager : MonoBehaviour {
 	private Animator animator;
 	private bool rebuild = true;
 
-	[DllImport("user32.dll")]
-	private static extern void OpenFileDialog();
+	//[DllImport("user32.dll")]
+	//private static extern void OpenFileDialog();
 
 	void Start() {
 		gameManager = FindObjectOfType<GameManager>();
@@ -76,21 +77,24 @@ public class UIManager : MonoBehaviour {
 	}
 
 	public void OpenFile() {
-		
+
 		//string fileName = EditorUtility.OpenFilePanel("Open n-puzzle file", ".", "np");
 
-		System.Windows.Forms.OpenFileDialog ofd = new System.Windows.Forms.OpenFileDialog();
+		//System.Windows.Forms.OpenFileDialog ofd = new System.Windows.Forms.OpenFileDialog();
 
-		ofd.InitialDirectory = ".";
-		ofd.Filter = "NPuzzple files (*.np)|*.np";
-		ofd.FilterIndex = 2;
-		ofd.RestoreDirectory = true;
+		//ofd.InitialDirectory = ".";
+		//ofd.Filter = "NPuzzple files (*.np)|*.np";
+		//ofd.FilterIndex = 2;
+		//ofd.RestoreDirectory = true;
 
-		string fileName = null;
+		//string fileName = null;
 
-		if (ofd.ShowDialog() == System.Windows.Forms.DialogResult.OK) {
-			fileName = ofd.FileName;
-		}
+		//if (ofd.ShowDialog() == System.Windows.Forms.DialogResult.OK) {
+		//	fileName = ofd.FileName;
+		//}
+
+		string ext = "np";
+		string fileName = FileBrowser.OpenSingleFile("Open NPuzzle File", "", ext);
 
 		if (fileName == null || fileName.Length == 0) {
 			return;
