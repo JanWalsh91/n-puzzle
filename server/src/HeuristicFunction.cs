@@ -2,20 +2,21 @@
 namespace server.src {
 	public class HeuristicFunction {
 
-		public enum Types { MANHATTAN, JAN, NULL };
+		public enum Types { MANHATTAN, OKLOP, EUCLIDIAN, UNIFORMCOST };
 
 		public delegate float heuristicDelegate(Board board);
 		public heuristicDelegate heuristic;
 
-		heuristicDelegate[] heuristics = new heuristicDelegate[3];
+		heuristicDelegate[] heuristics = new heuristicDelegate[4];
 
 		Board solution;
 
 		public HeuristicFunction(ref Board solution) {
 			this.solution = solution;
 			this.heuristics[0] = this.Manhattan;
-			this.heuristics[1] = this.Jan;
-			this.heuristics[2] = this.Null;
+			this.heuristics[1] = this.Oklop;
+			this.heuristics[2] = this.Euclidian;
+			this.heuristics[3] = this.UniformCost;
 			this.heuristic = heuristics[1];
 		}
 
@@ -36,7 +37,20 @@ namespace server.src {
 			return cost;
 		}
 
-		private float Jan(Board board) {
+		private float Euclidian(Board board) {
+			float cost = 0.0f;
+
+			for (int i = 0; i < board.GetSize() * board.GetSize(); i++) {
+				int i2 = this.solution.GetIndexOf(board.GetList()[i]);
+				double hDist = Math.Pow((i2 % board.GetSize() - i % board.GetSize()), 2.0);
+				double vDist = Math.Pow((i2 / board.GetSize() - i / board.GetSize()), 2.0);
+				cost += (float)hDist + (float)vDist;
+			}
+
+			return cost;
+		}
+
+		private float Oklop(Board board) {
 			float cost = 0.0f;
 			for (int i = 0; i < board.GetSize() * board.GetSize(); i++) {
 				int i2 = this.solution.GetIndexOf(board.GetList()[i]);
@@ -51,7 +65,7 @@ namespace server.src {
 			return cost;
 		}
 
-		private float Null(Board board) {
+		private float UniformCost(Board board) {
 			return 0.0f;
 		}
 	}

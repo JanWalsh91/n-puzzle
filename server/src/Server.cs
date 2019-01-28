@@ -83,7 +83,7 @@ namespace server.src {
 
 				// parameters[0]: Algo Type (0, 1)
 				// parameters[1]: Solution Type (0, 1)
-				// parameters[2]: Heuristic Function (0, 1, 2) (2 is Uniform Search)
+				// parameters[2]: Heuristic Function (0, 1, 2, 3) MANHATTAN, OKLOP, EUCLIDIAN, UNIFORMCOST
 				// parameters[3]: Greedy Search (0, 1) (0: no, 1: yes, only for A*)
 				List<int> parameters = input[input.Count - 1];
 				input.RemoveAt(input.Count - 1);
