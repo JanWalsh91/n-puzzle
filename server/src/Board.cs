@@ -4,6 +4,7 @@ using System.Linq;
 
 namespace server.src {
 	public class Board {
+		List<List<int>> originalList;
 		List<int> list = new List<int>();
 		int size;								// N
 
@@ -22,16 +23,26 @@ namespace server.src {
 
 			// set size
 			this.size = input.Count;
+			originalList = input;
 		}
 
 		public Board(Board board) {
 			this.list = new List<int>(board.list);
 			this.size = board.size;
+			this.originalList = board.Get2DList();
 		}
 
 		public Board(List<int> input) {
 			this.list = new List<int>(input);
 			this.size = (int)Math.Sqrt(input.Count);
+			this.originalList = new List<List<int>>();
+			for (int i = 0; i < size; i++) {
+				this.originalList.Add(new List<int>());
+				for (int j = 0; j < size; j++) {
+					this.originalList[i].Add(input[i * size + j]);
+				}
+			}
+
 		}
 
 		public override bool Equals(object obj) {
@@ -71,6 +82,10 @@ namespace server.src {
 
 		public List<int> GetList() {
 			return this.list;
+		}
+
+		public List<List<int>> Get2DList() {
+			return this.originalList;
 		}
 
 		public static Board GetRegularSolution(int N) {

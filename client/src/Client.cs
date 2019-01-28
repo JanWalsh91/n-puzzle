@@ -52,6 +52,7 @@ public class TcpTimeClient {
 			// parameters[3]: Greedy Search (0, 1) (1: yes, only for A*)
 			input.Add(new List<int>{0, 0, 0, 0});
 
+
 			BinaryFormatter bf = new BinaryFormatter();
 
 			//XmlSerializer ser = new XmlSerializer(typeof(server.src.Server.Data));

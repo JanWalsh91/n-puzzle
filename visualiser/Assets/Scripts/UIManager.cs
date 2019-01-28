@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-
+using UnityEditor;
+using System.Runtime.InteropServices;
 
 public class UIManager : MonoBehaviour {
 
@@ -17,7 +18,10 @@ public class UIManager : MonoBehaviour {
 
 	private Client client;
 	private Animator animator;
+	private bool rebuild = true;
 
+	[DllImport("user32.dll")]
+	private static extern void OpenFileDialog();
 
 	void Start() {
 		gameManager = FindObjectOfType<GameManager>();
@@ -39,21 +43,15 @@ public class UIManager : MonoBehaviour {
 		animator = errorPanel.GetComponent<Animator>();
 	}
 
-	void OnEnable() {
-		GameManager.OnLoadFile += UpdateValue;
-	}
-
-	void OnDisable() {
-		GameManager.OnLoadFile -= UpdateValue;
-	}
-
 	public void UpdateValue(int N) {
 		sizeDropdown.value = N - 3;
 	}
 
 	public void OnSizeChange() {
 		gameManager.boardManager.N = sizeDropdown.value + 3;
-		gameManager.boardManager.BuildBoard(null);
+		if (rebuild) {
+			gameManager.boardManager.BuildReversedBoard(null);
+		}
 	}
 
 	public void OnHostChange() {
@@ -75,5 +73,50 @@ public class UIManager : MonoBehaviour {
 	public void DisplayError(string message) {
 		errorMessage.text = "Error: " + message;
 		animator.SetTrigger("Display");
+	}
+
+	public void OpenFile() {
+		
+		//string fileName = EditorUtility.OpenFilePanel("Open n-puzzle file", ".", "np");
+
+		System.Windows.Forms.OpenFileDialog ofd = new System.Windows.Forms.OpenFileDialog();
+
+		ofd.InitialDirectory = ".";
+		ofd.Filter = "NPuzzple files (*.np)|*.np";
+		ofd.FilterIndex = 2;
+		ofd.RestoreDirectory = true;
+
+		string fileName = null;
+
+		if (ofd.ShowDialog() == System.Windows.Forms.DialogResult.OK) {
+			fileName = ofd.FileName;
+		}
+
+		if (fileName == null || fileName.Length == 0) {
+			return;
+		}
+		List<List<int>> input = null;
+		try {
+			input = gameManager.parser.SolveFromFile(fileName);
+			//gameManager.boardManager.values = input;
+		} catch (ParserException pe) {
+			DisplayError(pe.Message);
+			return;
+		}
+
+		//foreach (var item in input) {
+		//	Debug.Log(System.String.Join(" - ", item));
+		//}
+
+		if (input.Count > 7) {
+			DisplayError("Unsupported size");
+			return;
+		}
+		rebuild = false;
+		sizeDropdown.value = input.Count - 3;
+		rebuild = true;
+		gameManager.boardManager.N = input.Count;
+		//Debug.Log("New N: " + gameManager.boardManager.N);
+		gameManager.boardManager.BuildReversedBoard(input);
 	}
 }

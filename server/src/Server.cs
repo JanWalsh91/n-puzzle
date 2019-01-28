@@ -90,8 +90,19 @@ namespace server.src {
 					Console.WriteLine(String.Join(" - ", item));
 				}
 
+				Board bSol = solutionTypeList[parameters[0]](input.Count);
 
-				Validator validator = new Validator(input);
+				Console.WriteLine("Solution Board:" );
+				bSol.PrintBoard();
+
+				Console.WriteLine("Original Board: ");
+				foreach (var item in input) {
+					Console.WriteLine(String.Join(" - ", item));
+				}
+
+				Console.WriteLine("Solution Type: " + parameters[0]);
+
+				Validator validator = new Validator(input, bSol.Get2DList());
 				try {
 					validator.Validate((Board.SolutionType)parameters[1]);
 				} catch (ValidatorException ve) {
@@ -101,22 +112,22 @@ namespace server.src {
 				} catch (Exception e) {
 					//TODO: handle, something very bad happened in that case
 					Console.WriteLine(e.Message);
+					continue;
 				}
 
 				Board b1 = new Board(input);
-				Board b2 = solutionTypeList[parameters[1]](input.Count);
 
 				try {
 					if (parameters[0] == 0) {
-						algorithm = new AStar(ref b1, ref b2);
+						algorithm = new AStar(ref b1, ref bSol);
 					} else if (parameters[0] == 1) {
-						algorithm = new IDA(ref b1, ref b2);
+						algorithm = new IDA(ref b1, ref bSol);
 					}
 				} catch (OutOfMemoryException oome) {
 					Console.WriteLine(":( " + oome.Message);
 				}
 
-				// TODO: Verify that
+				// TODO: Verify that 
 				algorithm.SetHeuristicFunction((HeuristicFunction.Types)parameters[2]);
 
 				List<Node> solution = algorithm.Resolve();
