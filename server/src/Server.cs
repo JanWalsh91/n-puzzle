@@ -130,10 +130,9 @@ namespace server.src {
 				}
 
 				algorithm.SetHeuristicFunction((HeuristicFunction.Types)parameters[2]);
-
+				algorithm.SetGreedySearch(parameters[3] == 1);
 
 				List<Node> solution = null;
-
 
 				CancellationTokenSource tokenSource = new CancellationTokenSource();
 				CancellationToken token = tokenSource.Token;

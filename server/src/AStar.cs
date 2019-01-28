@@ -63,6 +63,8 @@ namespace server.src {
 
 			bool evalNeighbor = false;
 			Node current = null;
+			float maxF = float.MinValue;
+			Node bestNeighbor = null;
 
 			while (openSet.Count > 0) {
 				if (ct.IsCancellationRequested) {
@@ -85,6 +87,11 @@ namespace server.src {
 				closedSet[current.hash] = current;
 
 				UpdateSizeComplexity();
+
+				if (this.greedySearch) {
+					maxF = float.MinValue;
+					bestNeighbor = null;
+				}
 
 				List<Node> neighbors = GetNeighbors(ref current);
 				for (int i = 0; i < neighbors.Count; i++) {
@@ -110,31 +117,19 @@ namespace server.src {
 						inOpenSet[neighbors[i].hash] = true;
 						openSet.Add(neighbors[i]);
 						UpdateTimeComplexity();
-					} else {
-						//Console.WriteLine("READDED TO OPENSET: " + neighbors[i].hash);
-						////if (neighbors[i].hash.Equals("3;2;7;4;11;8;12;13;1;9;14;5;15;0;6;10")) {
-						////	int I = openSet.FindAll(a => a.hash.Equals(neighbors[i].hash)).ToList().Count;
-						////	Console.WriteLine("I: " + I);
-						////}
-						//while (openSet.Contains(neighbors[i])) {
-							
-						//	openSet.Remove(neighbors[i]);
-						//}
-						////openSet.
-						////if (neighbors[i].hash.Equals("3;2;7;4;11;8;12;13;1;9;14;5;15;0;6;10")) {
-						////	int I = openSet.FindAll(a => a.hash.Equals(neighbors[i].hash)).ToList().Count;
-						////	Console.WriteLine("I: " + I);
-						////}
-						////openSet[neighbors[i].hash]
-						//openSet.Add(neighbors[i]);
-						////if (neighbors[i].hash.Equals("3;2;7;4;11;8;12;13;1;9;14;5;15;0;6;10")) {
-						////	int I = openSet.FindAll(a => a.hash.Equals(neighbors[i].hash)).ToList().Count;
-						////	Console.WriteLine("I: " + I);
-						////}
+					}
+
+					if (this.greedySearch && neighbors[i].f > maxF) {
+						maxF = neighbors[i].f;
+						bestNeighbor = neighbors[i];
 					}
 
 				}
 
+				if (this.greedySearch && bestNeighbor != null) {
+					evalNeighbor = true;
+					current = bestNeighbor;
+				}
 
 				AStar.pouet++;
 
@@ -142,7 +137,6 @@ namespace server.src {
 					Console.WriteLine("pouet: " + AStar.pouet + ". openSet.Count: " + this.openSet.Count + ". closedSet.Count: " + this.closedSet.Count + ". f: " + current.f);
 					current.state.PrintBoard();
 					Console.WriteLine("==========");
-
 				}
 			}
 			return null;
