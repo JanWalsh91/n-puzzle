@@ -15,6 +15,9 @@ public class GameManager : MonoBehaviour {
 	public GameObject woodenBoard;
 	public Client client;
 	public Text nbStep;
+	public Text complexityTime;
+	public Text complexitySize;
+	public Text elapsedTime;
 	public UIManager uiManager;
 	public Camera cam;
 	public Tray tray;
@@ -24,7 +27,8 @@ public class GameManager : MonoBehaviour {
 	public int heuristicFunction = 0;
 	public int solutionType = 0;
 	public int isGreedy = 0;
-
+	public int timeOut = 5000;
+	
 	public Material swapCellOriginalMaterial;
 	public Material swapCellSelectedMaterial;
 
@@ -38,6 +42,7 @@ public class GameManager : MonoBehaviour {
 	private Dictionary<BoardManager.MoveDirection, BoardManager.MoveDirection> oppositeMoveDirection;
 
 	private bool needToUpdateNbStep = false;
+	private List<String> resolutionInformation;
 
 	private Cell swapFirstCell;
 	private Cell swapSecondCell;
@@ -124,7 +129,14 @@ public class GameManager : MonoBehaviour {
 			Debug.Log("Need To Update Step");
 			needToUpdateNbStep = false;
 			sideTrayAnimator.SetTrigger("Close");
-			nbStep.text = solutionNextMoves.Count.ToString();
+
+			Debug.Log("trim: ");
+			Debug.Log(resolutionInformation[0].Split(':')[0]);
+
+			nbStep.text = resolutionInformation[0].Split(':')[1].ToString().Trim();
+			complexitySize.text = resolutionInformation[1].Split(':')[1].ToString().Trim();
+			complexityTime.text = resolutionInformation[2].Split(':')[1].ToString().Trim();
+			elapsedTime.text = resolutionInformation[3].Split(':')[1].ToString().Trim();
 		}
 
 		if (client.errorMessage != null) {
@@ -282,6 +294,17 @@ public class GameManager : MonoBehaviour {
 				return;
 			}
 			Debug.Log("Solution Count: " + solution.Count);
+
+			if (solution.Count > 4) {
+				resolutionInformation = solution.Skip(solution.Count - 4).Take(4).ToList();
+				solution.RemoveAt(solution.Count - 1);
+				solution.RemoveAt(solution.Count - 1);
+				solution.RemoveAt(solution.Count - 1);
+				solution.RemoveAt(solution.Count - 1);
+			}
+
+			Debug.Log("ResolutionINformation : " + resolutionInformation.Count);
+
 			for (int i = 0; i < solution.Count; i++) {
 				solutionNextMoves.AddFirst(stringToMoveDirection[solution[i]]);
 			}

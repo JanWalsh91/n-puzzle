@@ -88,6 +88,7 @@ namespace server.src {
 				// parameters[1]: Solution Type (0, 1)
 				// parameters[2]: Heuristic Function (0, 1, 2, 3, 4) { MANHATTAN, EUCLIDIAN, OKCLOP, GWYNEFIS, UNIFORMCOST }
 				// parameters[3]: Greedy Search (0, 1) (0: no, 1: yes, only for A*)
+				// parameters[4]: Timeout in ms
 				List<int> parameters = input[input.Count - 1];
 				input.RemoveAt(input.Count - 1);
 
@@ -147,13 +148,14 @@ namespace server.src {
 
 				var task = Task.Run(() => algorithm.Resolve(token), token);
 
-				tokenSource.CancelAfter(TimeSpan.FromSeconds(30));
+				tokenSource.CancelAfter(TimeSpan.FromMilliseconds(parameters[4] < 60000 ? parameters[4] : 60000));
 				try {
 					task.Wait();
 					solution = task.Result;
 				} catch (AggregateException e) {
 					foreach (var v in e.InnerExceptions) {
 						Console.WriteLine(e.Message + " " + v.Message);
+						bf.Serialize(ns, new List<string> { "Error", "Timeout" });
 					}
 				} finally {
 					tokenSource.Dispose();
@@ -167,6 +169,7 @@ namespace server.src {
 				
 				ns.Close();
 				client.Close();
+
 			}
 			
 			listener.Stop();

@@ -27,6 +27,8 @@ public class BoardManager : MonoBehaviour {
 	private Vector3 velocity;
 	private Vector3 targetDestination;
 
+	private Dictionary<int, float> NtoSize;
+
 	public enum MoveDirection {
 		Down,
 		Up,
@@ -35,56 +37,45 @@ public class BoardManager : MonoBehaviour {
 	}
 
 	void Start() {
-		N = 4;
-		BuildBoard(null);
+		N = 3;
 		movements = new Queue<MoveDirection>();
+		NtoSize = new Dictionary<int, float>();
+
+		NtoSize.Add(3, 0.9f);
+		NtoSize.Add(4, 0.675f);
+		NtoSize.Add(5, 0.54f);
+		NtoSize.Add(6, 0.445f);
+
+	
+		BuildBoard(null);
 	}
 
 	private void OnDrawGizmos() {
-		Gizmos.DrawSphere(new Vector3(-1.5f, 0.05f, 1.5f), 0.25f);
-		Gizmos.DrawSphere(new Vector3(1.5f, -0.05f, 1.5f), 0.25f);
+		Gizmos.DrawSphere(new Vector3(-1.5f, 0.05f, 1.5f), 0.1f);
+		Gizmos.DrawSphere(new Vector3(1.5f, -0.05f, 1.5f), 0.1f);
 	}
 
 	public void BuildBoard(List<List<int>> input) {
-		//Vector3 size = cellPrefab.GetComponent<Renderer>().bounds.size;
-		Vector3 scale = cellPrefab.transform.localScale;
+		Vector3 size = new Vector3(NtoSize[N], 1f, NtoSize[N]);
 
-		Vector3 size = Vector3.one;// - (Vector3.one / 2f);
+		//float scale = -0.74f * Mathf.Log((float)N) + 1.843881197f;
 
-		//float scaleFactor = 1f - 1f / 4f - 1f / 6f;
+		cellSize = size;
 
+		//size *= scale;
 
-		Debug.Log("Size: " + cellPrefab.GetComponent<Renderer>().bounds.size);
-
-		float scaleFactor = 1f;
-		float divide = 4f;
-		for (int i = 3; i < N; i++) {
-			//size.x /= 1.4f;
-			//size.z /= 1.4f;
-
-			//scale.x /= 1.3f;
-			//scale.y /= 1.3f;
-
-			scaleFactor -= 1f / divide;
-			divide += 2f;
-		}
-		scale *= scaleFactor;
-	
-		cellSize.x = size.x * scaleFactor;
-		cellSize.y = size.z * scaleFactor;
-
-		Vector3 spawnPosition = new Vector3(-1.5f, 0.05f, 1.5f);
-
-		//float gap = (3 - cellSize.x * N) / (float)N + 0.01f; // 3 == board size
-		//float gap = (2.9f - cellSize.x * N) / (float)N - 0.01f; // 3 == board size
-
-		float gap = 0.0f;
-
-		spawnPosition.x += gap / 2f + cellSize.x / 2f;
-		spawnPosition.z -= gap / 2f + cellSize.x / 2f;
+		Debug.Log("Size: " + size);
+		size.y = 1f;
+		Vector3 spawnPosition = new Vector3(-1.45f, 0.15f, 1.45f);
 
 
+		float gap = (0.2f / (float)N);
+		float padding = cellSize.x / 2f + gap / 2f;
 		Debug.Log("Gap: " + gap);
+
+
+		spawnPosition.x += padding;
+		spawnPosition.z -= padding;
 		Quaternion rotation = cellPrefab.transform.rotation;
 
 		foreach (Transform item in transform) {
@@ -103,10 +94,11 @@ public class BoardManager : MonoBehaviour {
 			if (input == null) {
 				values.Add(new List<int>());
 			}
-			spawnPosition.x = -1.5f - gap / 2f + cellSize.x / 2f;
+			//spawnPosition.x = -1.5f - gap / 2f + size.x / 2f;
+			spawnPosition.x = -1.45f + padding;
 			for (int j = 0; j < N; j++) {
 				GameObject instance = Instantiate(cellPrefab, spawnPosition, rotation, transform);
-				instance.transform.localScale = scale;
+				instance.transform.localScale = new Vector3(NtoSize[N], 1, NtoSize[N]);
 				if (input == null) {
 					instance.GetComponentInChildren<TextMesh>().text = (i == N - 1 && j == N - 1) ? "0" : (i * N + j + 1).ToString();
 					values[i].Add((i == N - 1 && j == N - 1) ? 0 : (i * N + j + 1));
@@ -114,7 +106,6 @@ public class BoardManager : MonoBehaviour {
 				} else {
 					instance.GetComponentInChildren<TextMesh>().text = input[i][j].ToString();
 				}
-				spawnPosition.x += cellSize.x + gap;
 				Cell cell = instance.GetComponent<Cell>();
 				cells.Add(cell);
 				cell.value = values[i][j];
@@ -123,10 +114,10 @@ public class BoardManager : MonoBehaviour {
 					instance.GetComponentInChildren<TextMesh>().gameObject.SetActive(false);
 					emptyCell = cells[cells.Count - 1];
 				}
-				spawnPosition.x += gap;
+				spawnPosition.x += cellSize.x + gap;
 			}
 
-			spawnPosition.z -= cellSize.y + gap;
+			spawnPosition.z -= cellSize.x + gap;
 		}
 
 		//Debug.Log(" === BuildBoard Values, After Eveything === BEGIN");
@@ -242,7 +233,8 @@ public class BoardManager : MonoBehaviour {
 	}
 
 	public void GetClosestCells() {
-		Collider[] colliders = Physics.OverlapSphere(emptyCell.transform.position, cellSize.x + (cellSize.y / 4.0f) * 2, LayerMask.GetMask("Cell"));
+		Debug.Log("Cell Size Closest cell: " + cellSize);
+		Collider[] colliders = Physics.OverlapSphere(emptyCell.transform.position, cellSize.x + cellSize.x / 2f, LayerMask.GetMask("Cell"));
 		left = right = up = down = null;
 		//Debug.Log("Sphere size: " + (cellSize.x + (cellSize.y / 4.0f)));
 		//Debug.Log(colliders.Length);

@@ -14,6 +14,8 @@ public class UIManager : MonoBehaviour {
 	public Dropdown solutionType;
 	public Dropdown sizeDropdown;
 	public Toggle greedySearch;
+
+	public InputField timeout;
 	public InputField hostInputField;
 	public InputField portInputField;
 	public RectTransform errorPanel;
@@ -34,14 +36,16 @@ public class UIManager : MonoBehaviour {
 		greedySearchText = greedySearch.GetComponentInChildren<Text>();
 
 		List<string> options = new List<string>();
-		for (int i = 3; i < 6; i++) {
+		for (int i = 3; i < 7; i++) {
 			options.Add(i.ToString() + " x " + i.ToString());
 		}
 		sizeDropdown.AddOptions(options);
 
+		timeout.text = gameManager.timeOut.ToString();
 		hostInputField.text = client.hostName;
 		portInputField.text = client.portNum.ToString();
 
+		timeout.onValueChanged.AddListener(delegate { OnTimeOutChange(); });
 		hostInputField.onValueChanged.AddListener(delegate { OnHostChange(); });
 		portInputField.onValueChanged.AddListener(delegate { OnPortChange(); });
 
@@ -92,6 +96,10 @@ public class UIManager : MonoBehaviour {
 
 	public void OnSpeedChange() {
 		gameManager.boardManager.movingSpeed = 0.1f / speed.value;
+	}
+
+	public void OnTimeOutChange() {
+		gameManager.timeOut = System.Convert.ToInt32(timeout.text);
 	}
 
 	public void OpenFile() {
