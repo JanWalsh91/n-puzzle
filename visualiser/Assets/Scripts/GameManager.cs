@@ -18,6 +18,7 @@ public class GameManager : MonoBehaviour {
 	public Text complexityTime;
 	public Text complexitySize;
 	public Text elapsedTime;
+	public Text playPauseButtonText;
 	public UIManager uiManager;
 	public Camera cam;
 	public Tray tray;
@@ -46,6 +47,7 @@ public class GameManager : MonoBehaviour {
 
 	private Cell swapFirstCell;
 	private Cell swapSecondCell;
+	private Coroutine playCoroutine = null;
 	//private MeshRenderer swapFirstCellMeshRenderer;
 	//private MeshRenderer swapSecondCellMeshRenderer;
 
@@ -53,7 +55,9 @@ public class GameManager : MonoBehaviour {
 
 	private float elaspedTime;
 	private float rotationSpeed = 0.5f;
+
 	private bool inSettings = false;
+	private bool canMove = true;
 
 	void Start() {
 		elaspedTime = 0f;
@@ -143,20 +147,25 @@ public class GameManager : MonoBehaviour {
 			uiManager.DisplayError(client.errorMessage);
 			client.errorMessage = null;
 			sideTrayAnimator.SetTrigger("Close");
+			ResetSolution();
 		}
 
-		if (!inSettings) {
+		if (!inSettings && canMove) {
 			if (Input.GetKeyDown(KeyCode.RightArrow)) {
 				boardManager.AddMovements(BoardManager.MoveDirection.Right);
 				//solutionNextMoves.AddLast(BoardManager.MoveDirection.Left);
+				ResetSolution();
 			} else if (Input.GetKeyDown(KeyCode.LeftArrow)) {
 				boardManager.AddMovements(BoardManager.MoveDirection.Left);
+				ResetSolution();
 				//solutionNextMoves.AddLast(BoardManager.MoveDirection.Right);
 			} else if (Input.GetKeyDown(KeyCode.UpArrow)) {
 				boardManager.AddMovements(BoardManager.MoveDirection.Up);
+				ResetSolution();
 				//solutionNextMoves.AddLast(BoardManager.MoveDirection.Down);
 			} else if (Input.GetKeyDown(KeyCode.DownArrow)) {
 				boardManager.AddMovements(BoardManager.MoveDirection.Down);
+				ResetSolution();
 				//solutionNextMoves.AddLast(BoardManager.MoveDirection.Up);
 			}
 		}
@@ -227,6 +236,16 @@ public class GameManager : MonoBehaviour {
 		}
 	}
 	
+	private void ResetSolution() {
+		solutionNextMoves.Clear();
+		solutionPrevMoves.Clear();
+		//uiManager.
+		nbStep.text = "-";
+		complexitySize.text = "-";
+		complexityTime.text = "-";
+		elapsedTime.text = "-";
+	}
+
 	public void NextStep() {
 		if (solutionNextMoves.Count > 0) {
 			BoardManager.MoveDirection nextDirection = solutionNextMoves.Last.Value;
@@ -248,15 +267,52 @@ public class GameManager : MonoBehaviour {
 	}
 
 	public void Play() {
-		while (solutionNextMoves.Count > 0) {
-			NextStep();
-		}
+		//while (solutionNextMoves.Count > 0) {
+		//	NextStep();
+		//}
+
+
 		// Create a event in the board manager to update the step to solution counter
+
+		if (playCoroutine == null) {
+			playCoroutine = StartCoroutine(PlayCoroutine());
+			playPauseButtonText.text = "||";
+		} else {
+			Pause();
+		}
+	}
+
+	public void Pause() {
+		if (playCoroutine != null) {
+			StopCoroutine(playCoroutine);
+			boardManager.canSendAnotherMove = true;
+			canMove = true;
+			playPauseButtonText.text = ">";
+			playCoroutine = null;
+			//TODO: if move, reset everything
+		}
+	}
+
+	IEnumerator PlayCoroutine() {
+		canMove = false;
+		boardManager.canSendAnotherMove = true;
+		while (solutionNextMoves.Count > 0) {
+			if (boardManager.canSendAnotherMove) {
+				NextStep();
+			}
+			yield return new WaitForSeconds(boardManager.movingSpeed);
+		}
+		canMove = true;
+		playPauseButtonText.text = ">";
 	}
 
 	public void GoToSettings() {
 		//woodenBoard.transform.Rotate(new Vector3(90f, 0f, 0f));
 		//woodenBoard.transform.rotation = inverseWoodenBoardRotation;
+		if (!canMove) {
+			return;
+		}
+	
 		inSettings = true;
 		elaspedTime = 0f;
 		desiredRotation = inverseWoodenBoardRotation;
@@ -279,7 +335,6 @@ public class GameManager : MonoBehaviour {
 		if (solution != null) {
 			solution.Clear();
 		}
-		nbStep.text = "0";
 
 		sideTrayAnimator.SetTrigger("Open");
 

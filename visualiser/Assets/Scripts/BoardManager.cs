@@ -27,6 +27,8 @@ public class BoardManager : MonoBehaviour {
 	private Vector3 velocity;
 	private Vector3 targetDestination;
 
+	public bool canSendAnotherMove = false;
+
 	private Dictionary<int, float> NtoSize;
 
 	public enum MoveDirection {
@@ -161,11 +163,12 @@ public class BoardManager : MonoBehaviour {
 			movingCell.transform.position = Vector3.SmoothDamp(movingCell.transform.position, targetDestination, ref velocity, movingSpeed);
 			if (movingCell.transform.position == targetDestination) {
 				movingCell = null;
+				canSendAnotherMove = true;
 				GetClosestCells();
 			}
 		} else if (movements.Count > 0) {
 			MoveDirection move = movements.Dequeue();
-
+			canSendAnotherMove = false;
 			targetDestination = emptyCell.transform.position;
 			switch (move) {
 				case MoveDirection.Down:

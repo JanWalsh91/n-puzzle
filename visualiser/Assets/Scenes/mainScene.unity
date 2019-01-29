@@ -1599,7 +1599,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 0
+  m_Text: '-'
 --- !u!222 &280388677
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1994,7 +1994,7 @@ GameObject:
   - component: {fileID: 366486611}
   - component: {fileID: 366486610}
   m_Layer: 0
-  m_Name: ButtonNext
+  m_Name: ButtonPlay
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2179,7 +2179,7 @@ GameObject:
   - component: {fileID: 409686824}
   - component: {fileID: 409686823}
   m_Layer: 0
-  m_Name: ButtonPlay
+  m_Name: ButtonBack
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3204,7 +3204,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 0
+  m_Text: '-'
 --- !u!222 &726645416
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -5454,6 +5454,7 @@ MonoBehaviour:
   solutionType: {fileID: 601462009}
   sizeDropdown: {fileID: 1117726431}
   greedySearch: {fileID: 1994723572}
+  timeout: {fileID: 736944486}
   hostInputField: {fileID: 1065933282}
   portInputField: {fileID: 616704830}
   errorPanel: {fileID: 150580987}
@@ -5888,7 +5889,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 0
+  m_Text: '-'
 --- !u!222 &1107233347
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -6748,7 +6749,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 0
+  m_Text: '-'
 --- !u!222 &1310100543
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -7937,6 +7938,7 @@ MonoBehaviour:
   cellPrefab: {fileID: 1761859348965296, guid: 81093a51e40c34bcdb8f8d8bb7c8792c, type: 2}
   movingSpeed: 0.015
   cells: []
+  canSendAnotherMove: 0
 --- !u!1 &1708563846
 GameObject:
   m_ObjectHideFlags: 0
@@ -8536,6 +8538,7 @@ MonoBehaviour:
   complexityTime: {fileID: 726645415}
   complexitySize: {fileID: 280388676}
   elapsedTime: {fileID: 1310100542}
+  playPauseButtonText: {fileID: 862192269}
   uiManager: {fileID: 1029097100}
   cam: {fileID: 534669904}
   tray: {fileID: 1323306224}
@@ -9026,7 +9029,7 @@ GameObject:
   - component: {fileID: 1996208363}
   - component: {fileID: 1996208362}
   m_Layer: 0
-  m_Name: ButtonNext.001
+  m_Name: ButtonNext
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
