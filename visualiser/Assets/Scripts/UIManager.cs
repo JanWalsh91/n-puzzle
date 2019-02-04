@@ -27,9 +27,6 @@ public class UIManager : MonoBehaviour {
 	private bool rebuild = true;
 	private Text greedySearchText;
 
-	//[DllImport("user32.dll")]
-	//private static extern void OpenFileDialog();
-
 	void Start() {
 		gameManager = FindObjectOfType<GameManager>();
 		client = FindObjectOfType<Client>();
@@ -103,22 +100,6 @@ public class UIManager : MonoBehaviour {
 	}
 
 	public void OpenFile() {
-
-		//string fileName = EditorUtility.OpenFilePanel("Open n-puzzle file", ".", "np");
-
-		//System.Windows.Forms.OpenFileDialog ofd = new System.Windows.Forms.OpenFileDialog();
-
-		//ofd.InitialDirectory = ".";
-		//ofd.Filter = "NPuzzple files (*.np)|*.np";
-		//ofd.FilterIndex = 2;
-		//ofd.RestoreDirectory = true;
-
-		//string fileName = null;
-
-		//if (ofd.ShowDialog() == System.Windows.Forms.DialogResult.OK) {
-		//	fileName = ofd.FileName;
-		//}
-
 		string ext = "np";
 		string fileName = FileBrowser.OpenSingleFile("Open NPuzzle File", "", ext);
 
@@ -128,15 +109,10 @@ public class UIManager : MonoBehaviour {
 		List<List<int>> input = null;
 		try {
 			input = gameManager.parser.SolveFromFile(fileName);
-			//gameManager.boardManager.values = input;
 		} catch (ParserException pe) {
 			DisplayError(pe.Message);
 			return;
 		}
-
-		//foreach (var item in input) {
-		//	Debug.Log(System.String.Join(" - ", item));
-		//}
 
 		if (input.Count > 7) {
 			DisplayError("Unsupported size");
@@ -146,7 +122,6 @@ public class UIManager : MonoBehaviour {
 		sizeDropdown.value = input.Count - 3;
 		rebuild = true;
 		gameManager.boardManager.N = input.Count;
-		//Debug.Log("New N: " + gameManager.boardManager.N);
 		gameManager.boardManager.BuildReversedBoard(input);
 	}
 }

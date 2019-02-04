@@ -13,18 +13,11 @@ public class Tray : MonoBehaviour {
 		animator = GetComponent<Animator>();
 	}
 	
-	// Update is called once per frame
-	void Update () {
-		
-	}
-
 	void OnMouseEnter() {
-		//Debug.Log("MouseEnter");
 		Open();
 	}
 
 	void OnMouseExit() {
-		//Debug.Log("MouseExit");
 		Close();
 	}
 

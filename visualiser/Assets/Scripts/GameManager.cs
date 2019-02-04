@@ -48,8 +48,6 @@ public class GameManager : MonoBehaviour {
 	private Cell swapFirstCell;
 	private Cell swapSecondCell;
 	private Coroutine playCoroutine = null;
-	//private MeshRenderer swapFirstCellMeshRenderer;
-	//private MeshRenderer swapSecondCellMeshRenderer;
 
 	public Quaternion originalWoodenBoardRotation, inverseWoodenBoardRotation, desiredRotation;
 
@@ -84,59 +82,22 @@ public class GameManager : MonoBehaviour {
 
 		originalWoodenBoardRotation = woodenBoard.transform.rotation;
 		inverseWoodenBoardRotation = originalWoodenBoardRotation * Quaternion.Euler(Vector3.up * 180f);
-		//Debug.Log(originalWoodenBoardRotation);
 		desiredRotation = originalWoodenBoardRotation;
-
-		//woodenBoard.transform.rotation = inverseWoodenBoardRotation;
-		//boardManager.N = 4;
-		//boardManager.BuildReversedBoard(null);
-		//woodenBoard.transform.rotation = originalWoodenBoardRotation;
 	}
 
 	void Update() {
-
-		//TODO: To remove
-		if (Input.GetKeyDown(KeyCode.Comma)) {
-			GoToSettings();
-		} else if (Input.GetKeyDown(KeyCode.Period)) {
-			BackToBoard();
-		}
-
 		if (Input.GetKeyDown(KeyCode.Escape)) {
 			Application.Quit();
 		}
 
-		if (Input.GetKeyDown(KeyCode.Keypad3)) {
-			boardManager.N = 3;
-			boardManager.BuildBoard(null);
-		}
-		if (Input.GetKeyDown(KeyCode.Keypad4)) {
-			boardManager.N = 4;
-			boardManager.BuildBoard(null);
-		}
-		if (Input.GetKeyDown(KeyCode.Keypad5)) {
-			boardManager.N = 5;
-			boardManager.BuildBoard(null);
-		}
-		if (Input.GetKeyDown(KeyCode.Keypad6)) {
-			boardManager.N = 6;
-			boardManager.BuildBoard(null);
-		}
-
-		//woodenBoard.transform.Rotate(new Vector3(0f, 1f, 0f), Space.Self);
 		if (Quaternion.Angle(woodenBoard.transform.rotation, desiredRotation) > 0.1f) {
 			elaspedTime += Time.deltaTime * rotationSpeed;
 			woodenBoard.transform.rotation = Quaternion.Lerp(woodenBoard.transform.rotation, desiredRotation, elaspedTime);
 		}
 
 		if (needToUpdateNbStep) {
-			Debug.Log("Need To Update Step");
 			needToUpdateNbStep = false;
 			sideTrayAnimator.SetTrigger("Close");
-
-			Debug.Log("trim: ");
-			Debug.Log(resolutionInformation[0].Split(':')[0]);
-
 			nbStep.text = resolutionInformation[0].Split(':')[1].ToString().Trim();
 			complexitySize.text = resolutionInformation[1].Split(':')[1].ToString().Trim();
 			complexityTime.text = resolutionInformation[2].Split(':')[1].ToString().Trim();
@@ -153,20 +114,16 @@ public class GameManager : MonoBehaviour {
 		if (!inSettings && canMove) {
 			if (Input.GetKeyDown(KeyCode.RightArrow)) {
 				boardManager.AddMovements(BoardManager.MoveDirection.Right);
-				//solutionNextMoves.AddLast(BoardManager.MoveDirection.Left);
 				ResetSolution();
 			} else if (Input.GetKeyDown(KeyCode.LeftArrow)) {
 				boardManager.AddMovements(BoardManager.MoveDirection.Left);
 				ResetSolution();
-				//solutionNextMoves.AddLast(BoardManager.MoveDirection.Right);
 			} else if (Input.GetKeyDown(KeyCode.UpArrow)) {
 				boardManager.AddMovements(BoardManager.MoveDirection.Up);
 				ResetSolution();
-				//solutionNextMoves.AddLast(BoardManager.MoveDirection.Down);
 			} else if (Input.GetKeyDown(KeyCode.DownArrow)) {
 				boardManager.AddMovements(BoardManager.MoveDirection.Down);
 				ResetSolution();
-				//solutionNextMoves.AddLast(BoardManager.MoveDirection.Up);
 			}
 		}
 
@@ -177,14 +134,10 @@ public class GameManager : MonoBehaviour {
 			if (Physics.Raycast(ray, out hit)) {
 
 				if (hit.collider.CompareTag("Cell")) {
-					Debug.Log("Event System stuff: " + EventSystem.current.IsPointerOverGameObject());
-					Debug.Log("Will Swap: " + hit.collider.gameObject);
 					if (swapFirstCell == null) {
 						swapFirstCell = hit.collider.GetComponent<Cell>();
-						// If hit the empty cell, do nothing... Or..?
 						if (swapFirstCell.value == 0) {
 							swapFirstCell = null;
-							//swapFirstCell.GetComponent<MeshRenderer>().material = swapCellOriginalMaterial;
 						} else {
 							swapFirstCell.GetComponent<MeshRenderer>().material = swapCellSelectedMaterial;
 						}
@@ -196,12 +149,8 @@ public class GameManager : MonoBehaviour {
 							Vector3 tmpPos = swapSecondCell.transform.position;
 							swapSecondCell.transform.position = swapFirstCell.transform.position;
 							swapFirstCell.transform.position = tmpPos;
-
-							// Find in values list, boardManager
-
 							int iFirstCell = -1, iSecondCell = -1;
 							int jFirstCell = -1, jSecondCell = -1;
-
 							for (int i = 0; i < boardManager.N; i++) {
 								if (jFirstCell == -1) {
 									iFirstCell = i;
@@ -216,17 +165,10 @@ public class GameManager : MonoBehaviour {
 								int tmp = boardManager.values[iFirstCell][jFirstCell];
 								boardManager.values[iFirstCell][jFirstCell] = boardManager.values[iSecondCell][jSecondCell];
 								boardManager.values[iSecondCell][jSecondCell] = tmp;
-
-								for (int i = 0; i < boardManager.N; i++) {
-									Debug.Log(String.Join(" - ", boardManager.values[i]));
-								}
 							}
-
 							swapFirstCell = null;
 							swapSecondCell = null;
 							boardManager.GetClosestCells();
-
-
 						} else {
 							swapSecondCell = null;
 						}
@@ -239,7 +181,6 @@ public class GameManager : MonoBehaviour {
 	private void ResetSolution() {
 		solutionNextMoves.Clear();
 		solutionPrevMoves.Clear();
-		//uiManager.
 		nbStep.text = "-";
 		complexitySize.text = "-";
 		complexityTime.text = "-";
@@ -267,14 +208,7 @@ public class GameManager : MonoBehaviour {
 	}
 
 	public void Play() {
-		//while (solutionNextMoves.Count > 0) {
-		//	NextStep();
-		//}
-
-
-		// Create a event in the board manager to update the step to solution counter
-
-		if (playCoroutine == null) {
+		if (playCoroutine == null && solutionNextMoves.Count > 0) {
 			playCoroutine = StartCoroutine(PlayCoroutine());
 			playPauseButtonText.text = "||";
 		} else {
@@ -307,12 +241,9 @@ public class GameManager : MonoBehaviour {
 	}
 
 	public void GoToSettings() {
-		//woodenBoard.transform.Rotate(new Vector3(90f, 0f, 0f));
-		//woodenBoard.transform.rotation = inverseWoodenBoardRotation;
 		if (!canMove) {
 			return;
 		}
-	
 		inSettings = true;
 		elaspedTime = 0f;
 		desiredRotation = inverseWoodenBoardRotation;
@@ -337,19 +268,11 @@ public class GameManager : MonoBehaviour {
 		}
 
 		sideTrayAnimator.SetTrigger("Open");
-
-		//foreach (var item in input) {
-		//	Debug.Log(String.Join(" - ", item));
-		//}
-
 		Thread serverCommunicationThread = new Thread(new ThreadStart(() => {
 			solution = client.CallServer(input);
-
 			if (solution == null) {
 				return;
 			}
-			Debug.Log("Solution Count: " + solution.Count);
-
 			if (solution.Count > 4) {
 				resolutionInformation = solution.Skip(solution.Count - 4).Take(4).ToList();
 				solution.RemoveAt(solution.Count - 1);
@@ -357,13 +280,9 @@ public class GameManager : MonoBehaviour {
 				solution.RemoveAt(solution.Count - 1);
 				solution.RemoveAt(solution.Count - 1);
 			}
-
-			Debug.Log("ResolutionINformation : " + resolutionInformation.Count);
-
 			for (int i = 0; i < solution.Count; i++) {
 				solutionNextMoves.AddFirst(stringToMoveDirection[solution[i]]);
 			}
-			Debug.Log("Setting the boolean to true");
 			needToUpdateNbStep = true;
 		}));
 		serverCommunicationThread.IsBackground = true;

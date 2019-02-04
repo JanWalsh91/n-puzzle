@@ -14,7 +14,6 @@ public class Client: MonoBehaviour {
 
 	public BoardManager boardManager;
 	public GameManager gameManager;
-	//public UIManager uiManager;
 
 	public string errorMessage;
 
@@ -37,20 +36,13 @@ public class Client: MonoBehaviour {
 				Debug.Log(e.Message);
 			}
 
-			//ns.ReadTimeout = 10000;
-
 			List<string> solution;
 			solution = (List<string>)bf.Deserialize(ns);
 			if (solution != null && solution.Count > 0 && solution[0].Equals("Error")) {
 				errorMessage = solution[1];
 				// TODO: Maybe raise an exception... Thread stuff?
 			}
-
-			Debug.Log("Found solution! " + solution.Count);
-
 			client.Close();
-
-
 			return solution;
 		} catch (IOException) {
 			errorMessage = "Time out";
