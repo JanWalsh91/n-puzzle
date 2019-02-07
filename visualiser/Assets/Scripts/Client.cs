@@ -40,7 +40,6 @@ public class Client: MonoBehaviour {
 			solution = (List<string>)bf.Deserialize(ns);
 			if (solution != null && solution.Count > 0 && solution[0].Equals("Error")) {
 				errorMessage = solution[1];
-				// TODO: Maybe raise an exception... Thread stuff?
 			}
 			client.Close();
 			return solution;

@@ -42,7 +42,7 @@ namespace server.src {
 			pathToSolution.Add("Complexity In Size: " + algorithm.GetSizeComplexity());
 
 			// Add Elasped Time
-			pathToSolution.Add("Elapsed Time: " + algorithm.GetElaspedMS() + "ms");
+			pathToSolution.Add("Elapsed Time: " + algorithm.GetElaspedMS());
 
 			return pathToSolution;
 		}

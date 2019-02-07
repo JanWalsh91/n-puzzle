@@ -277,8 +277,8 @@ public class GameManager : MonoBehaviour {
 		Thread serverCommunicationThread = new Thread(new ThreadStart(() => {
 			solution = client.CallServer(input);
 			ResetSolution();
-			if (solution == null) {
-				sideTrayAnimator.SetTrigger("Close");
+			if (solution == null || solution[0].Equals("Error")) {
+				isSolving = false;
 				return;
 			}
 			if (solution.Count >= 4) {
