@@ -14,14 +14,12 @@ namespace server.src {
 		}
 
 		public Board(List<List<int>> input) {
-			// make list
 			for (int i = 0; i < input.Count; i++) {
 				for (int y = 0; y < input[i].Count; y++) {
 					this.list.Add(input[i][y]);
 				}
 			}
 
-			// set size
 			this.size = input.Count;
 			originalList = input;
 		}
@@ -119,9 +117,7 @@ namespace server.src {
 				y += deltaY;
 			}
 
-			Console.WriteLine("Solution: ");
 			Board board = new Board(list);
-			board.PrintBoard();
 			return board;
 
 		}

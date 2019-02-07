@@ -92,26 +92,7 @@ namespace server.src {
 				List<int> parameters = input[input.Count - 1];
 				input.RemoveAt(input.Count - 1);
 
-				foreach (var item in parameters) {
-					Console.WriteLine(item);
-				}
-
-				foreach (var item in input) {
-					Console.WriteLine(String.Join(" - ", item));
-				}
-
 				Board bSol = solutionTypeList[parameters[1]](input.Count);
-
-				Console.WriteLine("Solution Board:" );
-				bSol.PrintBoard();
-
-				Console.WriteLine("Original Board: ");
-				foreach (var item in input) {
-					Console.WriteLine(String.Join(" - ", item));
-				}
-
-				Console.WriteLine("Solution Type: " + parameters[1]);
-
 
 				Validator validator = new Validator(input, bSol.Get2DList());
 				try {
@@ -121,7 +102,6 @@ namespace server.src {
 					bf.Serialize(ns, new List<string> { "Error", ve.Message });
 					continue;
 				} catch (Exception e) {
-					//TODO: handle, something very bad happened in that case
 					Console.WriteLine(e.Message);
 					continue;
 				}

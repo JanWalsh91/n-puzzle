@@ -13,8 +13,6 @@ namespace server.src {
 		public Board state;
 		public float g;
 		public float f;
-		//public bool isInOpenSet; 
-		//public bool isInClosedSet; 
 
 		public Node(ref Board board) {
 			this.state = board;
@@ -22,8 +20,6 @@ namespace server.src {
 			g = float.PositiveInfinity;
 			f = float.PositiveInfinity;
 			this.hash = state.ToString();
-			//isInOpenSet = false;
-			//isInClosedSet = false;
 		}
 
 		public Node(string hash) {
@@ -36,8 +32,6 @@ namespace server.src {
 			this.cameFrom = null;
 			g = float.PositiveInfinity;
 			f = float.PositiveInfinity;
-			//isInOpenSet = false;
-			//isInClosedSet = false;
 			this.hash = hash;
 		}
 
@@ -48,18 +42,6 @@ namespace server.src {
 			}
 			return ((this.f - other.f > 0) ? 1 : -1);
 		}
-
-		//public override bool Equals(object obj) {
-		//	if (obj.GetType() != typeof(Node)) {
-		//		return false;
-		//	}
-		//	Console.WriteLine("IRE");
-		//	return this.hash.Equals((obj as Node).hash);
-		//}
-
-		//public override int GetHashCode() {
-		//	return base.GetHashCode();
-		//}
 
 		public List<string> GetNeighborHashes() {
 			return this.state.GetNeighborHashes();

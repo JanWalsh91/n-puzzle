@@ -9,8 +9,6 @@ using System.Threading;
 namespace server.src {
 	public class AStar : Algorithm {
 
-		static int pouet = 0;
-
 		Dictionary<string, Node> nodes = new Dictionary<string, Node>();
 		Dictionary<string, bool> inOpenSet = new Dictionary<string, bool>();
 		Dictionary<string, bool> inClosedSet = new Dictionary<string, bool>();
@@ -131,14 +129,6 @@ namespace server.src {
 				if (this.greedySearch && bestNeighbor != null) {
 					evalNeighbor = true;
 					current = bestNeighbor;
-				}
-
-				AStar.pouet++;
-
-				if (AStar.pouet % 500 == 0) {
-					Console.WriteLine("pouet: " + AStar.pouet + ". openSet.Count: " + this.openSet.Count + ". closedSet.Count: " + this.closedSet.Count + ". f: " + current.f);
-					current.state.PrintBoard();
-					Console.WriteLine("==========");
 				}
 			}
 			this.StopTimer();

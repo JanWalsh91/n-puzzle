@@ -15,10 +15,8 @@ namespace server.src {
 			int currentLine = 0;
 
 			for (int i = 0; i < lines.Length; i++) {
-				//Console.WriteLine(lines[i]);
 
 				lines[i] = lines[i].Trim();
-				//Console.WriteLine("-" + lines[i] + "-");
 
 				lines[i] = lines[i].Split('#')[0];
 				if (lines[i].Length != 0) {
@@ -27,7 +25,6 @@ namespace server.src {
 						// First line that corresponds to the puzzle dimension
 
 						bool success = Int32.TryParse(lines[i], out N);
-						//Console.WriteLine("N is now: " + N);
 						if (!success) {
 							throw new ParserException("Wrong format at " + fileName + ":" + (i + 1));
 						}
@@ -49,7 +46,6 @@ namespace server.src {
 							if (!success) {
 								throw new ParserException("Wrong format (should be integers) at " + fileName + ":" + (i + 1));
 							}
-							//Console.WriteLine("i: " + currentLine + ", y: " + y);
 							input[currentLine].Add(tmp);
 						}
 						currentLine++;

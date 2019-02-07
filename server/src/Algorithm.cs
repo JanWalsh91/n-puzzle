@@ -20,7 +20,6 @@ namespace server.src {
 		}
 
 		public void SetGreedySearch(bool x) {
-			Console.WriteLine("Set GreedySearch to " + x);
 			this.greedySearch = x;
 		}
 
