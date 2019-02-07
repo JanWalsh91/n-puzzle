@@ -37,7 +37,6 @@ namespace server.src {
 
 		public int CompareTo(Node other) {
 			if (this.hash.Equals(other.hash)) {
-				Console.WriteLine("Equals hash");
 				return 0;
 			}
 			return ((this.f - other.f > 0) ? 1 : -1);

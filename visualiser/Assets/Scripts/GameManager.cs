@@ -56,6 +56,7 @@ public class GameManager : MonoBehaviour {
 
 	private bool inSettings = false;
 	private bool canMove = true;
+	private bool isSolving = false;
 
 	void Start() {
 		elaspedTime = 0f;
@@ -187,8 +188,8 @@ public class GameManager : MonoBehaviour {
 		elapsedTime.text = "-";
 	}
 
-	public void NextStep() {
-		if (solutionNextMoves.Count > 0) {
+	public void NextStep(bool force) {
+		if (solutionNextMoves.Count > 0 && (playCoroutine == null || force)) {
 			BoardManager.MoveDirection nextDirection = solutionNextMoves.Last.Value;
 			solutionNextMoves.RemoveLast();
 			boardManager.AddMovements(nextDirection);
@@ -198,7 +199,7 @@ public class GameManager : MonoBehaviour {
 	}
 
 	public void PrevStep() {
-		if (solutionPrevMoves.Count > 0) {
+		if (solutionPrevMoves.Count > 0 && playCoroutine == null) {
 			BoardManager.MoveDirection nextDirection = solutionPrevMoves.Last.Value;
 			solutionPrevMoves.RemoveLast();
 			boardManager.AddMovements(nextDirection);
@@ -232,12 +233,13 @@ public class GameManager : MonoBehaviour {
 		boardManager.canSendAnotherMove = true;
 		while (solutionNextMoves.Count > 0) {
 			if (boardManager.canSendAnotherMove) {
-				NextStep();
+				NextStep(true);
 			}
 			yield return new WaitForSeconds(boardManager.movingSpeed);
 		}
 		canMove = true;
 		playPauseButtonText.text = ">";
+		playCoroutine = null;
 	}
 
 	public void GoToSettings() {
@@ -260,6 +262,11 @@ public class GameManager : MonoBehaviour {
 
 	private void Solve(List<List<int>> input) {
 
+		if (isSolving) {
+			return;
+		}
+		isSolving = true;
+
 		ResetSolution();
 		boardManager.ClearMovements();
 		if (solution != null) {
@@ -269,6 +276,7 @@ public class GameManager : MonoBehaviour {
 		sideTrayAnimator.SetTrigger("Open");
 		Thread serverCommunicationThread = new Thread(new ThreadStart(() => {
 			solution = client.CallServer(input);
+			ResetSolution();
 			if (solution == null) {
 				sideTrayAnimator.SetTrigger("Close");
 				return;
@@ -284,6 +292,7 @@ public class GameManager : MonoBehaviour {
 				solutionNextMoves.AddFirst(stringToMoveDirection[solution[i]]);
 			}
 			needToUpdateNbStep = true;
+			isSolving = false;
 		}));
 		serverCommunicationThread.IsBackground = true;
 		serverCommunicationThread.Start();
