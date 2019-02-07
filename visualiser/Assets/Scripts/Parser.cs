@@ -7,7 +7,12 @@ public class Parser {
 	public Parser() {}
 
 	public List<List<int>> SolveFromFile(string fileName) {
-		string[] lines = System.IO.File.ReadAllLines(fileName);
+		string[] lines = null;
+		try {
+			lines = System.IO.File.ReadAllLines(fileName);
+		} catch (System.Exception e) {
+			throw new ParserException(fileName + ": " + e.Message);
+		}
 		List<List<int>> input = null;
 
 		int N = -1;
@@ -16,17 +21,14 @@ public class Parser {
 		for (int i = 0; i < lines.Length; i++) {
 
 			lines[i] = lines[i].Trim();
-			//Console.WriteLine("-" + lines[i] + "-");
 
 			lines[i] = lines[i].Split('#')[0];
 			if (lines[i].Length != 0) {
 
 				if (N == -1) {
 					// First line that corresponds to the puzzle dimension
-
 					bool success = Int32.TryParse(lines[i], out N);
-					//Console.WriteLine("N is now: " + N);
-					if (!success) {
+					if (!success || N < 3) {
 						throw new ParserException("Wrong format at " + fileName + ":" + (i + 1));
 					}
 					input = new List<List<int>>(N);
@@ -47,7 +49,6 @@ public class Parser {
 						if (!success) {
 							throw new ParserException("Wrong format (should be integers) at " + fileName + ":" + (i + 1));
 						}
-						//Console.WriteLine("i: " + currentLine + ", y: " + y);
 						input[currentLine].Add(tmp);
 					}
 					currentLine++;

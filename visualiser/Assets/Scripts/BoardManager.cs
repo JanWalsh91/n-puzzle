@@ -144,67 +144,71 @@ public class BoardManager : MonoBehaviour {
 			MoveDirection move = movements.Dequeue();
 			canSendAnotherMove = false;
 			targetDestination = emptyCell.transform.position;
-			switch (move) {
-				case MoveDirection.Down:
-					if (!up) {
-						break;
-					}
-					emptyCell.transform.position = up.transform.position;
-					movingCell = up.gameObject;
-					for (int i = 0; i < N; i++) {
-						int j = values[i].FindIndex(o => o == up.value);
-						if (j > -1) {
-							values[i + 1][j] = up.value;
-							values[i][j] = 0;
+			try {
+				switch (move) {
+					case MoveDirection.Down:
+						if (!up) {
 							break;
 						}
-					}
-					break;
-				case MoveDirection.Up:
-					if (!down) {
+						emptyCell.transform.position = up.transform.position;
+						movingCell = up.gameObject;
+						for (int i = 0; i < N; i++) {
+							int j = values[i].FindIndex(o => o == up.value);
+							if (j > -1) {
+								values[i + 1][j] = up.value;
+								values[i][j] = 0;
+								break;
+							}
+						}
 						break;
-					}
-					emptyCell.transform.position = down.transform.position;
-					movingCell = down.gameObject;
-					for (int i = 0; i < N; i++) {
-						int j = values[i].FindIndex(o => o == down.value);
-						if (j > -1) {
-							values[i - 1][j] = down.value;
-							values[i][j] = 0;
+					case MoveDirection.Up:
+						if (!down) {
 							break;
 						}
-					}
-					break;
-				case MoveDirection.Left:
-					if (!right) {
+						emptyCell.transform.position = down.transform.position;
+						movingCell = down.gameObject;
+						for (int i = 0; i < N; i++) {
+							int j = values[i].FindIndex(o => o == down.value);
+							if (j > -1) {
+								values[i - 1][j] = down.value;
+								values[i][j] = 0;
+								break;
+							}
+						}
 						break;
-					}
-					emptyCell.transform.position = right.transform.position;
-					movingCell = right.gameObject;
-					for (int i = 0; i < N; i++) {
-						int j = values[i].FindIndex(o => o == right.value);
-						if (j > -1) {
-							values[i][j - 1] = right.value;
-							values[i][j] = 0;
+					case MoveDirection.Left:
+						if (!right) {
 							break;
 						}
-					}
-					break;
-				case MoveDirection.Right:
-					if (!left) {
+						emptyCell.transform.position = right.transform.position;
+						movingCell = right.gameObject;
+						for (int i = 0; i < N; i++) {
+							int j = values[i].FindIndex(o => o == right.value);
+							if (j > -1) {
+								values[i][j - 1] = right.value;
+								values[i][j] = 0;
+								break;
+							}
+						}
 						break;
-					}
-					emptyCell.transform.position = left.transform.position;
-					movingCell = left.gameObject;
-					for (int i = 0; i < N; i++) {
-						int j = values[i].FindIndex(o => o == left.value);
-						if (j > -1) {
-							values[i][j + 1] = left.value;
-							values[i][j] = 0;
+					case MoveDirection.Right:
+						if (!left) {
 							break;
 						}
-					}
-					break;
+						emptyCell.transform.position = left.transform.position;
+						movingCell = left.gameObject;
+						for (int i = 0; i < N; i++) {
+							int j = values[i].FindIndex(o => o == left.value);
+							if (j > -1) {
+								values[i][j + 1] = left.value;
+								values[i][j] = 0;
+								break;
+							}
+						}
+						break;
+				}
+			} catch (System.Exception e) {
+				Debug.Log(e.Message);
 			}
 		}
 	}

@@ -277,8 +277,8 @@ public class GameManager : MonoBehaviour {
 		Thread serverCommunicationThread = new Thread(new ThreadStart(() => {
 			solution = client.CallServer(input);
 			ResetSolution();
+			isSolving = false;
 			if (solution == null || solution[0].Equals("Error")) {
-				isSolving = false;
 				return;
 			}
 			if (solution.Count >= 4) {
@@ -292,7 +292,6 @@ public class GameManager : MonoBehaviour {
 				solutionNextMoves.AddFirst(stringToMoveDirection[solution[i]]);
 			}
 			needToUpdateNbStep = true;
-			isSolving = false;
 		}));
 		serverCommunicationThread.IsBackground = true;
 		serverCommunicationThread.Start();
