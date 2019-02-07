@@ -133,7 +133,7 @@ public class GameManager : MonoBehaviour {
 
 			if (Physics.Raycast(ray, out hit)) {
 
-				if (hit.collider.CompareTag("Cell")) {
+				if (hit.collider.CompareTag("Cell") && playCoroutine == null) {
 					if (swapFirstCell == null) {
 						swapFirstCell = hit.collider.GetComponent<Cell>();
 						if (swapFirstCell.value == 0) {
@@ -178,7 +178,7 @@ public class GameManager : MonoBehaviour {
 		}
 	}
 	
-	private void ResetSolution() {
+	public void ResetSolution() {
 		solutionNextMoves.Clear();
 		solutionPrevMoves.Clear();
 		nbStep.text = "-";
@@ -260,8 +260,7 @@ public class GameManager : MonoBehaviour {
 
 	private void Solve(List<List<int>> input) {
 
-		solutionNextMoves.Clear();
-		solutionPrevMoves.Clear();
+		ResetSolution();
 		boardManager.ClearMovements();
 		if (solution != null) {
 			solution.Clear();
@@ -271,9 +270,10 @@ public class GameManager : MonoBehaviour {
 		Thread serverCommunicationThread = new Thread(new ThreadStart(() => {
 			solution = client.CallServer(input);
 			if (solution == null) {
+				sideTrayAnimator.SetTrigger("Close");
 				return;
 			}
-			if (solution.Count > 4) {
+			if (solution.Count >= 4) {
 				resolutionInformation = solution.Skip(solution.Count - 4).Take(4).ToList();
 				solution.RemoveAt(solution.Count - 1);
 				solution.RemoveAt(solution.Count - 1);

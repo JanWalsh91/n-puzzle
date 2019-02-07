@@ -58,6 +58,7 @@ public class UIManager : MonoBehaviour {
 		if (rebuild) {
 			gameManager.boardManager.BuildReversedBoard(null);
 		}
+		gameManager.ResetSolution();
 	}
 
 	public void OnHostChange() {
@@ -72,18 +73,22 @@ public class UIManager : MonoBehaviour {
 		gameManager.algorithmType = algorithmType.value;
 		greedySearch.interactable = algorithmType.value == 0;
 		greedySearchText.color = new Color(greedySearchText.color.r, greedySearchText.color.g, greedySearchText.color.b, algorithmType.value == 0 ? 1f : 0.2f);
+		gameManager.ResetSolution();
 	}
 
 	public void OnHeuristicFunctionChange() {
 		gameManager.heuristicFunction = heuristicFunction.value;
+		gameManager.ResetSolution();
 	}
 
 	public void OnSolutionTypeChange() {
 		gameManager.solutionType = solutionType.value;
+		gameManager.ResetSolution();
 	}
 
 	public void OnGreedySearchChange() {
 		gameManager.isGreedy = System.Convert.ToInt32(greedySearch.isOn);
+		gameManager.ResetSolution();
 	}
 
 	public void DisplayError(string message) {
@@ -107,6 +112,7 @@ public class UIManager : MonoBehaviour {
 			return;
 		}
 		List<List<int>> input = null;
+		gameManager.ResetSolution();
 		try {
 			input = gameManager.parser.SolveFromFile(fileName);
 		} catch (ParserException pe) {
